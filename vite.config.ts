@@ -6,7 +6,18 @@ import react from '@vitejs/plugin-react'
 process.env.BROWSER = 'msedge'
 
 export default defineConfig({
+  // 🔗 Necesario para GitHub Pages (nombre exacto del repo)
+  base: '/tokkii-web/',
+
   plugins: [react()],
+
+  // 🏗️ Output compatible con GitHub Pages (/docs)
+  build: {
+    outDir: 'docs',
+    emptyOutDir: true,
+  },
+
+  // ⚙️ Configuración SOLO para desarrollo local
   server: {
     open: true,
     proxy: {
