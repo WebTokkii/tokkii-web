@@ -1,0 +1,66 @@
+.most-streamed-section {
+    width: 100%;
+    max-width: 900px;
+    margin: 4rem auto;
+}
+
+.streamed-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
+    margin-top: 1rem;
+}
+
+.streamed-card {
+    position: relative;
+    border-radius: 16px;
+    overflow: hidden;
+    height: 200px;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.streamed-image {
+    width: 100%;
+    height: 100%;
+    background-size: cover;
+    background-position: center;
+    transition: transform 0.5s ease;
+}
+
+.streamed-card:hover .streamed-image {
+    transform: scale(1.1);
+}
+
+.streamed-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, rgba(15, 2, 26, 0.9) 0%, rgba(15, 2, 26, 0.2) 60%, transparent 100%);
+    display: flex;
+    align-items: flex-end;
+    padding: 1.5rem;
+    transition: var(--transition);
+}
+
+.streamed-overlay h4 {
+    color: white;
+    font-size: 1.4rem;
+    font-weight: 700;
+    margin: 0;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+@media (max-width: 768px) {
+    .streamed-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1rem;
+    }
+
+    .streamed-card {
+        height: 160px;
+    }
+
+    .streamed-overlay h4 {
+        font-size: 1.1rem;
+    }
+}

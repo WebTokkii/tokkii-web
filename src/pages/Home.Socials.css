@@ -1,0 +1,69 @@
+.home-socials {
+    display: flex;
+    justify-content: center;
+    gap: 1.5rem;
+    margin: 2rem auto 4rem;
+    flex-wrap: wrap;
+}
+
+.social-link {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    padding: 0.8rem 1.5rem;
+    border-radius: 50px;
+    font-weight: 600;
+    font-size: 1.1rem;
+    color: white;
+    text-decoration: none;
+    transition: var(--transition);
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.social-link:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+}
+
+/* Social Colors on Hover */
+.social-link.twitch:hover {
+    background: #9146FF;
+    border-color: #a970ff;
+    box-shadow: 0 0 20px rgba(145, 70, 255, 0.4);
+}
+
+.social-link.instagram:hover {
+    background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
+    border-color: #dc2743;
+    box-shadow: 0 0 20px rgba(220, 39, 67, 0.4);
+}
+
+.social-link.tiktok:hover {
+    background: #000000;
+    border-color: #25F4EE;
+    box-shadow: 0 0 20px rgba(37, 244, 238, 0.4);
+}
+
+.social-link.x-twitter:hover {
+    background: #000000;
+    border-color: #ffffff;
+    box-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
+}
+
+.social-link.discord:hover {
+    background: #5865F2;
+    border-color: #7289da;
+    box-shadow: 0 0 20px rgba(88, 101, 242, 0.4);
+}
+
+@media (max-width: 768px) {
+    .home-socials {
+        gap: 1rem;
+    }
+
+    .social-link {
+        padding: 0.6rem 1.2rem;
+        font-size: 1rem;
+    }
+}
