@@ -16,7 +16,7 @@ import NotFound from './pages/NotFound';
 
 const App: React.FC = () => {
   return (
-    <Router>
+    <Router basename={import.meta.env.BASE_URL}>
       <ScrollToTop />
       <div className="app-wrapper">
         <Navbar />
