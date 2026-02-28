@@ -13,24 +13,43 @@ const Sorteos: React.FC = () => {
         e.preventDefault();
         setLoading(true);
 
+        const webhookUrl = import.meta.env.VITE_DISCORD_WEBHOOK_SORTEOS;
+
+        if (!webhookUrl) {
+            alert("Error: Webhook no configurado");
+            setLoading(false);
+            return;
+        }
+
         try {
-            const res = await fetch("http://localhost:3001/api/contacto", {
+            const res = await fetch(webhookUrl, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
                 },
-                body: JSON.stringify({ nombre, eventoPremio, mensaje })
+                body: JSON.stringify({
+                    embeds: [
+                        {
+                            title: "🎉 Reclamo de Premio",
+                            color: 5814783,
+                            fields: [
+                                { name: "👤 Nombre", value: nombre },
+                                { name: "🏆 Premio", value: eventoPremio },
+                                { name: "💬 Mensaje", value: mensaje },
+                            ],
+                            timestamp: new Date(),
+                        },
+                    ],
+                })
             });
 
-            const data = await res.json();
-
-            if (data.success) {
+            if (res.ok) {
                 alert("Mensaje enviado 🚀");
                 setNombre("");
                 setEventoPremio("");
                 setMensaje("");
             } else {
-                alert("Error al enviar");
+                alert("Error al enviar a Discord");
             }
         } catch (error) {
             alert("Error de conexión");
