@@ -25,46 +25,29 @@ const Eventos: React.FC = () => {
         e.preventDefault();
         setLoading(true);
 
-        const webhookUrl = import.meta.env.VITE_DISCORD_WEBHOOK_EVENTOS;
-
-        if (!webhookUrl) {
-            alert("Error: Webhook no configurado");
-            setLoading(false);
-            return;
-        }
+        const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
 
         try {
-            const res = await fetch(webhookUrl, {
+            const res = await fetch(`${API_URL}/api/eventos`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
                 },
-                body: JSON.stringify({
-                    embeds: [
-                        {
-                            title: "🏆 Nuevo Registro de Evento",
-                            color: 15844367,
-                            fields: [
-                                { name: "👤 Nombre", value: nombre },
-                                { name: "🎯 Evento", value: eventoPremio },
-                                { name: "💬 Mensaje", value: mensaje },
-                            ],
-                            timestamp: new Date(),
-                        },
-                    ],
-                })
+                body: JSON.stringify({ nombre, eventoPremio, mensaje })
             });
 
-            if (res.ok) {
+            const data = await res.json();
+
+            if (data.success) {
                 alert("Mensaje enviado 🚀");
                 setNombre("");
                 setEventoPremio("");
                 setMensaje("");
             } else {
-                alert("Error al enviar a Discord");
+                alert("Error al enviar al servidor");
             }
         } catch (error) {
-            alert("Error de conexión");
+            alert("Error de conexión con el servidor");
         }
 
         setLoading(false);
