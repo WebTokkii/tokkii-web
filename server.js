@@ -211,6 +211,19 @@ app.post("/api/eventos", async (req, res) => {
 /* =====================================================
    🚀 SERVER
 ===================================================== */
+app.get("/", (req, res) => {
+  res.send("Servidor de Tokkiixa funcionando correctamente 🚀");
+});
+
+app.get("/api/health", (req, res) => {
+  res.json({
+    status: "ok",
+    webhooks: {
+      sorteos: !!process.env.DISCORD_WEBHOOK_SORTEOS,
+      eventos: !!process.env.DISCORD_WEBHOOK_EVENTOS
+    }
+  });
+});
 
 const PORT = process.env.PORT || 3001;
 
