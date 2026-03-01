@@ -169,8 +169,13 @@ app.post("/api/contacto", async (req, res) => {
 
     res.json({ success: true });
   } catch (error) {
-    console.error("ERROR SORTEOS:", error.response?.data || error.message);
-    res.status(500).json({ error: "Error enviando a Discord (Sorteos)" });
+    const errorMsg = error.response?.data || error.message;
+    console.error("ERROR SORTEOS:", errorMsg);
+    res.status(500).json({
+      success: false,
+      error: "Error enviando a Discord (Sorteos)",
+      details: errorMsg
+    });
   }
 });
 
@@ -207,8 +212,13 @@ app.post("/api/eventos", async (req, res) => {
 
     res.json({ success: true });
   } catch (error) {
-    console.error("ERROR EVENTOS:", error.response?.data || error.message);
-    res.status(500).json({ error: "Error enviando a Discord (Eventos)" });
+    const errorMsg = error.response?.data || error.message;
+    console.error("ERROR EVENTOS:", errorMsg);
+    res.status(500).json({
+      success: false,
+      error: "Error enviando a Discord (Eventos)",
+      details: errorMsg
+    });
   }
 });
 
