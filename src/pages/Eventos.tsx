@@ -44,7 +44,7 @@ const Eventos: React.FC = () => {
                 setEventoPremio("");
                 setMensaje("");
             } else {
-                alert("Error al enviar al servidor");
+                alert(`Error: ${data.error}\nDetalles: ${JSON.stringify(data.details)}`);
             }
         } catch (error) {
             alert("Error de conexión con el servidor");
