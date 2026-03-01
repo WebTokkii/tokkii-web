@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTriangleExclamation } from '@fortawesome/free-solid-svg-icons';
+import Ruleta from '../components/Ruleta';
 import '../components/NewsWidget.css';
 
 const Sorteos: React.FC = () => {
@@ -8,6 +9,31 @@ const Sorteos: React.FC = () => {
     const [eventoPremio, setEventoPremio] = useState("");
     const [mensaje, setMensaje] = useState("");
     const [loading, setLoading] = useState(false);
+    const [showRuleta, setShowRuleta] = useState(localStorage.getItem("tokki_admin") === "true");
+
+    useEffect(() => {
+        let inputKeys = "";
+        const secretKeyword = "emilia";
+
+        const handleKeyDown = (e: KeyboardEvent) => {
+            // No activar si el usuario está escribiendo en un input o textarea
+            if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) {
+                return;
+            }
+
+            inputKeys += e.key.toLowerCase();
+            inputKeys = inputKeys.slice(-secretKeyword.length);
+
+            if (inputKeys === secretKeyword) {
+                setShowRuleta(true);
+                localStorage.setItem("tokki_admin", "true");
+                console.log("Acceso de administradora activado.");
+            }
+        };
+
+        window.addEventListener('keydown', handleKeyDown);
+        return () => window.removeEventListener('keydown', handleKeyDown);
+    }, []);
 
     const enviarFormulario = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -124,7 +150,10 @@ const Sorteos: React.FC = () => {
                     </div>
                 </div>
 
-                <div className="news-header">
+                {/* Ruleta Section - Solo visible con la palabra clave */}
+                {showRuleta && <Ruleta />}
+
+                <div className="news-header" style={{ marginTop: '4rem' }}>
                     <h3 className="widget-title">Sorteos Activos</h3>
                 </div>
                 <div className="grid">
