@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { Power, Play, StopCircle, UserCheck, Trophy, X, RefreshCcw, LayoutGrid } from 'lucide-react';
+import { Play, StopCircle, Trophy, X, RefreshCcw } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import tmi from 'tmi.js';
 import './TwitchGiveaway.css';
@@ -9,7 +9,6 @@ const TwitchGiveaway: React.FC = () => {
     const [keyword, setKeyword] = useState('!web');
     const [isStarted, setIsStarted] = useState(false);
     const [winner, setWinner] = useState<string | null>(null);
-    const [isConnected, setIsConnected] = useState(false);
 
     const clientRef = useRef<tmi.Client | null>(null);
     const participantsRef = useRef<string[]>([]);
@@ -27,12 +26,11 @@ const TwitchGiveaway: React.FC = () => {
 
         client.connect().then(() => {
             console.log('Conectado a Twitch');
-            setIsConnected(true);
         }).catch(err => {
             console.error('Error conectando a Twitch:', err);
         });
 
-        client.on('message', (channel, tags, message, self) => {
+        client.on('message', (_channel, tags, message, self) => {
             if (self) return;
             if (!isStarted) return;
 
@@ -51,14 +49,6 @@ const TwitchGiveaway: React.FC = () => {
 
         clientRef.current = client;
     }, [isStarted, keyword]);
-
-    const disconnectTwitch = useCallback(() => {
-        if (clientRef.current) {
-            clientRef.current.disconnect();
-            clientRef.current = null;
-            setIsConnected(false);
-        }
-    }, []);
 
     useEffect(() => {
         if (isStarted) {
@@ -157,7 +147,7 @@ const TwitchGiveaway: React.FC = () => {
                 <div className="gift-list-panel">
                     <div className="gift-list-header">
                         <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                            <UserCheck size={18} color="#9146FF" />
+                            <Trophy size={18} color="#9146FF" />
                             <span style={{ fontWeight: 'bold' }}>En lista</span>
                         </div>
                         <div className="gift-count">{participants.length}</div>
@@ -165,7 +155,7 @@ const TwitchGiveaway: React.FC = () => {
 
                     <div className="gift-users-scroll custom-scrollbar">
                         <AnimatePresence initial={false}>
-                            {participants.map((user, idx) => (
+                            {participants.map((user) => (
                                 <motion.div
                                     key={`twitch-user-${user}`}
                                     initial={{ opacity: 0, x: 20 }}
