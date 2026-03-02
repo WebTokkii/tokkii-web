@@ -1,0 +1,329 @@
+.gift-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 2.5rem;
+    border-radius: 2.5rem;
+    background: var(--bg-card);
+    backdrop-filter: blur(15px);
+    border: 1px solid var(--glass-border);
+    margin: 3rem 0;
+    position: relative;
+    overflow: hidden;
+}
+
+.gift-header {
+    text-align: center;
+    margin-bottom: 2.5rem;
+    z-index: 2;
+}
+
+.gift-title {
+    font-size: 2.8rem;
+    font-weight: 900;
+    margin-bottom: 0.5rem;
+    background: linear-gradient(135deg, #9146FF, #00d4ff);
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-transform: uppercase;
+    font-style: italic;
+    letter-spacing: -1px;
+}
+
+.gift-status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.4rem 1rem;
+    background: rgba(145, 70, 255, 0.15);
+    border: 1px solid rgba(145, 70, 255, 0.3);
+    border-radius: 2rem;
+    color: #bf94ff;
+    font-size: 0.85rem;
+    font-weight: 700;
+    margin-top: 0.5rem;
+}
+
+.gift-status-badge.active {
+    background: rgba(0, 255, 136, 0.1);
+    border-color: rgba(0, 255, 136, 0.3);
+    color: #00ff88;
+}
+
+.gift-pulse {
+    width: 8px;
+    height: 8px;
+    background: currentColor;
+    border-radius: 50%;
+    animation: gift-pulse-anim 1.5s infinite;
+}
+
+@keyframes gift-pulse-anim {
+    0% {
+        transform: scale(1);
+        opacity: 1;
+    }
+
+    100% {
+        transform: scale(2.5);
+        opacity: 0;
+    }
+}
+
+.gift-main-layout {
+    display: grid;
+    grid-template-columns: 1fr 380px;
+    gap: 3rem;
+    width: 100%;
+    max-width: 1100px;
+}
+
+/* Raffle Controls */
+.gift-controls-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+.gift-setup-card {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid var(--glass-border);
+    border-radius: 2rem;
+    padding: 2rem;
+}
+
+.gift-setup-title {
+    font-size: 1.2rem;
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+}
+
+.gift-input-field {
+    width: 100%;
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid var(--glass-border);
+    border-radius: 1rem;
+    padding: 1rem 1.25rem;
+    color: white;
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+    transition: var(--transition);
+}
+
+.gift-input-field:focus {
+    outline: none;
+    border-color: #9146FF;
+    box-shadow: 0 0 15px rgba(145, 70, 255, 0.2);
+}
+
+.gift-action-btns {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+}
+
+.gift-btn {
+    padding: 1rem;
+    border-radius: 1.2rem;
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    text-transform: uppercase;
+    font-size: 0.9rem;
+}
+
+.gift-btn-start {
+    background: #9146FF;
+    color: white;
+    box-shadow: 0 8px 20px rgba(145, 70, 255, 0.3);
+}
+
+.gift-btn-stop {
+    background: var(--secondary);
+    color: white;
+    box-shadow: 0 8px 20px rgba(255, 0, 110, 0.3);
+}
+
+.gift-btn-draw {
+    grid-column: span 2;
+    background: white;
+    color: #0f021a;
+    padding: 1.25rem;
+    margin-top: 0.5rem;
+    font-size: 1.1rem;
+}
+
+.gift-btn-clear {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--glass-border);
+    color: var(--text-muted);
+}
+
+.gift-btn:hover:not(:disabled) {
+    transform: translateY(-3px);
+    filter: brightness(1.1);
+}
+
+.gift-btn:active:not(:disabled) {
+    transform: translateY(0);
+}
+
+.gift-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* Participant List */
+.gift-list-panel {
+    background: rgba(0, 0, 0, 0.2);
+    border: 1px solid var(--glass-border);
+    border-radius: 2rem;
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    max-height: 500px;
+}
+
+.gift-list-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.25rem;
+    padding: 0 0.5rem;
+}
+
+.gift-count {
+    background: #9146FF;
+    color: white;
+    padding: 0.2rem 0.75rem;
+    border-radius: 1rem;
+    font-size: 0.85rem;
+    font-weight: 800;
+}
+
+.gift-users-scroll {
+    overflow-y: auto;
+    flex: 1;
+    padding-right: 0.5rem;
+}
+
+.gift-user-item {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 1rem;
+    padding: 0.85rem 1rem;
+    margin-bottom: 0.6rem;
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    animation: gift-slide-in 0.3s ease-out forwards;
+}
+
+@keyframes gift-slide-in {
+    from {
+        opacity: 0;
+        transform: translateX(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.gift-user-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: linear-gradient(45deg, #9146FF, #00d4ff);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 900;
+    font-size: 0.8rem;
+    color: white;
+}
+
+.gift-user-name {
+    font-weight: 600;
+    font-size: 0.95rem;
+    color: #e0aaff;
+}
+
+/* Winner Modal */
+.gift-winner-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 2, 26, 0.95);
+    z-index: 2000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+}
+
+.gift-winner-card {
+    background: #1a0b2e;
+    border: 2px solid #9146FF;
+    border-radius: 3rem;
+    padding: 4rem 3rem;
+    width: 100%;
+    max-width: 500px;
+    text-align: center;
+    position: relative;
+    box-shadow: 0 0 100px rgba(145, 70, 255, 0.4);
+}
+
+.gift-winner-label {
+    color: #9146FF;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 4px;
+    font-size: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.gift-winner-name {
+    font-size: 4.5rem;
+    font-weight: 900;
+    color: white;
+    margin-bottom: 2.5rem;
+    line-height: 1;
+    word-break: break-all;
+    text-shadow: 0 0 30px rgba(145, 70, 255, 0.5);
+}
+
+.gift-confetti {
+    position: absolute;
+    width: 12px;
+    height: 12px;
+    animation: gift-fall 3s linear infinite;
+}
+
+@keyframes gift-fall {
+    0% {
+        transform: translateY(-100px) rotate(0deg);
+        opacity: 1;
+    }
+
+    100% {
+        transform: translateY(600px) rotate(720deg);
+        opacity: 0;
+    }
+}
+
+@media (max-width: 1000px) {
+    .gift-main-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .gift-title {
+        font-size: 2rem;
+    }
+}

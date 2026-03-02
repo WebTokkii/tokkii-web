@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTriangleExclamation } from '@fortawesome/free-solid-svg-icons';
 import Ruleta from '../components/Ruleta';
+import TwitchGiveaway from '../components/TwitchGiveaway';
 import '../components/NewsWidget.css';
 
 const Sorteos: React.FC = () => {
@@ -16,7 +17,6 @@ const Sorteos: React.FC = () => {
         const secretKeyword = "emilia";
 
         const handleKeyDown = (e: KeyboardEvent) => {
-            // No activar si el usuario está escribiendo en un input o textarea
             if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) {
                 return;
             }
@@ -70,7 +70,6 @@ const Sorteos: React.FC = () => {
     return (
         <section className="section fade-in">
             <div className="container">
-                {/* Warning Box */}
                 <div className="warning-box glass" style={{
                     border: '2px solid #ff4d4d',
                     padding: '1.5rem 2rem',
@@ -150,8 +149,13 @@ const Sorteos: React.FC = () => {
                     </div>
                 </div>
 
-                {/* Ruleta Section - Solo visible con la palabra clave */}
-                {showRuleta && <Ruleta />}
+                {showRuleta && (
+                    <>
+                        <Ruleta />
+                        <div style={{ margin: '4rem 0' }}></div>
+                        <TwitchGiveaway />
+                    </>
+                )}
 
                 <div className="news-header" style={{ marginTop: '4rem' }}>
                     <h3 className="widget-title">Sorteos Activos</h3>
@@ -189,4 +193,3 @@ const Sorteos: React.FC = () => {
 };
 
 export default Sorteos;
-
