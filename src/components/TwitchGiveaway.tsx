@@ -36,10 +36,10 @@ const TwitchGiveaway: React.FC = () => {
             if (self) return;
             if (!isStarted) return;
 
-            const msg = message.toLowerCase().trim();
+            const msg = message.trim();
             const user = tags['display-name'] || tags.username;
 
-            if (msg === keyword.toLowerCase().trim() && user) {
+            if (msg === keyword.trim() && user) {
                 if (!participantsRef.current.includes(user)) {
                     setParticipants(prev => {
                         if (prev.includes(user)) return prev;

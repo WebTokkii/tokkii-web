@@ -176,9 +176,15 @@ app.post("/api/contacto", async (req, res) => {
   } catch (error) {
     const errorMsg = error.response?.data || error.message;
     console.error("ERROR SORTEOS:", errorMsg);
+
+    let userFriendlyMessage = "Error enviando a Discord (Sorteos)";
+    if (error.response?.status === 429) {
+      userFriendlyMessage = "Discord está limitando las peticiones temporalmente. Por favor, espera un minuto e intenta de nuevo ⏳";
+    }
+
     res.status(500).json({
       success: false,
-      error: "Error enviando a Discord (Sorteos)",
+      error: userFriendlyMessage,
       details: errorMsg
     });
   }
@@ -224,9 +230,15 @@ app.post("/api/eventos", async (req, res) => {
   } catch (error) {
     const errorMsg = error.response?.data || error.message;
     console.error("ERROR EVENTOS:", errorMsg);
+
+    let userFriendlyMessage = "Error enviando a Discord (Eventos)";
+    if (error.response?.status === 429) {
+      userFriendlyMessage = "Discord está limitando las peticiones temporalmente. Por favor, espera un minuto e intenta de nuevo ⏳";
+    }
+
     res.status(500).json({
       success: false,
-      error: "Error enviando a Discord (Eventos)",
+      error: userFriendlyMessage,
       details: errorMsg
     });
   }
