@@ -1,14 +1,10 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Link } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTriangleExclamation, faArrowRight } from '@fortawesome/free-solid-svg-icons';
 import '../components/NewsWidget.css';
 
 const Eventos: React.FC = () => {
-    const [nombre, setNombre] = useState("");
-    const [eventoPremio, setEventoPremio] = useState("");
-    const [mensaje, setMensaje] = useState("");
-    const [loading, setLoading] = useState(false);
 
     // Variable para próximos eventos
     const proximosEventos = [
@@ -21,37 +17,6 @@ const Eventos: React.FC = () => {
         }
     ];
 
-    const enviarFormulario = async (e: React.FormEvent) => {
-        e.preventDefault();
-        setLoading(true);
-
-        const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
-
-        try {
-            const res = await fetch(`${API_URL}/api/eventos`, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({ nombre, eventoPremio, mensaje })
-            });
-
-            const data = await res.json();
-
-            if (data.success) {
-                alert("Mensaje enviado 🚀");
-                setNombre("");
-                setEventoPremio("");
-                setMensaje("");
-            } else {
-                alert(`Error: ${data.error}\nDetalles: ${JSON.stringify(data.details)}`);
-            }
-        } catch (error) {
-            alert("Error de conexión con el servidor");
-        }
-
-        setLoading(false);
-    };
 
     return (
         <section className="section fade-in">
@@ -76,69 +41,9 @@ const Eventos: React.FC = () => {
                     </div>
                 </div>
 
-                <div className="contact-card glass" style={{ marginBottom: '4rem', padding: '3rem' }}>
-                    <div className="split-container" style={{ alignItems: 'flex-start', gap: '3rem' }}>
-                        <div className="split-content" style={{ textAlign: 'left' }}>
-                            <h2 className="section-title" style={{ marginBottom: '1.5rem', textAlign: 'left' }}>Para participar en algún evento, presta atención:</h2>
-                            <p className="section-description" style={{ margin: '0', textAlign: 'left', maxWidth: '100%' }}>
-                                Completa los campos según lo solicitado por Tokkiixa para participar en el evento. Es obligatorio ingresar todos los datos requeridos correctamente y sin omisiones.
-                            </p>
-                        </div>
 
-                        <div className="split-form" style={{ flex: '1.2', width: '100%' }}>
-                            <form className="contact-form" onSubmit={enviarFormulario} style={{ marginTop: '0' }}>
-                                <div className="form-group">
-                                    <input
-                                        type="text"
-                                        placeholder="Tu nombre"
-                                        className="glass-input"
-                                        value={nombre}
-                                        onChange={(e) => setNombre(e.target.value)}
-                                        required
-                                        disabled={loading}
-                                    />
-                                </div>
-
-                                <div className="form-group">
-                                    <input
-                                        type="text"
-                                        placeholder="Evento al cual participas"
-                                        className="glass-input"
-                                        value={eventoPremio}
-                                        onChange={(e) => setEventoPremio(e.target.value)}
-                                        required
-                                        disabled={loading}
-                                    />
-                                </div>
-
-                                <div className="form-group">
-                                    <textarea
-                                        placeholder="BattleTag, Nick Discord, etc"
-                                        className="glass-input"
-                                        style={{ minHeight: '120px' }}
-                                        value={mensaje}
-                                        onChange={(e) => setMensaje(e.target.value)}
-                                        required
-                                        disabled={loading}
-                                    />
-                                </div>
-
-                                <button
-                                    type="submit"
-                                    className="btn-primary glow"
-                                    style={{ width: '100%' }}
-                                    disabled={loading}
-                                >
-                                    {loading ? "Enviando..." : "Enviar"}
-                                </button>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-
-
-                <div className="news-header">
-                    <h3 className="widget-title">Próximos Eventos</h3>
+                <div className="news-header" style={{ marginBottom: '2rem' }}>
+                    <h3 className="widget-title">Eventos Activos</h3>
                 </div>
 
                 {proximosEventos.map((evento, index) => (
@@ -194,7 +99,8 @@ const Eventos: React.FC = () => {
                                         gap: '8px',
                                         transition: 'all 0.3s ease',
                                         fontWeight: 'bold',
-                                        opacity: '0.9'
+                                        opacity: '0.9',
+                                        padding: '0.8rem 0'
                                     }}
                                     className="more-info-link"
                                     onMouseOver={(e) => {
@@ -212,6 +118,7 @@ const Eventos: React.FC = () => {
                         </div>
                     </div>
                 ))}
+
             </div>
         </section>
     );

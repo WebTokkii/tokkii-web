@@ -1,10 +1,12 @@
 import React from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCalendarAlt, faChevronLeft } from '@fortawesome/free-solid-svg-icons';
+import { faCalendarAlt, faChevronLeft, faUserPlus } from '@fortawesome/free-solid-svg-icons';
+import ParticipationForm from '../components/ParticipationForm';
 
 const EventoDetalle: React.FC = () => {
     const { slug } = useParams<{ slug: string }>();
+    const [showForm, setShowForm] = React.useState(false);
 
     // Esta data debería estar en un lugar compartido en el futuro
     const eventosData: Record<string, any> = {
@@ -82,13 +84,26 @@ const EventoDetalle: React.FC = () => {
                             </div>
 
                             <div style={{ marginTop: '2rem' }}>
-                                <Link to="/eventos" className="btn-primary glow" style={{ width: '100%', textAlign: 'center', display: 'block' }}>
-                                    Inscribirse ahora
-                                </Link>
+                                <button
+                                    onClick={() => setShowForm(true)}
+                                    className="btn-primary glow"
+                                    style={{ width: '100%', textAlign: 'center', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px' }}
+                                >
+                                    <FontAwesomeIcon icon={faUserPlus} /> Participar ahora
+                                </button>
                             </div>
                         </div>
                     </div>
                 </div>
+
+                {showForm && evento && (
+                    <ParticipationForm
+                        tipo="evento"
+                        itemId={slug || ""}
+                        itemTitle={evento.titulo}
+                        onClose={() => setShowForm(false)}
+                    />
+                )}
             </div>
         </section>
     );

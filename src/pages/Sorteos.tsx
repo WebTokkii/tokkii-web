@@ -4,12 +4,11 @@ import { faTriangleExclamation } from '@fortawesome/free-solid-svg-icons';
 import Ruleta from '../components/Ruleta';
 import TwitchGiveaway from '../components/TwitchGiveaway';
 import '../components/NewsWidget.css';
+import ParticipationForm from '../components/ParticipationForm';
+import { faUserPlus } from '@fortawesome/free-solid-svg-icons';
 
 const Sorteos: React.FC = () => {
-    const [nombre, setNombre] = useState("");
-    const [eventoPremio, setEventoPremio] = useState("");
-    const [mensaje, setMensaje] = useState("");
-    const [loading, setLoading] = useState(false);
+    const [selectedSorteo, setSelectedSorteo] = useState<{ id: string, title: string } | null>(null);
     const [showRuleta, setShowRuleta] = useState(localStorage.getItem("tokki_admin") === "true");
 
     useEffect(() => {
@@ -35,37 +34,6 @@ const Sorteos: React.FC = () => {
         return () => window.removeEventListener('keydown', handleKeyDown);
     }, []);
 
-    const enviarFormulario = async (e: React.FormEvent) => {
-        e.preventDefault();
-        setLoading(true);
-
-        const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
-
-        try {
-            const res = await fetch(`${API_URL}/api/contacto`, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({ nombre, eventoPremio, mensaje })
-            });
-
-            const data = await res.json();
-
-            if (data.success) {
-                alert("Mensaje enviado 🚀");
-                setNombre("");
-                setEventoPremio("");
-                setMensaje("");
-            } else {
-                alert(`Error: ${data.error}\nDetalles: ${JSON.stringify(data.details)}`);
-            }
-        } catch (error) {
-            alert("Error de conexión con el servidor");
-        }
-
-        setLoading(false);
-    };
 
     return (
         <section className="section fade-in">
@@ -89,65 +57,6 @@ const Sorteos: React.FC = () => {
                     </div>
                 </div>
 
-                <div className="contact-card glass" style={{ marginBottom: '4rem', padding: '3rem' }}>
-                    <div className="split-container" style={{ alignItems: 'flex-start', gap: '3rem' }}>
-                        <div className="split-content" style={{ textAlign: 'left' }}>
-                            <h2 className="section-title" style={{ marginBottom: '1.5rem', textAlign: 'left' }}>Para Reclamar tú premio, presta atención:</h2>
-                            <p className="section-description" style={{ margin: '0', textAlign: 'left', maxWidth: '100%' }}>
-                                Rellena los campos según te solicito Tokkiixa, indicando el premio que reclamas, y la informacion solicitada al momento de ganar tu premio.
-                            </p>
-                        </div>
-
-                        <div className="split-form" style={{ flex: '1.2', width: '100%' }}>
-                            <form className="contact-form" onSubmit={enviarFormulario} style={{ marginTop: '0' }}>
-                                <div className="form-group">
-                                    <input
-                                        type="text"
-                                        placeholder="Tu nombre"
-                                        className="glass-input"
-                                        value={nombre}
-                                        onChange={(e) => setNombre(e.target.value)}
-                                        required
-                                        disabled={loading}
-                                    />
-                                </div>
-
-                                <div className="form-group">
-                                    <input
-                                        type="text"
-                                        placeholder="Indica el premio que reclamas"
-                                        className="glass-input"
-                                        value={eventoPremio}
-                                        onChange={(e) => setEventoPremio(e.target.value)}
-                                        required
-                                        disabled={loading}
-                                    />
-                                </div>
-
-                                <div className="form-group">
-                                    <textarea
-                                        placeholder="BattleTag, Nick Discord, etc"
-                                        className="glass-input"
-                                        style={{ minHeight: '120px' }}
-                                        value={mensaje}
-                                        onChange={(e) => setMensaje(e.target.value)}
-                                        required
-                                        disabled={loading}
-                                    />
-                                </div>
-
-                                <button
-                                    type="submit"
-                                    className="btn-primary glow"
-                                    style={{ width: '100%' }}
-                                    disabled={loading}
-                                >
-                                    {loading ? "Enviando..." : "Enviar"}
-                                </button>
-                            </form>
-                        </div>
-                    </div>
-                </div>
 
                 {showRuleta && (
                     <>
@@ -167,11 +76,32 @@ const Sorteos: React.FC = () => {
                                 <span className="badge">ACTIVO</span>
                                 <h3>Sorteo Especial de Temporada #{i}</h3>
                                 <p>Participa ahora y gana increíbles premios diseñados para nuestra comunidad de Tokkiixa.</p>
-                                <button className="btn-primary">Participar</button>
+                                <button
+                                    onClick={() => setSelectedSorteo({ id: `sorteo-temp-${i}`, title: `Sorteo Especial de Temporada #${i}` })}
+                                    className="btn-primary glow"
+                                    style={{
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        gap: '10px',
+                                        justifyContent: 'center',
+                                        width: '100%'
+                                    }}
+                                >
+                                    <FontAwesomeIcon icon={faUserPlus} /> Participar
+                                </button>
                             </div>
                         </div>
                     ))}
                 </div>
+
+                {selectedSorteo && (
+                    <ParticipationForm
+                        tipo="sorteo"
+                        itemId={selectedSorteo.id}
+                        itemTitle={selectedSorteo.title}
+                        onClose={() => setSelectedSorteo(null)}
+                    />
+                )}
 
                 <div className="news-header" style={{ marginTop: '3rem' }}>
                     <h3 className="widget-title">Próximos Sorteos</h3>
