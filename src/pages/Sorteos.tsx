@@ -1,15 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faTriangleExclamation } from '@fortawesome/free-solid-svg-icons';
+import { faTriangleExclamation, faUserPlus } from '@fortawesome/free-solid-svg-icons';
 import Ruleta from '../components/Ruleta';
 import TwitchGiveaway from '../components/TwitchGiveaway';
 import '../components/NewsWidget.css';
 import ParticipationForm from '../components/ParticipationForm';
-import { faUserPlus } from '@fortawesome/free-solid-svg-icons';
+import { supabase } from '../lib/supabase';
 
 const Sorteos: React.FC = () => {
     const [selectedSorteo, setSelectedSorteo] = useState<{ id: string, title: string } | null>(null);
     const [showRuleta, setShowRuleta] = useState(localStorage.getItem("tokki_admin") === "true");
+    const [sorteos, setSorteos] = useState<any[]>([]);
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         let inputKeys = "";
@@ -34,6 +36,27 @@ const Sorteos: React.FC = () => {
         return () => window.removeEventListener('keydown', handleKeyDown);
     }, []);
 
+    useEffect(() => {
+        const fetchSorteos = async () => {
+            const { data, error } = await supabase
+                .from('content_items')
+                .select('*')
+                .eq('tipo', 'sorteo')
+                .order('created_at', { ascending: false });
+
+            if (error) {
+                console.error('Error fetching raffles:', error);
+            } else {
+                setSorteos(data || []);
+            }
+            setLoading(false);
+        };
+
+        fetchSorteos();
+    }, []);
+
+    const sorteosActivos = sorteos.filter(s => s.estado === 'activo');
+    const proximosSorteos = sorteos.filter(s => s.estado === 'proximo');
 
     return (
         <section className="section fade-in">
@@ -57,7 +80,6 @@ const Sorteos: React.FC = () => {
                     </div>
                 </div>
 
-
                 {showRuleta && (
                     <>
                         <Ruleta />
@@ -66,33 +88,53 @@ const Sorteos: React.FC = () => {
                     </>
                 )}
 
-                <div className="news-header" style={{ marginTop: '4rem' }}>
+                <div className="news-header" style={{ marginTop: '4rem', marginBottom: '2rem' }}>
                     <h3 className="widget-title">Sorteos Activos</h3>
                 </div>
-                <div className="grid">
-                    {[1, 2, 3, 4].map((i) => (
-                        <div key={i} className="card glass glow-hover">
-                            <div className="card-body">
-                                <span className="badge">ACTIVO</span>
-                                <h3>Sorteo Especial de Temporada #{i}</h3>
-                                <p>Participa ahora y gana increíbles premios diseñados para nuestra comunidad de Tokkiixa.</p>
-                                <button
-                                    onClick={() => setSelectedSorteo({ id: `sorteo-temp-${i}`, title: `Sorteo Especial de Temporada #${i}` })}
-                                    className="btn-primary glow"
-                                    style={{
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        gap: '10px',
-                                        justifyContent: 'center',
-                                        width: '100%'
-                                    }}
-                                >
-                                    <FontAwesomeIcon icon={faUserPlus} /> Participar
-                                </button>
+
+                {loading ? (
+                    <div className="text-center" style={{ padding: '3rem' }}>
+                        <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: '1.2rem' }}>Cargando sorteos...</p>
+                    </div>
+                ) : sorteosActivos.length === 0 ? (
+                    <div style={{
+                        padding: '3rem',
+                        textAlign: 'center',
+                        background: 'rgba(255,255,255,0.02)',
+                        borderRadius: '24px',
+                        border: '1px dashed rgba(255,255,255,0.1)',
+                        marginBottom: '4rem'
+                    }}>
+                        <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: '1.2rem', margin: 0 }}>
+                            No hay sorteos activos en este momento. ¡Vuelve pronto!
+                        </p>
+                    </div>
+                ) : (
+                    <div className="grid">
+                        {sorteosActivos.map((sorteo, i) => (
+                            <div key={i} className="card glass glow-hover">
+                                <div className="card-body">
+                                    <span className="badge">ACTIVO</span>
+                                    <h3>{sorteo.titulo}</h3>
+                                    <p>{sorteo.descripcion}</p>
+                                    <button
+                                        onClick={() => setSelectedSorteo({ id: sorteo.slug, title: sorteo.titulo })}
+                                        className="btn-primary glow"
+                                        style={{
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            gap: '10px',
+                                            justifyContent: 'center',
+                                            width: '100%'
+                                        }}
+                                    >
+                                        <FontAwesomeIcon icon={faUserPlus} /> Participar
+                                    </button>
+                                </div>
                             </div>
-                        </div>
-                    ))}
-                </div>
+                        ))}
+                    </div>
+                )}
 
                 {selectedSorteo && (
                     <ParticipationForm
@@ -103,20 +145,36 @@ const Sorteos: React.FC = () => {
                     />
                 )}
 
-                <div className="news-header" style={{ marginTop: '3rem' }}>
+                <div className="news-header" style={{ marginTop: '3rem', marginBottom: '2rem' }}>
                     <h3 className="widget-title">Próximos Sorteos</h3>
                 </div>
-                <div className="grid">
-                    {[1, 2, 3, 4].map((i) => (
-                        <div key={i} className="card glass">
-                            <div className="card-body">
-                                <span className="badge" style={{ background: 'rgba(255,255,255,0.1)', color: 'rgba(255,255,255,0.5)' }}>PRÓXIMO</span>
-                                <h3>Próximo Sorteo #{i}</h3>
-                                <p>Mantente atento a las novedades de Tokkiixa para no perderte este sorteo.</p>
+
+                {!loading && proximosSorteos.length === 0 ? (
+                    <div style={{
+                        padding: '3rem',
+                        textAlign: 'center',
+                        background: 'rgba(255,255,255,0.02)',
+                        borderRadius: '24px',
+                        border: '1px dashed rgba(255,255,255,0.1)',
+                        marginBottom: '4rem'
+                    }}>
+                        <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: '1.2rem', margin: 0 }}>
+                            No hay sorteos programados próximamente. ¡Mantente atento!
+                        </p>
+                    </div>
+                ) : (
+                    <div className="grid">
+                        {proximosSorteos.map((sorteo, i) => (
+                            <div key={i} className="card glass">
+                                <div className="card-body">
+                                    <span className="badge" style={{ background: 'rgba(255,255,255,0.1)', color: 'rgba(255,255,255,0.5)' }}>PRÓXIMO</span>
+                                    <h3>{sorteo.titulo}</h3>
+                                    <p>{sorteo.descripcion}</p>
+                                </div>
                             </div>
-                        </div>
-                    ))}
-                </div>
+                        ))}
+                    </div>
+                )}
             </div>
         </section>
     );

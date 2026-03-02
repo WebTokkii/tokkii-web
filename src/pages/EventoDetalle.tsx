@@ -3,30 +3,44 @@ import { useParams, Link } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCalendarAlt, faChevronLeft, faUserPlus } from '@fortawesome/free-solid-svg-icons';
 import ParticipationForm from '../components/ParticipationForm';
+import { supabase } from '../lib/supabase';
 
 const EventoDetalle: React.FC = () => {
     const { slug } = useParams<{ slug: string }>();
+    const [evento, setEvento] = React.useState<any>(null);
+    const [loading, setLoading] = React.useState(true);
     const [showForm, setShowForm] = React.useState(false);
 
-    // Esta data debería estar en un lugar compartido en el futuro
-    const eventosData: Record<string, any> = {
-        "clash-of-mishi": {
-            titulo: "Clash of Mishi",
-            descripcion: "Clash of Mishis llega con combates aéreos intensos donde solo el último en el aire avanza!",
-            detalles: "Prepárate para la acción más felina y frenética. Demuestra tus 9 vidas, gana tu final y consigue hasta 1.000 monedas. En este evento comunitario, los jugadores se enfrentarán en duelos aéreos donde la destreza y los reflejos lo son todo.",
-            normas: [
-                "Es obligatorio tener el BattleTag correctamente vinculado.",
-                "Estar presente en el stream de Tokkiixa durante el evento.",
-                "Seguir las instrucciones del moderador en todo momento.",
-                "Respeto absoluto hacia todos los participantes."
-            ],
-            premios: "Hasta 1.000 monedas para el ganador final.",
-            fecha: "Próximamente",
-            imagen: "ClashOfMishi_Portada.png",
-        }
-    };
+    React.useEffect(() => {
+        const fetchEvento = async () => {
+            const { data, error } = await supabase
+                .from('content_items')
+                .select('*')
+                .eq('slug', slug)
+                .single();
 
-    const evento = eventosData[slug || ""];
+            if (error) {
+                console.error('Error fetching event details:', error);
+            } else {
+                setEvento(data);
+            }
+            setLoading(false);
+        };
+
+        if (slug) {
+            fetchEvento();
+        }
+    }, [slug]);
+
+    if (loading) {
+        return (
+            <section className="section text-center">
+                <div className="container">
+                    <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: '1.2rem' }}>Cargando detalles del evento...</p>
+                </div>
+            </section>
+        );
+    }
 
     if (!evento) {
         return (
@@ -49,7 +63,11 @@ const EventoDetalle: React.FC = () => {
 
                 <div className="event-detail-card glass" style={{ padding: '3rem', borderRadius: '32px' }}>
                     <div style={{ width: '100%', height: '400px', borderRadius: '24px', overflow: 'hidden', marginBottom: '3rem', boxShadow: '0 20px 40px rgba(0,0,0,0.4)' }}>
-                        <img src={`${import.meta.env.VITE_R2_BASE_URL}/Imagenes/${evento.imagen}`} alt={evento.titulo} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                        <img
+                            src={`${import.meta.env.VITE_R2_BASE_URL}/Imagenes/${evento.imagen}`}
+                            alt={evento.titulo}
+                            style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                        />
                     </div>
 
                     <div className="event-hero-info" style={{ marginBottom: '3rem' }}>
@@ -64,24 +82,30 @@ const EventoDetalle: React.FC = () => {
                         <div className="event-main-text">
                             <h3 style={{ fontSize: '2rem', color: '#fff', marginBottom: '1.5rem' }}>Sobre el evento</h3>
                             <p style={{ fontSize: '1.2rem', lineHeight: '1.8', color: 'rgba(255,255,255,0.8)', marginBottom: '2rem' }}>
-                                {evento.detalles}
+                                {evento.detalles || evento.descripcion}
                             </p>
 
-                            <h3 style={{ fontSize: '2rem', color: '#fff', marginBottom: '1.5rem' }}>Normas de participación</h3>
-                            <ul style={{ paddingLeft: '1.5rem', color: 'rgba(255,255,255,0.8)', fontSize: '1.1rem', lineHeight: '2' }}>
-                                {evento.normas.map((norma: string, i: number) => (
-                                    <li key={i}>{norma}</li>
-                                ))}
-                            </ul>
+                            {evento.normas && evento.normas.length > 0 && (
+                                <>
+                                    <h3 style={{ fontSize: '2rem', color: '#fff', marginBottom: '1.5rem' }}>Normas de participación</h3>
+                                    <ul style={{ paddingLeft: '1.5rem', color: 'rgba(255,255,255,0.8)', fontSize: '1.1rem', lineHeight: '2' }}>
+                                        {evento.normas.map((norma: string, i: number) => (
+                                            <li key={i}>{norma}</li>
+                                        ))}
+                                    </ul>
+                                </>
+                            )}
                         </div>
 
                         <div className="event-sidebar">
-                            <div className="sidebar-box glass" style={{ padding: '2rem', borderRadius: '24px', background: 'rgba(255, 77, 77, 0.05)', border: '1px solid rgba(255, 77, 77, 0.2)' }}>
-                                <h3 style={{ fontSize: '1.6rem', color: '#ff4d4d', marginBottom: '1rem' }}>Premios</h3>
-                                <p style={{ fontSize: '1.2rem', color: '#fff', fontWeight: '500' }}>
-                                    {evento.premios}
-                                </p>
-                            </div>
+                            {evento.premios && (
+                                <div className="sidebar-box glass" style={{ padding: '2rem', borderRadius: '24px', background: 'rgba(255, 77, 77, 0.05)', border: '1px solid rgba(255, 77, 77, 0.2)' }}>
+                                    <h3 style={{ fontSize: '1.6rem', color: '#ff4d4d', marginBottom: '1rem' }}>Premios</h3>
+                                    <p style={{ fontSize: '1.2rem', color: '#fff', fontWeight: '500' }}>
+                                        {evento.premios}
+                                    </p>
+                                </div>
+                            )}
 
                             <div style={{ marginTop: '2rem' }}>
                                 <button
@@ -96,7 +120,7 @@ const EventoDetalle: React.FC = () => {
                     </div>
                 </div>
 
-                {showForm && evento && (
+                {showForm && (
                     <ParticipationForm
                         tipo="evento"
                         itemId={slug || ""}
