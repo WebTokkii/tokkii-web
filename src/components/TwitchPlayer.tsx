@@ -7,7 +7,8 @@ const TwitchPlayer = () => {
     useEffect(() => {
         const fetchStatus = async () => {
             try {
-                const response = await fetch('http://localhost:3001/api/twitch-status');
+                const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3001';
+                const response = await fetch(`${apiUrl}/api/twitch-status`);
                 const data = await response.json();
                 setStatus(data);
             } catch (error) {
@@ -26,13 +27,13 @@ const TwitchPlayer = () => {
 
     if (status?.isLive) {
         // Si está en vivo, usamos el canal
-        twitchUrl = `https://player.twitch.tv/?channel=tokkiixa&parent=${hostname}&parent=localhost&parent=127.0.0.1&autoplay=true&muted=true`;
+        twitchUrl = `https://player.twitch.tv/?channel=tokkiixa&parent=${hostname}&parent=tokkii.online&parent=localhost&parent=127.0.0.1&autoplay=true&muted=true`;
     } else if (status?.lastVideoId) {
         // Si está offline, usamos el último video (VOD)
-        twitchUrl = `https://player.twitch.tv/?video=${status.lastVideoId}&parent=${hostname}&parent=localhost&parent=127.0.0.1&autoplay=true&muted=true`;
+        twitchUrl = `https://player.twitch.tv/?video=${status.lastVideoId}&parent=${hostname}&parent=tokkii.online&parent=localhost&parent=127.0.0.1&autoplay=true&muted=true`;
     } else {
         // Fallback al canal por si acaso
-        twitchUrl = `https://player.twitch.tv/?channel=tokkiixa&parent=${hostname}&parent=localhost&parent=127.0.0.1&autoplay=true&muted=true`;
+        twitchUrl = `https://player.twitch.tv/?channel=tokkiixa&parent=${hostname}&parent=tokkii.online&parent=localhost&parent=127.0.0.1&autoplay=true&muted=true`;
     }
 
     if (loading) {

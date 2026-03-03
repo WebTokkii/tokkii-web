@@ -7,7 +7,7 @@ dotenv.config();
 
 const app = express();
 app.use(cors({
-  origin: ["https://webtokkii.github.io", "http://localhost:5173"],
+  origin: ["https://tokkii.online", "https://webtokkii.github.io", "http://localhost:5173"],
   methods: ["GET", "POST"],
   credentials: true
 }));
