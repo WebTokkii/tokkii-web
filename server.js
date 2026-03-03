@@ -49,11 +49,22 @@ async function getTwitchToken() {
    📡 TWITCH STATUS (LIVE / OFFLINE)
 ===================================================== */
 
+let cachedStatus = null;
+let lastCacheUpdate = 0;
+const CACHE_DURATION = 60 * 1000; // 1 minuto
+
 app.get("/api/twitch-status", async (req, res) => {
   try {
+    // Verificar si tenemos caché válido
+    if (cachedStatus && (Date.now() - lastCacheUpdate < CACHE_DURATION)) {
+      return res.json(cachedStatus);
+    }
+
     if (!twitchToken || Date.now() > tokenExpiration) {
       await getTwitchToken();
     }
+
+    let statusResult = { isLive: false };
 
     // 1. Verificamos si está en vivo
     const streamResponse = await axios.get(
@@ -72,7 +83,7 @@ app.get("/api/twitch-status", async (req, res) => {
     const stream = streamResponse.data.data[0];
 
     if (stream) {
-      return res.json({
+      statusResult = {
         isLive: true,
         title: stream.title,
         game: stream.game_name,
@@ -80,35 +91,13 @@ app.get("/api/twitch-status", async (req, res) => {
         thumbnail: stream.thumbnail_url
           .replace("{width}", "1280")
           .replace("{height}", "720"),
-      });
-    }
-
-    // 2. Si está offline, buscamos el último VOD
-    // Primero necesitamos el ID de usuario si no lo tenemos
-    const userResponse = await axios.get(
-      "https://api.twitch.tv/helix/users",
-      {
-        params: {
-          login: "tokkiixa",
-        },
-        headers: {
-          "Client-ID": process.env.TWITCH_CLIENT_ID,
-          Authorization: `Bearer ${twitchToken}`,
-        },
-      }
-    );
-
-    const userId = userResponse.data.data[0]?.id;
-
-    if (userId) {
-      const videoResponse = await axios.get(
-        "https://api.twitch.tv/helix/videos",
+      };
+    } else {
+      // 2. Si está offline, buscamos el último VOD
+      const userResponse = await axios.get(
+        "https://api.twitch.tv/helix/users",
         {
-          params: {
-            user_id: userId,
-            first: 1,
-            type: "archive", // Solo transmisiones pasadas
-          },
+          params: { login: "tokkiixa" },
           headers: {
             "Client-ID": process.env.TWITCH_CLIENT_ID,
             Authorization: `Bearer ${twitchToken}`,
@@ -116,22 +105,51 @@ app.get("/api/twitch-status", async (req, res) => {
         }
       );
 
-      const lastVideo = videoResponse.data.data[0];
-      if (lastVideo) {
-        return res.json({
-          isLive: false,
-          lastVideoId: lastVideo.id,
-          title: lastVideo.title,
-          thumbnail: lastVideo.thumbnail_url
-            .replace("{width}", "1280")
-            .replace("{height}", "720"),
-        });
+      const userId = userResponse.data.data[0]?.id;
+
+      if (userId) {
+        const videoResponse = await axios.get(
+          "https://api.twitch.tv/helix/videos",
+          {
+            params: {
+              user_id: userId,
+              first: 1,
+              type: "archive",
+            },
+            headers: {
+              "Client-ID": process.env.TWITCH_CLIENT_ID,
+              Authorization: `Bearer ${twitchToken}`,
+            },
+          }
+        );
+
+        const lastVideo = videoResponse.data.data[0];
+        if (lastVideo) {
+          statusResult = {
+            isLive: false,
+            lastVideoId: lastVideo.id,
+            title: lastVideo.title,
+            thumbnail: lastVideo.thumbnail_url
+              .replace("{width}", "1280")
+              .replace("{height}", "720"),
+          };
+        }
       }
     }
 
-    res.json({ isLive: false });
+    // Actualizar caché
+    cachedStatus = statusResult;
+    lastCacheUpdate = Date.now();
+
+    res.json(statusResult);
   } catch (error) {
     console.error("ERROR TWITCH:", error.response?.data || error.message);
+
+    // Si hay error pero tenemos caché viejo, lo devolvemos en lugar de fallar
+    if (cachedStatus) {
+      return res.json(cachedStatus);
+    }
+
     res.status(500).json({ error: "Error verificando Twitch" });
   }
 });

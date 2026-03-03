@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 
 const TwitchPlayer = () => {
-    const [status, setStatus] = useState<{ isLive: boolean; lastVideoId?: string; title?: string } | null>(null);
+    const [status, setStatus] = useState<{ isLive: boolean; lastVideoId?: string; title?: string; error?: boolean } | null>(null);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
@@ -9,10 +9,17 @@ const TwitchPlayer = () => {
             try {
                 const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3001';
                 const response = await fetch(`${apiUrl}/api/twitch-status`);
+
+                if (!response.ok) {
+                    throw new Error('API response was not ok');
+                }
+
                 const data = await response.json();
                 setStatus(data);
             } catch (error) {
                 console.error('Error fetching Twitch status:', error);
+                // Si falla la API, marcamos error para usar el fallback del canal
+                setStatus({ isLive: false, error: true });
             } finally {
                 setLoading(false);
             }
@@ -32,7 +39,7 @@ const TwitchPlayer = () => {
         // Si está offline, usamos el último video (VOD)
         twitchUrl = `https://player.twitch.tv/?video=${status.lastVideoId}&parent=${hostname}&parent=tokkii.online&parent=localhost&parent=127.0.0.1&autoplay=true&muted=true`;
     } else {
-        // Fallback al canal por si acaso
+        // Fallback al canal por si acaso (incluye caso de error de API)
         twitchUrl = `https://player.twitch.tv/?channel=tokkiixa&parent=${hostname}&parent=tokkii.online&parent=localhost&parent=127.0.0.1&autoplay=true&muted=true`;
     }
 
@@ -43,6 +50,9 @@ const TwitchPlayer = () => {
             </div>
         );
     }
+
+    // Título y estado dinámico
+    const isError = status?.error;
 
     return (
         <div className="twitch-container" style={{ width: '100%', maxWidth: '1000px', margin: '0 auto' }}>
@@ -79,6 +89,22 @@ const TwitchPlayer = () => {
                             }}>
                                 🟢 LIVE
                             </span>
+                        ) : isError ? (
+                            <span style={{
+                                background: 'transparent',
+                                color: '#fbbf24', // Ámbar para estado incierto
+                                border: '1px solid #fbbf24',
+                                padding: '2px 8px',
+                                borderRadius: '4px',
+                                fontSize: '0.65rem',
+                                fontWeight: 'bold',
+                                textTransform: 'uppercase',
+                                boxShadow: '0 0 8px rgba(251, 191, 36, 0.3)',
+                                display: 'inline-flex',
+                                alignItems: 'center'
+                            }}>
+                                📡 TWITCH
+                            </span>
                         ) : (
                             <span style={{
                                 background: 'transparent',
@@ -108,7 +134,11 @@ const TwitchPlayer = () => {
                         letterSpacing: '0.5px',
                         textShadow: '0 0 10px rgba(255, 75, 75, 0.4)'
                     }}>
-                        {status?.isLive ? 'Tokkiixa esta en directo' : 'Tokkiixa esta offline'}
+                        {status?.isLive
+                            ? 'Tokkiixa está en vivo!'
+                            : isError
+                                ? 'Tokkiixa en Twitch'
+                                : 'Tokkiixa está offline'}
                     </h2>
 
                     {status?.title && (
@@ -127,6 +157,7 @@ const TwitchPlayer = () => {
                             {status.title}
                         </p>
                     )}
+
 
                     <div style={{ marginBottom: '1rem' }}>
                         <a
