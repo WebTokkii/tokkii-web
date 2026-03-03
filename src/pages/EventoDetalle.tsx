@@ -107,15 +107,17 @@ const EventoDetalle: React.FC = () => {
                                 </div>
                             )}
 
-                            <div style={{ marginTop: '2rem' }}>
-                                <button
-                                    onClick={() => setShowForm(true)}
-                                    className="btn-primary glow"
-                                    style={{ width: '100%', textAlign: 'center', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px' }}
-                                >
-                                    <FontAwesomeIcon icon={faUserPlus} /> Participar ahora
-                                </button>
-                            </div>
+                            {evento.estado === 'activo' && (
+                                <div style={{ marginTop: '2rem' }}>
+                                    <button
+                                        onClick={() => setShowForm(true)}
+                                        className="btn-primary glow"
+                                        style={{ width: '100%', textAlign: 'center', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px' }}
+                                    >
+                                        <FontAwesomeIcon icon={faUserPlus} /> Participar ahora
+                                    </button>
+                                </div>
+                            )}
                         </div>
                     </div>
                 </div>

@@ -1,11 +1,12 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faTriangleExclamation, faArrowRight } from '@fortawesome/free-solid-svg-icons';
+import { faTriangleExclamation, faArrowRight, faUserPlus } from '@fortawesome/free-solid-svg-icons';
 import '../components/NewsWidget.css';
 import { supabase } from '../lib/supabase';
+import ParticipationForm from '../components/ParticipationForm';
 
-const EventCard: React.FC<{ evento: any }> = ({ evento }) => (
+const EventCard: React.FC<{ evento: any, onParticipate?: (evento: any) => void }> = ({ evento, onParticipate }) => (
     <div className="event-highlight" style={{
         display: 'flex',
         borderRadius: '28px',
@@ -42,37 +43,57 @@ const EventCard: React.FC<{ evento: any }> = ({ evento }) => (
             <h4 style={{ fontSize: '1.4rem', color: 'rgba(255,255,255,0.7)', marginBottom: '1.5rem', fontWeight: '400', lineHeight: '1.4' }}>
                 {evento.descripcion}
             </h4>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginTop: 'auto' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginTop: 'auto', gap: '20px', flexWrap: 'wrap' }}>
                 <div style={{ display: 'block' }}>
                     <span style={{ fontWeight: 'bold', color: '#ff4d4d', fontSize: '1.3rem' }}>FECHA:</span>
                     <span style={{ marginLeft: '10px', color: '#fff', fontSize: '1.3rem' }}>{evento.fecha}</span>
                 </div>
-                <Link
-                    to={`/eventos/${evento.slug}`}
-                    style={{
-                        color: '#ff4d4d',
-                        textDecoration: 'none',
-                        fontSize: '1.2rem',
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '8px',
-                        transition: 'all 0.3s ease',
-                        fontWeight: 'bold',
-                        opacity: '0.9',
-                        padding: '0.8rem 0'
-                    }}
-                    className="more-info-link"
-                    onMouseOver={(e) => {
-                        e.currentTarget.style.opacity = '1';
-                        e.currentTarget.style.textShadow = '0 0 10px rgba(255, 77, 77, 0.5)';
-                    }}
-                    onMouseOut={(e) => {
-                        e.currentTarget.style.opacity = '0.9';
-                        e.currentTarget.style.textShadow = 'none';
-                    }}
-                >
-                    Más información <FontAwesomeIcon icon={faArrowRight} style={{ fontSize: '1rem' }} />
-                </Link>
+
+                <div style={{ display: 'flex', gap: '2rem', alignItems: 'center' }}>
+                    {evento.estado === 'activo' && onParticipate && (
+                        <button
+                            onClick={() => onParticipate(evento)}
+                            className="btn-primary glow"
+                            style={{
+                                padding: '0.6rem 1.5rem',
+                                fontSize: '1rem',
+                                borderRadius: '50px',
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '8px'
+                            }}
+                        >
+                            <FontAwesomeIcon icon={faUserPlus} /> Participar
+                        </button>
+                    )}
+
+                    <Link
+                        to={`/eventos/${evento.slug}`}
+                        style={{
+                            color: '#ff4d4d',
+                            textDecoration: 'none',
+                            fontSize: '1.2rem',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '8px',
+                            transition: 'all 0.3s ease',
+                            fontWeight: 'bold',
+                            opacity: '0.9',
+                            padding: '0.8rem 0'
+                        }}
+                        className="more-info-link"
+                        onMouseOver={(e) => {
+                            e.currentTarget.style.opacity = '1';
+                            e.currentTarget.style.textShadow = '0 0 10px rgba(255, 77, 77, 0.5)';
+                        }}
+                        onMouseOut={(e) => {
+                            e.currentTarget.style.opacity = '0.9';
+                            e.currentTarget.style.textShadow = 'none';
+                        }}
+                    >
+                        Más información <FontAwesomeIcon icon={faArrowRight} style={{ fontSize: '1rem' }} />
+                    </Link>
+                </div>
             </div>
         </div>
     </div>
@@ -81,6 +102,7 @@ const EventCard: React.FC<{ evento: any }> = ({ evento }) => (
 const Eventos: React.FC = () => {
     const [eventos, setEventos] = React.useState<any[]>([]);
     const [loading, setLoading] = React.useState(true);
+    const [selectedEvento, setSelectedEvento] = React.useState<{ id: string, title: string } | null>(null);
 
     React.useEffect(() => {
         const fetchEventos = async () => {
@@ -107,6 +129,16 @@ const Eventos: React.FC = () => {
     return (
         <section className="section fade-in">
             <div className="container">
+                {/* Participation Form Modal */}
+                {selectedEvento && (
+                    <ParticipationForm
+                        tipo="evento"
+                        itemId={selectedEvento.id}
+                        itemTitle={selectedEvento.title}
+                        onClose={() => setSelectedEvento(null)}
+                    />
+                )}
+
                 {/* Warning Box */}
                 <div className="warning-box glass" style={{
                     border: '2px solid #ff4d4d',
@@ -150,7 +182,11 @@ const Eventos: React.FC = () => {
                     </div>
                 ) : (
                     eventosActivos.map((evento, index) => (
-                        <EventCard key={index} evento={evento} />
+                        <EventCard
+                            key={index}
+                            evento={evento}
+                            onParticipate={(ev) => setSelectedEvento({ id: ev.slug, title: ev.titulo })}
+                        />
                     ))
                 )}
 
