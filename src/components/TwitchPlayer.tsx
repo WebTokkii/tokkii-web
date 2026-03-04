@@ -136,7 +136,7 @@ const TwitchPlayer = () => {
                     )}
 
 
-                    <div style={{ marginBottom: '1rem' }}>
+                    <div style={{ marginBottom: '1rem', marginTop: '1.5rem' }}>
                         <a
                             href="https://www.twitch.tv/tokkiixa"
                             target="_blank"
