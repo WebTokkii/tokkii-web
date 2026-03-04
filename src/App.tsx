@@ -12,6 +12,7 @@ import NoticiaDetalle from './pages/NoticiaDetalle';
 import TeRecomiendo from './pages/TeRecomiendo';
 import EventoDetalle from './pages/EventoDetalle';
 import TierList from './pages/TierList';
+import Politicas from './pages/Politicas';
 import NotFound from './pages/NotFound';
 
 const App: React.FC = () => {
@@ -32,6 +33,7 @@ const App: React.FC = () => {
             <Route path="/noticias" element={<Noticias />} />
             <Route path="/noticias/:slug" element={<NoticiaDetalle />} />
             <Route path="/te-recomiendo" element={<TeRecomiendo />} />
+            <Route path="/politicas" element={<Politicas />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </main>
