@@ -51,11 +51,12 @@ async function getTwitchToken() {
 
 let cachedStatus = null;
 let lastCacheUpdate = 0;
-const CACHE_DURATION = 60 * 1000; // 1 minuto
+let cachedUserId = null;
+const CACHE_DURATION = 15 * 1000; // 15 segundos
 
 app.get("/api/twitch-status", async (req, res) => {
   try {
-    // Verificar si tenemos caché válido
+    // 1. Check cache
     if (cachedStatus && (Date.now() - lastCacheUpdate < CACHE_DURATION)) {
       return res.json(cachedStatus);
     }
@@ -64,15 +65,11 @@ app.get("/api/twitch-status", async (req, res) => {
       await getTwitchToken();
     }
 
-    let statusResult = { isLive: false };
-
-    // 1. Verificamos si está en vivo
+    // 2. Check if Live (Fastest call)
     const streamResponse = await axios.get(
       "https://api.twitch.tv/helix/streams",
       {
-        params: {
-          user_login: "tokkiixa",
-        },
+        params: { user_login: "tokkiixa" },
         headers: {
           "Client-ID": process.env.TWITCH_CLIENT_ID,
           Authorization: `Bearer ${twitchToken}`,
@@ -83,73 +80,61 @@ app.get("/api/twitch-status", async (req, res) => {
     const stream = streamResponse.data.data[0];
 
     if (stream) {
-      statusResult = {
+      const liveStatus = {
         isLive: true,
         title: stream.title,
         game: stream.game_name,
         viewers: stream.viewer_count,
-        thumbnail: stream.thumbnail_url
-          .replace("{width}", "1280")
-          .replace("{height}", "720"),
+        thumbnail: stream.thumbnail_url.replace("{width}", "1280").replace("{height}", "720"),
       };
-    } else {
-      // 2. Si está offline, buscamos el último VOD
-      const userResponse = await axios.get(
-        "https://api.twitch.tv/helix/users",
-        {
-          params: { login: "tokkiixa" },
-          headers: {
-            "Client-ID": process.env.TWITCH_CLIENT_ID,
-            Authorization: `Bearer ${twitchToken}`,
-          },
-        }
-      );
+      cachedStatus = liveStatus;
+      lastCacheUpdate = Date.now();
+      return res.json(liveStatus);
+    }
 
-      const userId = userResponse.data.data[0]?.id;
+    // 3. If Offline, get Last Video
+    // Cache User ID to avoid unnecessary calls
+    if (!cachedUserId) {
+      const userResponse = await axios.get("https://api.twitch.tv/helix/users", {
+        params: { login: "tokkiixa" },
+        headers: {
+          "Client-ID": process.env.TWITCH_CLIENT_ID,
+          Authorization: `Bearer ${twitchToken}`,
+        },
+      });
+      cachedUserId = userResponse.data.data[0]?.id;
+    }
 
-      if (userId) {
-        const videoResponse = await axios.get(
-          "https://api.twitch.tv/helix/videos",
-          {
-            params: {
-              user_id: userId,
-              first: 1,
-              type: "archive",
-            },
-            headers: {
-              "Client-ID": process.env.TWITCH_CLIENT_ID,
-              Authorization: `Bearer ${twitchToken}`,
-            },
-          }
-        );
+    if (cachedUserId) {
+      const videoResponse = await axios.get("https://api.twitch.tv/helix/videos", {
+        params: { user_id: cachedUserId, first: 1, type: "archive" },
+        headers: {
+          "Client-ID": process.env.TWITCH_CLIENT_ID,
+          Authorization: `Bearer ${twitchToken}`,
+        },
+      });
 
-        const lastVideo = videoResponse.data.data[0];
-        if (lastVideo) {
-          statusResult = {
-            isLive: false,
-            lastVideoId: lastVideo.id,
-            title: lastVideo.title,
-            thumbnail: lastVideo.thumbnail_url
-              .replace("{width}", "1280")
-              .replace("{height}", "720"),
-          };
-        }
+      const lastVideo = videoResponse.data.data[0];
+      if (lastVideo) {
+        const offlineStatus = {
+          isLive: false,
+          lastVideoId: lastVideo.id,
+          title: lastVideo.title,
+          thumbnail: lastVideo.thumbnail_url.replace("{width}", "1280").replace("{height}", "720"),
+        };
+        cachedStatus = offlineStatus;
+        lastCacheUpdate = Date.now();
+        return res.json(offlineStatus);
       }
     }
 
-    // Actualizar caché
-    cachedStatus = statusResult;
+    const simpleOffline = { isLive: false };
+    cachedStatus = simpleOffline;
     lastCacheUpdate = Date.now();
-
-    res.json(statusResult);
+    res.json(simpleOffline);
   } catch (error) {
     console.error("ERROR TWITCH:", error.response?.data || error.message);
-
-    // Si hay error pero tenemos caché viejo, lo devolvemos en lugar de fallar
-    if (cachedStatus) {
-      return res.json(cachedStatus);
-    }
-
+    if (cachedStatus) return res.json(cachedStatus);
     res.status(500).json({ error: "Error verificando Twitch" });
   }
 });

@@ -26,10 +26,10 @@ const TwitchPlayer = () => {
 
         fetchStatus();
 
-        // Re-intento automático cada 30 segundos de forma silenciosa
-        const interval = setInterval(fetchStatus, 30000);
+        // Re-intento automático cada 15 segundos para máxima asertividad
+        const interval = setInterval(fetchStatus, 15000);
         return () => clearInterval(interval);
-    }, [status]);
+    }, []);
 
     const hostname = typeof window !== 'undefined' ? window.location.hostname : 'localhost';
 
