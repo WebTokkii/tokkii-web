@@ -1,0 +1,62 @@
+============================================================
+GUÍA DE LLENADO PARA SUPABASE (EVENTOS Y SORTEOS) - TOKKII WEB
+============================================================
+
+Copiando y pegando estos valores en las celdas de tu tabla 'content_items'
+asegurarás que la información se vea perfectamente ordenada.
+
+------------------------------------------------------------
+EJEMPLO 1: EVENTO (TORNEO)
+------------------------------------------------------------
+
+[tipo]: evento
+[titulo]: Torneo Relámpago Valorant
+[slug]: torneo-valorant-marzo
+[descripcion]: ¡Participa en nuestro torneo Deathmatch y demuestra quién es el más ágil!
+
+[detalles]: (Copia y pega el bloque de abajo)
+El torneo tendrá 4 rondas:
+Ronda 1 y 2
+Todos los participantes juegan deathmatch.
+Se dividirán en dos grupos:
+12 ganadores
+12 perdedores
+Ronda 3 - 12 primeros perdedores de la 1ra y 2da ronda 
+Ronda 4 . 10 Ganadores de la 1ra y 2da ronda 
+
+De estas rondas saldrán los ganadores finales del torneo.
+
+[fecha]: Domingo 15 de Marzo - 18:00 HS
+[imagen]: Overwatch.png
+[estado]: activo
+[premios]: 1er Lugar: 2400 VP + VIP | 2do Lugar: 1200 VP
+[normas]: ["Ser seguidor", "Residir en LATAM", "Tener cuenta nivel 20+"]
+
+------------------------------------------------------------
+EJEMPLO 2: SORTEO (GIFT CARD / SKIN)
+------------------------------------------------------------
+
+[tipo]: sorteo
+[titulo]: Sorteo Skin Legendaria
+[slug]: sorteo-skin-especial
+[descripcion]: (Copia y pega el bloque de abajo)
+Sorteamos una skin de hasta 1775 VP para agradecer su apoyo.
+
+Requisitos:
+- Ser seguidor del canal.
+- Estar presente en el stream.
+- Haber participado enviando este formulario.
+
+[fecha]: Al terminar el directo de hoy
+[imagen]: JustCHatting.png
+[estado]: activo
+[premios]: Skin de hasta 1775 VP a elección
+[normas]: ["Estar presente en el chat", "Responder en menos de 2 minutos si ganas"]
+
+------------------------------------------------------------
+NOTAS IMPORTANTES PARA EL EQUIPO:
+------------------------------------------------------------
+1. SLUG: No puede tener espacios, acentos ni mayúsculas. Ponlo así: 'nombre-del-evento'.
+2. IMAGEN: Debe ser el nombre exacto del archivo que subimos al almacenamiento (ej: 'Logo.png').
+3. ESTADO: Debe ser 'activo' para que la gente pueda inscribirse, o 'proximo' si solo queremos avisar.
+4. SALTOS DE LÍNEA: Gracias a la última actualización, puedes pulsar ENTER dentro de las celdas de 'detalles' y 'descripcion' y la web los mostrará tal cual.

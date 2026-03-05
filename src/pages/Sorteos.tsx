@@ -116,13 +116,8 @@ const Sorteos: React.FC = () => {
                                 <div className="card-body">
                                     <span className="badge">ACTIVO</span>
                                     <h3>{sorteo.titulo}</h3>
-                                    <p>
-                                        {(sorteo.descripcion || '').split('\n').map((line: string, i: number) => (
-                                            <React.Fragment key={i}>
-                                                {line}
-                                                <br />
-                                            </React.Fragment>
-                                        ))}
+                                    <p style={{ whiteSpace: 'pre-line' }}>
+                                        {sorteo.descripcion || ''}
                                     </p>
                                     <button
                                         onClick={() => setSelectedSorteo({ id: sorteo.slug, title: sorteo.titulo })}
@@ -176,7 +171,7 @@ const Sorteos: React.FC = () => {
                                 <div className="card-body">
                                     <span className="badge" style={{ background: 'rgba(255,255,255,0.1)', color: 'rgba(255,255,255,0.5)' }}>PRÓXIMO</span>
                                     <h3>{sorteo.titulo}</h3>
-                                    <p>{sorteo.descripcion}</p>
+                                    <p style={{ whiteSpace: 'pre-line' }}>{sorteo.descripcion}</p>
                                 </div>
                             </div>
                         ))}
