@@ -40,8 +40,13 @@ const EventCard: React.FC<{ evento: any, onParticipate?: (evento: any) => void }
             minHeight: '220px'
         }}>
             <h2 style={{ fontSize: '3.5rem', marginBottom: '0.4rem', color: '#fff' }}>{evento.titulo}</h2>
-            <h4 style={{ fontSize: '1.4rem', color: 'rgba(255,255,255,0.7)', marginBottom: '1.5rem', fontWeight: '400', lineHeight: '1.4', whiteSpace: 'pre-wrap' }}>
-                {evento.descripcion}
+            <h4 style={{ fontSize: '1.4rem', color: 'rgba(255,255,255,0.7)', marginBottom: '1.5rem', fontWeight: '400', lineHeight: '1.4' }}>
+                {(evento.descripcion || '').split('\n').map((line: string, i: number) => (
+                    <React.Fragment key={i}>
+                        {line}
+                        <br />
+                    </React.Fragment>
+                ))}
             </h4>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginTop: 'auto', gap: '20px', flexWrap: 'wrap' }}>
                 <div style={{ display: 'block' }}>

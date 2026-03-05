@@ -81,8 +81,13 @@ const EventoDetalle: React.FC = () => {
                     <div className="event-content" style={{ display: 'grid', gridTemplateColumns: '1.5fr 1fr', gap: '4rem' }}>
                         <div className="event-main-text">
                             <h3 style={{ fontSize: '2rem', color: '#fff', marginBottom: '1.5rem' }}>Sobre el evento</h3>
-                            <p style={{ fontSize: '1.2rem', lineHeight: '1.8', color: 'rgba(255,255,255,0.8)', marginBottom: '2rem', whiteSpace: 'pre-wrap' }}>
-                                {evento.detalles || evento.descripcion}
+                            <p style={{ fontSize: '1.2rem', lineHeight: '1.8', color: 'rgba(255,255,255,0.8)', marginBottom: '2rem' }}>
+                                {(evento.detalles || evento.descripcion || '').split('\n').map((line: string, i: number) => (
+                                    <React.Fragment key={i}>
+                                        {line}
+                                        <br />
+                                    </React.Fragment>
+                                ))}
                             </p>
 
                             {evento.normas && evento.normas.length > 0 && (

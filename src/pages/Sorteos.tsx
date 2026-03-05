@@ -116,7 +116,14 @@ const Sorteos: React.FC = () => {
                                 <div className="card-body">
                                     <span className="badge">ACTIVO</span>
                                     <h3>{sorteo.titulo}</h3>
-                                    <p style={{ whiteSpace: 'pre-wrap' }}>{sorteo.descripcion}</p>
+                                    <p>
+                                        {(sorteo.descripcion || '').split('\n').map((line: string, i: number) => (
+                                            <React.Fragment key={i}>
+                                                {line}
+                                                <br />
+                                            </React.Fragment>
+                                        ))}
+                                    </p>
                                     <button
                                         onClick={() => setSelectedSorteo({ id: sorteo.slug, title: sorteo.titulo })}
                                         className="btn-primary glow"
