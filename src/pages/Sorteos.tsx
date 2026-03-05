@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faTriangleExclamation, faUserPlus } from '@fortawesome/free-solid-svg-icons';
+import { faTriangleExclamation, faArrowRight } from '@fortawesome/free-solid-svg-icons';
 import Ruleta from '../components/Ruleta';
 import TwitchGiveaway from '../components/TwitchGiveaway';
 import '../components/NewsWidget.css';
@@ -119,19 +120,25 @@ const Sorteos: React.FC = () => {
                                     <p style={{ whiteSpace: 'pre-line' }}>
                                         {sorteo.descripcion || ''}
                                     </p>
-                                    <button
-                                        onClick={() => setSelectedSorteo({ id: sorteo.slug, title: sorteo.titulo })}
-                                        className="btn-primary glow"
+                                    <Link
+                                        to={`/eventos/${sorteo.slug}`}
                                         style={{
+                                            color: '#ff4d4d',
+                                            textDecoration: 'none',
+                                            fontSize: '1.2rem',
                                             display: 'flex',
                                             alignItems: 'center',
-                                            gap: '10px',
+                                            gap: '8px',
+                                            transition: 'all 0.3s ease',
+                                            fontWeight: 'bold',
+                                            opacity: '0.9',
                                             justifyContent: 'center',
-                                            width: '100%'
+                                            padding: '0.8rem 0'
                                         }}
+                                        className="more-info-link"
                                     >
-                                        <FontAwesomeIcon icon={faUserPlus} /> Participar
-                                    </button>
+                                        Más información <FontAwesomeIcon icon={faArrowRight} style={{ fontSize: '1rem' }} />
+                                    </Link>
                                 </div>
                             </div>
                         ))}

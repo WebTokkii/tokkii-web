@@ -1,12 +1,12 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faTriangleExclamation, faArrowRight, faUserPlus } from '@fortawesome/free-solid-svg-icons';
+import { faTriangleExclamation, faArrowRight } from '@fortawesome/free-solid-svg-icons';
 import '../components/NewsWidget.css';
 import { supabase } from '../lib/supabase';
 import ParticipationForm from '../components/ParticipationForm';
 
-const EventCard: React.FC<{ evento: any, onParticipate?: (evento: any) => void }> = ({ evento, onParticipate }) => (
+const EventCard: React.FC<{ evento: any }> = ({ evento }) => (
     <div className="event-highlight" style={{
         display: 'flex',
         borderRadius: '28px',
@@ -50,22 +50,7 @@ const EventCard: React.FC<{ evento: any, onParticipate?: (evento: any) => void }
                 </div>
 
                 <div style={{ display: 'flex', gap: '2rem', alignItems: 'center' }}>
-                    {evento.estado === 'activo' && onParticipate && (
-                        <button
-                            onClick={() => onParticipate(evento)}
-                            className="btn-primary glow"
-                            style={{
-                                padding: '0.6rem 1.5rem',
-                                fontSize: '1rem',
-                                borderRadius: '50px',
-                                display: 'flex',
-                                alignItems: 'center',
-                                gap: '8px'
-                            }}
-                        >
-                            <FontAwesomeIcon icon={faUserPlus} /> Participar
-                        </button>
-                    )}
+                    {/* Botón de participar eliminado de aquí por petición del usuario */}
 
                     <Link
                         to={`/eventos/${evento.slug}`}
@@ -185,7 +170,6 @@ const Eventos: React.FC = () => {
                         <EventCard
                             key={index}
                             evento={evento}
-                            onParticipate={(ev) => setSelectedEvento({ id: ev.slug, title: ev.titulo })}
                         />
                     ))
                 )}
