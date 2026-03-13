@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import ScrollToTop from './components/ScrollToTop';
+import AnalyticsTracker from './components/AnalyticsTracker';
 import Home from './pages/Home';
 import Eventos from './pages/Eventos';
 import Sorteos from './pages/Sorteos';
@@ -19,6 +20,7 @@ const App: React.FC = () => {
   return (
     <Router>
       <ScrollToTop />
+      <AnalyticsTracker />
       <div className="app-wrapper">
         <Navbar />
 
