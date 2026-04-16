@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { Link } from 'react-router-dom';
+import { supabase } from '../lib/supabase';
 import './NewsWidget.css';
 
 const NewsWidget: React.FC = () => {
@@ -9,16 +10,24 @@ const NewsWidget: React.FC = () => {
     const timeoutRef = useRef<any>(null);
 
     useEffect(() => {
-        fetch("https://public-api.wordpress.com/rest/v1.1/sites/tokkiixanews.wordpress.com/posts?number=3")
-            .then(res => res.json())
-            .then(data => {
-                setLatestPosts(data.posts || []);
-                setLoading(false);
-            })
-            .catch(err => {
+        const fetchLatest = async () => {
+            try {
+                const { data, error } = await supabase
+                    .from('news_articles')
+                    .select('*')
+                    .order('created_at', { ascending: false })
+                    .limit(3);
+
+                if (error) throw error;
+                setLatestPosts(data || []);
+            } catch (err) {
                 console.error("Error fetching latest posts:", err);
+            } finally {
                 setLoading(false);
-            });
+            }
+        };
+
+        fetchLatest();
     }, []);
 
     useEffect(() => {
@@ -49,7 +58,7 @@ const NewsWidget: React.FC = () => {
             <div className="news-fade-container">
                 {latestPosts.map((post, index) => (
                     <div
-                        key={post.ID}
+                        key={post.id}
                         className={`news-fade-slide ${index === (currentIndex % latestPosts.length) ? 'active' : ''}`}
                     >
                         <Link
@@ -59,17 +68,19 @@ const NewsWidget: React.FC = () => {
                             {/* Blurred background layer */}
                             <div
                                 className="news-slim-bg"
-                                style={{ backgroundImage: `url(${post.featured_image || `${import.meta.env.VITE_R2_BASE_URL}/logo.png`})` }}
+                                style={{ 
+                                    backgroundImage: `url(${post.header_image ? (post.header_image.startsWith('http') ? post.header_image : `${import.meta.env.VITE_R2_BASE_URL}/${post.header_image}`) : `${import.meta.env.VITE_R2_BASE_URL}/logo.png`})` 
+                                }}
                             />
 
                             <div className="news-slim-content">
                                 <div className="news-slim-text">
                                     <span className="news-widget-tag">NOTICIA</span>
-                                    <h4 dangerouslySetInnerHTML={{ __html: post.title }} />
+                                    <h4>{post.title}</h4>
                                 </div>
                                 <div className="news-slim-image">
                                     <img
-                                        src={post.featured_image || `${import.meta.env.VITE_R2_BASE_URL}/logo.png`}
+                                        src={post.header_image ? (post.header_image.startsWith('http') ? post.header_image : `${import.meta.env.VITE_R2_BASE_URL}/${post.header_image}`) : `${import.meta.env.VITE_R2_BASE_URL}/logo.png`}
                                         alt={post.title}
                                     />
                                 </div>

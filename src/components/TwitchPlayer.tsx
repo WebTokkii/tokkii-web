@@ -36,11 +36,11 @@ const TwitchPlayer = () => {
     let twitchUrl = '';
 
     if (status?.isLive) {
-        twitchUrl = `https://player.twitch.tv/?channel=tokkiixa&parent=${hostname}&parent=tokkii.online&parent=localhost&parent=127.0.0.1&autoplay=true&muted=true`;
+        twitchUrl = `https://player.twitch.tv/?channel=eviltokkii&parent=${hostname}&parent=tokkii.online&parent=localhost&parent=127.0.0.1&autoplay=true&muted=true`;
     } else if (status?.lastVideoId) {
         twitchUrl = `https://player.twitch.tv/?video=${status.lastVideoId}&parent=${hostname}&parent=tokkii.online&parent=localhost&parent=127.0.0.1&autoplay=true&muted=true`;
     } else {
-        twitchUrl = `https://player.twitch.tv/?channel=tokkiixa&parent=${hostname}&parent=tokkii.online&parent=localhost&parent=127.0.0.1&autoplay=true&muted=true`;
+        twitchUrl = `https://player.twitch.tv/?channel=eviltokkii&parent=${hostname}&parent=tokkii.online&parent=localhost&parent=127.0.0.1&autoplay=true&muted=true`;
     }
 
     if (loading && !status) {
@@ -115,7 +115,7 @@ const TwitchPlayer = () => {
                         letterSpacing: '0.5px',
                         textShadow: '0 0 10px rgba(255, 75, 75, 0.4)'
                     }}>
-                        {status?.isLive ? 'Tokkiixa está en vivo!' : 'Tokkiixa está offline'}
+                        {status?.isLive ? 'EvilTokkii está en vivo!' : 'EvilTokkii está offline'}
                     </h2>
 
                     {status?.title && (
@@ -138,7 +138,7 @@ const TwitchPlayer = () => {
 
                     <div style={{ marginBottom: '1rem', marginTop: '1.5rem' }}>
                         <a
-                            href="https://www.twitch.tv/tokkiixa"
+                            href="https://www.twitch.tv/eviltokkii"
                             target="_blank"
                             rel="noopener noreferrer"
                             style={{

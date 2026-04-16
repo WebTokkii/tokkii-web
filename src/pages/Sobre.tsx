@@ -7,8 +7,8 @@ const Sobre: React.FC = () => {
             <section className="section section-split fade-in">
                 <div className="container split-container">
                     <div className="split-content">
-                        <h2 className="section-title">Sobre Tokkiixa</h2>
-                        <p>¡Hola! Soy Tokkiixa, streamer chilena y amante de los videojuegos. 💜 Desde que descubrí el mundo del streaming en Twitch, encontré un espacio perfecto para compartir lo que más me apasiona: jugar, reír y conectar con personas que disfrutan el gaming tanto como yo.</p>
+                        <h2 className="section-title">Sobre EvilTokkii</h2>
+                        <p>¡Hola! Soy EvilTokkii, streamer chilena y amante de los videojuegos. 💜 Desde que descubrí el mundo del streaming en Twitch, encontré un espacio perfecto para compartir lo que más me apasiona: jugar, reír y conectar con personas que disfrutan el gaming tanto como yo.</p>
                         <p>En mis directos suelo jugar Overwatch, donde me encanta vivir cada partida con intensidad, celebrar las buenas jugadas y también reírme de los fails. Para mí, lo importante no es solo ganar, sino disfrutar el proceso y compartir ese momento con la comunidad.</p>
                         <p>Me gusta mantener un ambiente cercano, relajado y lleno de buena energía. Aquí siempre hay espacio para conversar, pasar un buen rato y desconectarse de la rutina. Más que un canal, quiero que sea un lugar donde todos se sientan cómodos y parte de algo. 🐰💬</p>
                         <p style={{ marginTop: '1rem', fontWeight: 'bold' }}>Gracias por estar aquí y ser parte de esta aventura gamer. 🎮💫</p>
@@ -38,12 +38,10 @@ const Sobre: React.FC = () => {
                         <p>Detrás de cada stream hay un equipo increíble que hace que todo funcione como debe. En Twitch, el chat es una parte esencial de la experiencia, y eso no sería posible sin quienes lo cuidan día a día.</p>
                         <p style={{ fontWeight: '600' }}>
                             👑 ZAALUZ – Jefa de Mods<br />
-                            ✨ AST0RAAA<br />
                             ✨ ESPEEEOON<br />
-                            ✨ GUIDO247<br />
                             ✨ REQUIEM373<br />
                             ✨ SANAEDEKO<br />
-                            ✨ YUTANEOX
+                            ✨ Naofumiivt
                         </p>
                         <p>Cada uno cumple un rol fundamental manteniendo un ambiente seguro, respetuoso y amigable. Siempre atentos al chat, apoyando durante los directos y asegurándose de que la comunidad sea un espacio donde todos puedan disfrutar sin preocupaciones.</p>
                         <p>Ser mod no es solo tener una espada junto al nombre; es compromiso, responsabilidad y mucho cariño por la comunidad. Gracias a su trabajo, este espacio sigue creciendo con buena energía, respeto y compañerismo.💜</p>
@@ -75,7 +73,7 @@ const Sobre: React.FC = () => {
                         </p>
                         <p style={{ fontSize: '1.4rem', lineHeight: '1.8', color: '#fff', fontWeight: 'bold' }}>
                             Gracias por estar, por acompañar y por creer en este espacio.<br />
-                            <span className="gradient-text" style={{ fontSize: '1.8rem' }}>Tokkiixa también es de ustedes 💜</span>
+                            <span className="gradient-text" style={{ fontSize: '1.8rem' }}>EvilTokkii también es de ustedes 💜</span>
                         </p>
                     </div>
                 </div>

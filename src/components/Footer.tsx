@@ -11,14 +11,14 @@ const Footer: React.FC = () => {
                 gap: '1rem'
             }}>
                 <p style={{ margin: 0, opacity: 0.6, fontSize: '0.85rem' }}>
-                    &copy; 2026 Tokkiixa.
+                    &copy; 2026 EvilTokkii.
                 </p>
 
                 <div className="socials" style={{ display: 'flex', gap: '1.2rem', alignItems: 'center', fontSize: '0.85rem' }}>
-                    <a href="https://www.twitch.tv/tokkiixa" target="_blank" rel="noopener noreferrer">Twitch</a>
-                    <a href="https://www.instagram.com/tokkixa" target="_blank" rel="noopener noreferrer">Instagram</a>
-                    <a href="https://www.tiktok.com/@tokkixa_" target="_blank" rel="noopener noreferrer">TikTok</a>
-                    <a href="https://x.com/Tokkiixa" target="_blank" rel="noopener noreferrer">X</a>
+                    <a href="https://www.twitch.tv/eviltokkii" target="_blank" rel="noopener noreferrer">Twitch</a>
+                    <a href="https://www.instagram.com/eviltokkii" target="_blank" rel="noopener noreferrer">Instagram</a>
+                    <a href="https://www.tiktok.com/@eviltokkii" target="_blank" rel="noopener noreferrer">TikTok</a>
+                    <a href="https://x.com/EvilTokkii" target="_blank" rel="noopener noreferrer">X</a>
                     <a href="https://discord.com/invite/Kxvw4KfSBF" target="_blank" rel="noopener noreferrer">Discord</a>
                 </div>
 

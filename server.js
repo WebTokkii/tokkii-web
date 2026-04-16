@@ -69,7 +69,7 @@ app.get("/api/twitch-status", async (req, res) => {
     const streamResponse = await axios.get(
       "https://api.twitch.tv/helix/streams",
       {
-        params: { user_login: "tokkiixa" },
+        params: { user_login: "eviltokkii" },
         headers: {
           "Client-ID": process.env.TWITCH_CLIENT_ID,
           Authorization: `Bearer ${twitchToken}`,
@@ -96,7 +96,7 @@ app.get("/api/twitch-status", async (req, res) => {
     // Cache User ID to avoid unnecessary calls
     if (!cachedUserId) {
       const userResponse = await axios.get("https://api.twitch.tv/helix/users", {
-        params: { login: "tokkiixa" },
+        params: { login: "eviltokkii" },
         headers: {
           "Client-ID": process.env.TWITCH_CLIENT_ID,
           Authorization: `Bearer ${twitchToken}`,
@@ -251,7 +251,7 @@ app.post("/api/eventos", async (req, res) => {
    🚀 SERVER
 ===================================================== */
 app.get("/", (req, res) => {
-  res.send("Servidor de Tokkiixa funcionando correctamente 🚀");
+  res.send("Servidor de EvilTokkii funcionando correctamente 🚀");
 });
 
 app.get("/api/health", (req, res) => {

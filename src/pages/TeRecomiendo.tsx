@@ -33,13 +33,13 @@ const TeRecomiendo: React.FC = () => {
 
                     <div className="card streamer-horizontal glass glow-hover">
                         <div className="streamer-image-box">
-                            <img src={`${import.meta.env.VITE_R2_BASE_URL}/yutaneox.png`} alt="YutaNeoX" style={{ objectFit: 'cover' }} />
+                            <img src={`${import.meta.env.VITE_R2_BASE_URL}/yutaneox.png`} alt="Naofumiivt" style={{ objectFit: 'cover' }} />
                         </div>
                         <div className="streamer-info">
-                            <h3>YutaNeoX</h3>
-                            <p>Soy Yutaneox, tu streamer chileno de confianza para pasarla increíble. 😌🔥</p>
+                            <h3>Naofumiivt</h3>
+                            <p>¡Hola! Soy Naofumiivt, pásate a saludar y disfrutar de un buen rato. 😌🔥</p>
                             <a
-                                href="https://www.twitch.tv/yutaneox"
+                                href="https://www.twitch.tv/naofumiivt"
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 className="btn-primary glow btn-twitch"

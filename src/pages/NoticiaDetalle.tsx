@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
+import { supabase } from '../lib/supabase';
 
 const NoticiaDetalle: React.FC = () => {
     const { slug } = useParams<{ slug: string }>();
@@ -11,14 +12,16 @@ const NoticiaDetalle: React.FC = () => {
         const fetchPost = async () => {
             try {
                 setLoading(true);
-                // Usando la API REST v1.1 específicamente para el sitio tokkiixanews.wordpress.com
-                const response = await fetch(`https://public-api.wordpress.com/rest/v1.1/sites/tokkiixanews.wordpress.com/posts/slug:${slug}`);
+                const { data, error: sbError } = await supabase
+                    .from('news_articles')
+                    .select('*')
+                    .eq('slug', slug)
+                    .single();
 
-                if (!response.ok) {
+                if (sbError || !data) {
                     throw new Error("No se pudo encontrar la noticia.");
                 }
 
-                const data = await response.json();
                 setPost(data);
             } catch (err) {
                 console.error("Error fetching post:", err);
@@ -75,15 +78,19 @@ const NoticiaDetalle: React.FC = () => {
                 </Link>
 
                 <article style={{ marginBottom: '4rem' }}>
-                    {post.featured_image && (
+                    {post.header_image && (
                         <div style={{ width: '100%', height: '450px', borderRadius: '12px', overflow: 'hidden', marginBottom: '2.5rem' }}>
-                            <img src={post.featured_image} alt={post.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                            <img 
+                                src={post.header_image.startsWith('http') ? post.header_image : `${import.meta.env.VITE_R2_BASE_URL}/${post.header_image}`} 
+                                alt={post.title} 
+                                style={{ width: '100%', height: '100%', objectFit: 'cover' }} 
+                            />
                         </div>
                     )}
 
-                    <h1 className="section-title" style={{ marginBottom: '1.5rem', textAlign: 'left' }}
-                        dangerouslySetInnerHTML={{ __html: post.title }}
-                    />
+                    <h1 className="section-title" style={{ marginBottom: '1.5rem', textAlign: 'left' }}>
+                        {post.title}
+                    </h1>
 
                     <div className="badge" style={{
                         marginBottom: '2rem',
@@ -97,10 +104,10 @@ const NoticiaDetalle: React.FC = () => {
                         borderRadius: '30px',
                         fontSize: '0.95rem'
                     }}>
-                        <span style={{ fontWeight: '600' }}>{new Date(post.date).toLocaleDateString()}</span>
+                        <span style={{ fontWeight: '600' }}>{new Date(post.published_at || post.created_at).toLocaleDateString()}</span>
                         <span style={{ opacity: 0.3, height: '12px', width: '1px', background: 'white' }}></span>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                            <span style={{ fontSize: '0.9em', opacity: 0.9 }}>por {post.author?.name || "Tokkiixa"}</span>
+                            <span style={{ fontSize: '0.9em', opacity: 0.9 }}>por {post.author || "EvilTokkii"}</span>
                             <div style={{
                                 width: '1.4em',
                                 height: '1.4em',
@@ -114,20 +121,39 @@ const NoticiaDetalle: React.FC = () => {
                                 flexShrink: 0,
                                 boxShadow: '0 0 10px rgba(255, 0, 110, 0.3)'
                             }}>
-                                <img src={post.author?.avatar_URL || `${import.meta.env.VITE_R2_BASE_URL}/logo.png`} alt={post.author?.name || "Tokkiixa"} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                                <img src={`${import.meta.env.VITE_R2_BASE_URL}/logo.png`} alt={post.author || "EvilTokkii"} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                             </div>
                         </div>
                     </div>
 
-                    <div
-                        className="noticia-content"
-                        style={{
-                            fontSize: '1.15rem',
-                            lineHeight: '1.8',
-                            color: 'var(--text-main)',
-                        }}
-                        dangerouslySetInnerHTML={{ __html: post.content }}
-                    />
+                    <div className="noticia-content">
+                        {post.content_blocks && Array.isArray(post.content_blocks) ? (
+                            post.content_blocks.map((block: any, index: number) => {
+                                if (block.type === 'text') {
+                                    return (
+                                        <div 
+                                            key={index} 
+                                            className="text-block"
+                                            dangerouslySetInnerHTML={{ __html: block.content }} 
+                                        />
+                                    );
+                                } else if (block.type === 'image') {
+                                    return (
+                                        <figure key={index} className="image-block">
+                                            <img 
+                                                src={block.url?.startsWith('http') ? block.url : `${import.meta.env.VITE_R2_BASE_URL}/${block.url}`} 
+                                                alt={block.caption || ''} 
+                                            />
+                                            {block.caption && <figcaption>{block.caption}</figcaption>}
+                                        </figure>
+                                    );
+                                }
+                                return null;
+                            })
+                        ) : (
+                            <p style={{ opacity: 0.5 }}>Esta noticia no tiene contenido aún.</p>
+                        )}
+                    </div>
                 </article>
             </div>
             <style>{`

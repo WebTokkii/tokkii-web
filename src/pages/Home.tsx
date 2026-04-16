@@ -11,7 +11,7 @@ const Home: React.FC = () => {
         <section className="hero fade-in">
             <div className="container">
                 <h1 className="hero-title">
-                    Bienvenido a <span className="gradient-text">Tokkiixa</span>
+                    Bienvenido a <span className="gradient-text">EvilTokkii</span>
                 </h1>
 
                 <p className="hero-subtitle">
@@ -26,7 +26,7 @@ const Home: React.FC = () => {
                 {/* Social Links Section */}
                 <div className="home-socials fade-in">
                     <a
-                        href="https://www.twitch.tv/tokkiixa"
+                        href="https://www.twitch.tv/eviltokkii"
                         target="_blank"
                         rel="noopener noreferrer"
                         className="social-link twitch"
@@ -35,7 +35,7 @@ const Home: React.FC = () => {
                     </a>
 
                     <a
-                        href="https://www.instagram.com/tokkixa"
+                        href="https://www.instagram.com/eviltokkii"
                         target="_blank"
                         rel="noopener noreferrer"
                         className="social-link instagram"
@@ -44,7 +44,7 @@ const Home: React.FC = () => {
                     </a>
 
                     <a
-                        href="https://www.tiktok.com/@tokkixa_"
+                        href="https://www.tiktok.com/@eviltokkii"
                         target="_blank"
                         rel="noopener noreferrer"
                         className="social-link tiktok"
@@ -53,7 +53,7 @@ const Home: React.FC = () => {
                     </a>
 
                     <a
-                        href="https://x.com/Tokkiixa"
+                        href="https://x.com/EvilTokkii"
                         target="_blank"
                         rel="noopener noreferrer"
                         className="social-link x-twitter"

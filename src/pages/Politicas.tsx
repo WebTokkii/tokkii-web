@@ -12,7 +12,7 @@ const Politicas: React.FC = () => {
 
                     <div style={{ color: 'rgba(255,255,255,0.8)', lineHeight: '1.9' }}>
                         <p style={{ marginBottom: '1.5rem' }}>
-                            En <strong>Tokkiixa</strong> (en adelante, "el Sitio"), la privacidad de nuestros usuarios es una prioridad absoluta. Esta Política de Privacidad explica detalladamente cómo recopilamos, procesamos y protegemos la información personal proporcionada voluntariamente por los usuarios a través de nuestras plataformas interactivas y formularios de participación.
+                            En <strong>EvilTokkii</strong> (en adelante, "el Sitio"), la privacidad de nuestros usuarios es una prioridad absoluta. Esta Política de Privacidad explica detalladamente cómo recopilamos, procesamos y protegemos la información personal proporcionada voluntariamente por los usuarios a través de nuestras plataformas interactivas y formularios de participación.
                         </p>
 
                         <h3 style={{ color: '#fff', fontSize: '1.3rem', marginBottom: '1rem', marginTop: '2rem' }}>1.1. Recopilación de Información</h3>
@@ -41,7 +41,7 @@ const Politicas: React.FC = () => {
 
                     <div style={{ color: 'rgba(255,255,255,0.8)', lineHeight: '1.9' }}>
                         <p style={{ marginBottom: '1.5rem' }}>
-                            El acceso y uso de las herramientas de participación de Tokkiixa implica la aceptación total de los presentes términos. Si no estás de acuerdo con alguno de estos puntos, te pedimos que te abstengas de utilizar nuestros servicios de registro de eventos.
+                            El acceso y uso de las herramientas de participación de EvilTokkii implica la aceptación total de los presentes términos. Si no estás de acuerdo con alguno de estos puntos, te pedimos que te abstengas de utilizar nuestros servicios de registro de eventos.
                         </p>
 
                         <h3 style={{ color: '#fff', fontSize: '1.3rem', marginBottom: '1rem', marginTop: '2rem' }}>2.1. Requisitos de Participación</h3>
@@ -58,7 +58,7 @@ const Politicas: React.FC = () => {
 
                         <h3 style={{ color: '#fff', fontSize: '1.3rem', marginBottom: '1rem', marginTop: '2rem' }}>2.3. Limitación de Responsabilidad</h3>
                         <p>
-                            Tokkiixa no se hace responsable por fallas técnicas ajenas (caídas de servidores de Twitch, problemas de conexión del usuario o errores en la infraestructura de Internet) que impidan la participación a tiempo en una dinámica activa.
+                            EvilTokkii no se hace responsable por fallas técnicas ajenas (caídas de servidores de Twitch, problemas de conexión del usuario o errores en la infraestructura de Internet) que impidan la participación a tiempo en una dinámica activa.
                         </p>
                     </div>
                 </div>
@@ -86,7 +86,7 @@ const Politicas: React.FC = () => {
                 </div>
 
                 <div style={{ textAlign: 'center', marginTop: '5rem', opacity: 0.4, fontSize: '0.8rem' }}>
-                    <p>Tokkiixa Community © 2026 - Protegiendo la experiencia del usuario.</p>
+                    <p>EvilTokkii Community © 2026 - Protegiendo la experiencia del usuario.</p>
                     <p>Este documento es vinculante y puede ser actualizado periódicamente para mejorar la transparencia.</p>
                 </div>
             </div>

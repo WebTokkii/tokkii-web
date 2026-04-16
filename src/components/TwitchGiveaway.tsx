@@ -21,7 +21,7 @@ const TwitchGiveaway: React.FC = () => {
         if (clientRef.current) return;
 
         const client = new tmi.Client({
-            channels: ['tokkiixa']
+            channels: ['eviltokkii']
         });
 
         client.connect().then(() => {

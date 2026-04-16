@@ -216,7 +216,7 @@ export default function App() {
         className="text-center mb-8"
       >
         <h1 className="text-4xl md:text-6xl font-black tracking-tighter uppercase italic text-white">
-          Ruleta Sorteos Tokkiixa
+          Ruleta Sorteos EvilTokkii
         </h1>
         <p className="text-purple-300 mt-2 font-medium">Si quieres mas chance de Ganar, enviar 5 dolares a Zaluu ugu</p>
       </motion.div>

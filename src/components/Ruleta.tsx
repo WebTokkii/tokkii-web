@@ -192,7 +192,7 @@ const Ruleta: React.FC = () => {
     return (
         <div className="ruleta-container fade-in">
             <div className="ruleta-header">
-                <h2 className="ruleta-title">Ruleta de Sorteos Tokkiixa</h2>
+                <h2 className="ruleta-title">Ruleta de Sorteos EvilTokkii</h2>
                 <p className="ruleta-subtitle">¡Gira la rueda y descubre quién es el afortunado!</p>
             </div>
 

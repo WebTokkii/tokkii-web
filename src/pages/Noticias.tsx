@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import { supabase } from "../lib/supabase";
 import "./Noticias.css";
 
 const Noticias: React.FC = () => {
@@ -8,19 +9,23 @@ const Noticias: React.FC = () => {
     const [visibleCount, setVisibleCount] = useState(10);
 
     useEffect(() => {
-        fetch("https://public-api.wordpress.com/rest/v1.1/sites/tokkiixanews.wordpress.com/posts")
-            .then(res => res.json())
-            .then(data => {
-                const sortedPosts = (data.posts || []).sort((a: any, b: any) =>
-                    new Date(b.date).getTime() - new Date(a.date).getTime()
-                );
-                setPosts(sortedPosts);
+        const fetchArticles = async () => {
+            try {
+                const { data, error } = await supabase
+                    .from('news_articles')
+                    .select('*')
+                    .order('created_at', { ascending: false });
+
+                if (error) throw error;
+                setPosts(data || []);
+            } catch (err) {
+                console.error("Error fetching articles:", err);
+            } finally {
                 setLoading(false);
-            })
-            .catch(err => {
-                console.error("Error fetching posts:", err);
-                setLoading(false);
-            });
+            }
+        };
+
+        fetchArticles();
     }, []);
 
     const SkeletonLoader = () => (
@@ -51,44 +56,56 @@ const Noticias: React.FC = () => {
                 ) : (
                     <div className="news-list">
                         {posts.slice(0, visibleCount).map(post => {
-                            // Extract plain text from excerpt if possible, or use dangerouslySetInnerHTML
                             return (
                                 <Link
-                                    key={post.ID}
+                                    key={post.id}
                                     to={`/noticias/${post.slug}`}
                                     className="news-item-link"
                                 >
                                     <article className="news-item">
                                         <div className="news-image">
-                                            {post.featured_image ? (
-                                                <img src={post.featured_image} alt={post.title} loading="lazy" />
+                                            {post.header_image ? (
+                                                <img 
+                                                    src={post.header_image.startsWith('http') ? post.header_image : `${import.meta.env.VITE_R2_BASE_URL}/${post.header_image}`} 
+                                                    alt={post.title} 
+                                                    loading="lazy" 
+                                                />
                                             ) : (
                                                 <div className="skeleton" style={{ width: '100%', height: '100%' }}></div>
                                             )}
                                         </div>
 
                                         <div className="news-content">
-                                            <h3
-                                                className="news-title"
-                                                dangerouslySetInnerHTML={{ __html: post.title }}
-                                            />
+                                            <h3 className="news-title">{post.title}</h3>
 
-                                            <div
-                                                className="news-excerpt"
-                                                dangerouslySetInnerHTML={{ __html: post.excerpt }}
-                                            />
+                                            {post.subtitle && (
+                                                <p className="news-excerpt">{post.subtitle}</p>
+                                            )}
 
                                             <div className="news-meta" style={{ marginTop: 'auto', justifyContent: 'space-between', width: '100%' }}>
                                                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                                                     <span>Creado por</span>
-                                                    <img
-                                                        src={post.author?.avatar_URL || `${import.meta.env.VITE_R2_BASE_URL}/logo.png`}
-                                                        alt={post.author?.name}
-                                                        className="news-meta-author-img"
-                                                    />
-                                                    <span>{post.author?.name || "Tokkiixa"}</span>
+                                                    <div style={{
+                                                        width: '1.4em',
+                                                        height: '1.4em',
+                                                        borderRadius: '50%',
+                                                        overflow: 'hidden',
+                                                        border: '1.5px solid var(--secondary)',
+                                                        display: 'flex',
+                                                        alignItems: 'center',
+                                                        justifyContent: 'center',
+                                                        background: 'var(--bg-dark)',
+                                                        flexShrink: 0
+                                                    }}>
+                                                        <img
+                                                            src={`${import.meta.env.VITE_R2_BASE_URL}/logo.png`}
+                                                            alt={post.author}
+                                                            className="news-meta-author-img"
+                                                        />
+                                                    </div>
+                                                    <span>{post.author || "EvilTokkii"}</span>
                                                 </div>
-                                                <span>{new Date(post.date).toLocaleDateString()}</span>
+                                                <span>{new Date(post.published_at || post.created_at).toLocaleDateString()}</span>
                                             </div>
                                         </div>
                                     </article>
