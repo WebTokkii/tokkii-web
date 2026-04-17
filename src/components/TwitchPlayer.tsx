@@ -72,31 +72,33 @@ const TwitchPlayer = () => {
                     <div style={{ marginBottom: '0.6rem' }}>
                         {status?.isLive ? (
                             <span style={{
-                                background: 'transparent',
+                                background: 'rgba(16, 185, 129, 0.1)',
                                 color: '#10b981',
                                 border: '1px solid #10b981',
-                                padding: '2px 8px',
-                                borderRadius: '4px',
-                                fontSize: '0.65rem',
-                                fontWeight: 'bold',
+                                padding: '4px 12px',
+                                borderRadius: '6px',
+                                fontSize: '0.7rem',
+                                fontWeight: '800',
                                 textTransform: 'uppercase',
-                                boxShadow: '0 0 8px rgba(16, 185, 129, 0.3)',
+                                boxShadow: '0 0 15px rgba(16, 185, 129, 0.4)',
                                 display: 'inline-flex',
-                                alignItems: 'center'
+                                alignItems: 'center',
+                                gap: '5px'
                             }}>
-                                🟢 LIVE
+                                <span style={{ width: '8px', height: '8px', background: '#10b981', borderRadius: '50%', display: 'inline-block', boxShadow: '0 0 5px #10b981' }}></span>
+                                ONLINE
                             </span>
                         ) : (
                             <span style={{
                                 background: 'transparent',
                                 color: '#ef4444',
                                 border: '1px solid #ef4444',
-                                padding: '2px 8px',
-                                borderRadius: '4px',
-                                fontSize: '0.65rem',
-                                fontWeight: 'bold',
+                                padding: '4px 12px',
+                                borderRadius: '6px',
+                                fontSize: '0.7rem',
+                                fontWeight: '800',
                                 textTransform: 'uppercase',
-                                boxShadow: '0 0 8px rgba(239, 68, 68, 0.3)',
+                                boxShadow: '0 0 10px rgba(239, 68, 68, 0.2)',
                                 display: 'inline-flex',
                                 alignItems: 'center'
                             }}>
@@ -106,16 +108,16 @@ const TwitchPlayer = () => {
                     </div>
 
                     <h2 style={{
-                        color: '#ff4b4b',
+                        color: 'white',
                         margin: '0',
-                        fontSize: '1.8rem',
-                        fontWeight: '800',
+                        fontSize: '2rem',
+                        fontWeight: '900',
                         textTransform: 'uppercase',
                         lineHeight: '1.2',
                         letterSpacing: '0.5px',
-                        textShadow: '0 0 10px rgba(255, 75, 75, 0.4)'
+                        textShadow: status?.isLive ? '0 0 15px rgba(16, 185, 129, 0.3)' : 'none'
                     }}>
-                        {status?.isLive ? 'EvilTokkii está en vivo!' : 'EvilTokkii está offline'}
+                        {status?.isLive ? 'EvilTokkii está Online!' : 'EvilTokkii está Offline'}
                     </h2>
 
                     {status?.title && (

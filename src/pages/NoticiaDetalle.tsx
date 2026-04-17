@@ -2,6 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 
+// Parrafo de Keywords constante para todas las noticias (Oculto para el usuario, visible para SEO)
+const SEO_KEYWORDS_PARAGRAPH = "Keywords: Tokkii, EvilTokkii, Noticias de Videojuegos, Anime, Manga, Cultura Geek, Sorteos, Comunidad, Streaming, Capcom, Pragata, Atomic Heart DLC final, noticia gaming hoy, videojuegos 2026, lanzamientos gaming abril, Atomic Heart expansión, Análisis de juegos, Reviews, Gaming News, Noticias de hoy";
+
 const NoticiaDetalle: React.FC = () => {
     const { slug } = useParams<{ slug: string }>();
     const [post, setPost] = useState<any>(null);
@@ -35,6 +38,22 @@ const NoticiaDetalle: React.FC = () => {
             fetchPost();
         }
     }, [slug]);
+
+    const formatDate = (dateString: string) => {
+        const date = new Date(dateString);
+        const options: Intl.DateTimeFormatOptions = { 
+            day: '2-digit', 
+            month: 'short', 
+            year: 'numeric',
+            hour: 'numeric',
+            minute: '2-digit',
+            hour12: true,
+            timeZoneName: 'short'
+        };
+        const formatted = date.toLocaleDateString('es-ES', options).toUpperCase();
+        // ABRIL -> ABR, etc. to match the image style "16 ABR 2026"
+        return formatted;
+    };
 
     if (loading) {
         return (
@@ -73,67 +92,60 @@ const NoticiaDetalle: React.FC = () => {
     return (
         <section className="section fade-in">
             <div className="container">
-                <Link to="/noticias" className="card-link" style={{ marginBottom: '2rem', display: 'inline-block' }}>
-                    ← Volver a Noticias
-                </Link>
+                <article className="noticia-article">
+                    <header className="noticia-header">
+                        <div className="noticia-tags">
+                            <Link to="/noticias" className="back-btn-minimal" title="Volver a Noticias">
+                                <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round">
+                                    <path d="M19 12H5M12 19l-7-7 7-7"/>
+                                </svg>
+                            </Link>
+                            <span className="tag-badge">ARTÍCULO</span>
+                        </div>
+                        
+                        <p className="noticia-date">
+                            Publicado: {formatDate(post.published_at || post.created_at)}
+                        </p>
 
-                <article style={{ marginBottom: '4rem' }}>
+                        <h1 className="noticia-title">
+                            {post.title.toUpperCase()}
+                        </h1>
+
+                        {post.subtitle && (
+                            <p className="noticia-subtitle">
+                                {post.subtitle}
+                            </p>
+                        )}
+
+                        <div className="noticia-author">
+                            <div className="author-avatar">
+                                <img src={`${import.meta.env.VITE_R2_BASE_URL}/logo.png`} alt={post.author || "EvilTokkii"} />
+                            </div>
+                            <span className="author-name">{post.author || "EvilTokkii"}</span>
+                        </div>
+                    </header>
+
                     {post.header_image && (
-                        <div style={{ width: '100%', height: '450px', borderRadius: '12px', overflow: 'hidden', marginBottom: '2.5rem' }}>
+                        <div className="noticia-hero-image">
                             <img 
                                 src={post.header_image.startsWith('http') ? post.header_image : `${import.meta.env.VITE_R2_BASE_URL}/${post.header_image}`} 
                                 alt={post.title} 
-                                style={{ width: '100%', height: '100%', objectFit: 'cover' }} 
                             />
                         </div>
                     )}
-
-                    <h1 className="section-title" style={{ marginBottom: '1.5rem', textAlign: 'left' }}>
-                        {post.title}
-                    </h1>
-
-                    <div className="badge" style={{
-                        marginBottom: '2rem',
-                        display: 'inline-flex',
-                        alignItems: 'center',
-                        gap: '14px',
-                        padding: '8px 20px',
-                        background: 'rgba(255, 0, 110, 0.15)',
-                        border: '1px solid var(--secondary)',
-                        color: 'white',
-                        borderRadius: '30px',
-                        fontSize: '0.95rem'
-                    }}>
-                        <span style={{ fontWeight: '600' }}>{new Date(post.published_at || post.created_at).toLocaleDateString()}</span>
-                        <span style={{ opacity: 0.3, height: '12px', width: '1px', background: 'white' }}></span>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                            <span style={{ fontSize: '0.9em', opacity: 0.9 }}>por {post.author || "EvilTokkii"}</span>
-                            <div style={{
-                                width: '1.4em',
-                                height: '1.4em',
-                                borderRadius: '50%',
-                                overflow: 'hidden',
-                                border: '1.5px solid var(--secondary)',
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                background: 'var(--bg-dark)',
-                                flexShrink: 0,
-                                boxShadow: '0 0 10px rgba(255, 0, 110, 0.3)'
-                            }}>
-                                <img src={`${import.meta.env.VITE_R2_BASE_URL}/logo.png`} alt={post.author || "EvilTokkii"} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                            </div>
-                        </div>
-                    </div>
 
                     <div className="noticia-content">
                         {post.content_blocks && Array.isArray(post.content_blocks) ? (
                             post.content_blocks.map((block: any, index: number) => {
                                 if (block.type === 'text') {
+                                    // Si el bloque de texto empieza con "Keywords:", lo ocultamos visualmente pero lo mantenemos para SEO
+                                    const isKeywordsBlock = block.content.trim().toLowerCase().startsWith('keywords:') || 
+                                                           block.content.trim().toLowerCase().startsWith('<p>keywords:');
+                                    
                                     return (
                                         <div 
                                             key={index} 
-                                            className="text-block"
+                                            className={`text-block ${isKeywordsBlock ? 'seo-hidden-paragraph' : ''}`}
                                             dangerouslySetInnerHTML={{ __html: block.content }} 
                                         />
                                     );
@@ -153,50 +165,157 @@ const NoticiaDetalle: React.FC = () => {
                         ) : (
                             <p style={{ opacity: 0.5 }}>Esta noticia no tiene contenido aún.</p>
                         )}
+
+                        {/* Párrafo constante oculto para SEO al final de todas las noticias */}
+                        <div className="seo-hidden-paragraph" aria-hidden="true">
+                            <p>{SEO_KEYWORDS_PARAGRAPH}</p>
+                        </div>
                     </div>
                 </article>
             </div>
             <style>{`
-                .noticia-content {
-                    font-size: 1.2rem;
-                    line-height: 1.85;
+                .noticia-article {
+                    max-width: 900px;
+                    margin: 0 auto 4rem;
                 }
-                .noticia-content img {
-                    margin: 2rem auto;
-                    border-radius: 16px;
-                    display: block;
-                    max-width: 100%;
-                    height: auto;
-                    box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+
+                .noticia-header {
+                    margin-bottom: 2.5rem;
                 }
-                .noticia-content figure {
-                    margin: 3.5rem 0;
-                    display: block;
+
+                .noticia-tags {
+                    display: flex;
+                    align-items: center;
+                    gap: 1.5rem;
+                    margin-bottom: 2.5rem;
                 }
-                .noticia-content figcaption {
-                    text-align: center;
+                .back-btn-minimal {
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    color: white;
+                    transition: var(--transition);
+                    filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.2));
+                }
+                .back-btn-minimal:hover {
+                    color: var(--secondary);
+                    filter: drop-shadow(0 0 10px rgba(255, 0, 110, 0.5));
+                }
+                .tag-badge {
+                    background: var(--secondary);
+                    color: white;
+                    padding: 6px 16px;
+                    border-radius: 20px;
+                    font-size: 0.75rem;
+                    font-weight: 800;
+                    letter-spacing: 0.5px;
+                    box-shadow: 0 4px 15px rgba(255, 0, 110, 0.3);
+                }
+
+                .noticia-date {
+                    font-size: 0.9rem;
                     color: var(--text-muted);
-                    font-size: 0.95rem;
-                    margin-top: 1rem;
-                    font-style: italic;
+                    margin-bottom: 1.5rem;
+                    opacity: 0.8;
+                }
+
+                .noticia-title {
+                    font-size: 3.5rem;
+                    font-weight: 800;
+                    line-height: 1.1;
+                    margin-bottom: 1rem;
+                    color: white;
+                }
+
+                .noticia-subtitle {
+                    font-size: 1.6rem;
+                    color: #d1d1d1;
+                    margin-bottom: 2rem;
+                    line-height: 1.4;
+                    font-weight: 400;
+                }
+
+                .noticia-author {
+                    display: flex;
+                    align-items: center;
+                    gap: 0.8rem;
+                }
+                .author-avatar {
+                    width: 32px;
+                    height: 32px;
+                    border-radius: 50%;
+                    overflow: hidden;
+                    border: 1px solid rgba(255,255,255,0.2);
+                }
+                .author-avatar img {
+                    width: 100%;
+                    height: 100%;
+                    object-fit: cover;
+                }
+                .author-name {
+                    font-size: 1.1rem;
+                    font-weight: 500;
+                    color: white;
+                }
+
+                .noticia-hero-image {
+                    width: 100%;
+                    max-height: 600px;
+                    border-radius: 0;
+                    overflow: hidden;
+                    margin-bottom: 3rem;
+                }
+                .noticia-hero-image img {
+                    width: 100%;
+                    height: auto;
+                    display: block;
+                }
+
+                .noticia-content {
+                    font-size: 1.25rem;
+                    line-height: 1.8;
+                    color: #ececec;
+                    --heading-top-margin: 3.5rem;
+                    --heading-bottom-margin: 1.2rem;
                 }
                 .noticia-content p {
                     margin-bottom: 2rem;
                 }
-                .noticia-content h1, .noticia-content h2, .noticia-content h3 {
-                    margin-top: 4rem;
-                    margin-bottom: 1.5rem;
-                    color: #fff;
+                .noticia-content h1, 
+                .noticia-content h2, 
+                .noticia-content h3 {
+                    margin-top: var(--heading-top-margin);
+                    margin-bottom: var(--heading-bottom-margin);
+                    color: white;
                     font-weight: 700;
+                    line-height: 1.3;
                 }
-                .noticia-content ul, .noticia-content ol {
-                    margin-bottom: 2rem;
-                    padding-left: 1.5rem;
+                /* Evitar margen superior excesivo si el título es lo primero */
+                .noticia-content *:first-child {
+                    margin-top: 0;
                 }
-                .noticia-content li {
-                    margin-bottom: 0.8rem;
+                .noticia-content img {
+                    max-width: 100%;
+                    border-radius: 8px;
+                    margin: 2.5rem 0;
                 }
-                @keyframes spin { to { transform: rotate(360deg); } }
+                
+                /* SEO Hidden Paragraph - Fooplroof hiding */
+                .seo-hidden-paragraph {
+                    display: none !important;
+                    visibility: hidden;
+                    opacity: 0;
+                    pointer-events: none;
+                }
+
+                @media (max-width: 768px) {
+                    .noticia-title {
+                        font-size: 2.5rem;
+                    }
+                    .noticia-subtitle {
+                        font-size: 1.3rem;
+                    }
+                }
             `}</style>
         </section>
     );

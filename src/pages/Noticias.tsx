@@ -1,140 +1,128 @@
-import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
-import { supabase } from "../lib/supabase";
-import "./Noticias.css";
+import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
+import { supabase } from '../lib/supabase';
+import './Noticias.css';
 
-const Noticias: React.FC = () => {
+const Noticias = () => {
     const [posts, setPosts] = useState<any[]>([]);
+    const [sideItems, setSideItems] = useState<{ sorteos: any[], eventos: any[] }>({ sorteos: [], eventos: [] });
     const [loading, setLoading] = useState(true);
-    const [visibleCount, setVisibleCount] = useState(10);
 
     useEffect(() => {
-        const fetchArticles = async () => {
+        const fetchData = async () => {
             try {
-                const { data, error } = await supabase
+                // Fetch News Articles
+                const { data: newsData } = await supabase
                     .from('news_articles')
                     .select('*')
-                    .order('created_at', { ascending: false });
+                    .order('published_at', { ascending: false });
 
-                if (error) throw error;
-                setPosts(data || []);
-            } catch (err) {
-                console.error("Error fetching articles:", err);
+                // Fetch Sorteos (2) & Eventos (2) from content_items
+                const [{ data: sorteosData }, { data: eventosData }] = await Promise.all([
+                    supabase.from('content_items').select('*').eq('tipo', 'sorteo').order('created_at', { ascending: false }).limit(2),
+                    supabase.from('content_items').select('*').eq('tipo', 'evento').order('created_at', { ascending: false }).limit(2)
+                ]);
+
+                if (newsData) setPosts(newsData);
+                setSideItems({
+                    sorteos: sorteosData || [],
+                    eventos: eventosData || []
+                });
+            } catch (error) {
+                console.error('Error fetching news content:', error);
             } finally {
                 setLoading(false);
             }
         };
 
-        fetchArticles();
+        fetchData();
     }, []);
 
-    const SkeletonLoader = () => (
-        <div className="news-list">
-            {[1, 2, 3].map((i) => (
-                <article key={i} className="news-item">
-                    <div className="news-image skeleton"></div>
-                    <div className="news-content">
-                        <div className="news-meta skeleton"></div>
-                        <div className="news-title skeleton"></div>
-                        <div className="news-excerpt skeleton"></div>
-                    </div>
-                </article>
-            ))}
-        </div>
+    const formatDate = (dateStr: string) => {
+        if (!dateStr) return '';
+        return new Date(dateStr).toLocaleDateString('es-ES', {
+            day: 'numeric',
+            month: 'short',
+            year: 'numeric'
+        }).toUpperCase();
+    };
+
+    const getImageUrl = (image: string) => {
+        if (!image) return `${import.meta.env.VITE_R2_BASE_URL}/logo.png`;
+        return image.startsWith('http') ? image : `${import.meta.env.VITE_R2_BASE_URL}/${image}`;
+    };
+
+    // Componente para Noticia Principal (Estilo CR)
+    const MainNewsCard = ({ post }: { post: any }) => (
+        <Link to={`/noticias/${post.slug}`} className="cr-main-card">
+            <div className="cr-card-image">
+                <img src={getImageUrl(post.header_image)} alt={post.title} />
+            </div>
+            <div className="cr-card-content">
+                <div className="cr-badges">
+                    <span className="cr-badge brand">ARTÍCULO</span>
+                </div>
+                <h2 className="cr-card-title">{post.title}</h2>
+                <div className="cr-card-meta">
+                    <span className="cr-date">{formatDate(post.published_at || post.created_at)}</span>
+                    <span className="cr-author">POR {post.author || 'TOKII'}</span>
+                </div>
+            </div>
+        </Link>
     );
 
+    // Componente para Sidebar (Estilo CR Mini)
+    const SidebarNewsCard = ({ item, type }: { item: any, type: string }) => (
+        <Link to={type === 'sorteo' ? `/sorteos` : `/eventos`} className="cr-side-card">
+            <div className="cr-side-image">
+                <img 
+                    src={getImageUrl(item.imagen)} 
+                    alt={item.titulo} 
+                    onError={(e) => (e.currentTarget.src = `${import.meta.env.VITE_R2_BASE_URL}/logo.png`)}
+                />
+            </div>
+            <div className="cr-side-content">
+                <div className="cr-badges">
+                    <span className={`cr-badge ${type === 'sorteo' ? 'purple' : 'blue'}`}>
+                        {type === 'sorteo' ? 'SORTEO' : 'EVENTO'}
+                    </span>
+                </div>
+                <h3 className="cr-side-title">{item.titulo}</h3>
+                <span className="cr-side-date">{formatDate(item.created_at)}</span>
+            </div>
+        </Link>
+    );
+
+    if (loading) return <div className="loading-state">Cargando noticias...</div>;
+
     return (
-        <section className="section fade-in">
-            <div className="container" style={{ maxWidth: '1000px' }}>
-                <h2 className="section-title text-center">💫 Noticias Gamer que No Te Puedes Perder 💫</h2>
-                <p className="news-list-subtitle">
-                    Las últimas noticias de videojuegos, lanzamientos, actualizaciones y tendencias del mundo gamer.
-                </p>
-
-                {loading ? (
-                    <SkeletonLoader />
-                ) : (
-                    <div className="news-list">
-                        {posts.slice(0, visibleCount).map(post => {
-                            return (
-                                <Link
-                                    key={post.id}
-                                    to={`/noticias/${post.slug}`}
-                                    className="news-item-link"
-                                >
-                                    <article className="news-item">
-                                        <div className="news-image">
-                                            {post.header_image ? (
-                                                <img 
-                                                    src={post.header_image.startsWith('http') ? post.header_image : `${import.meta.env.VITE_R2_BASE_URL}/${post.header_image}`} 
-                                                    alt={post.title} 
-                                                    loading="lazy" 
-                                                />
-                                            ) : (
-                                                <div className="skeleton" style={{ width: '100%', height: '100%' }}></div>
-                                            )}
-                                        </div>
-
-                                        <div className="news-content">
-                                            <h3 className="news-title">{post.title}</h3>
-
-                                            {post.subtitle && (
-                                                <p className="news-excerpt">{post.subtitle}</p>
-                                            )}
-
-                                            <div className="news-meta" style={{ marginTop: 'auto', justifyContent: 'space-between', width: '100%' }}>
-                                                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                                                    <span>Creado por</span>
-                                                    <div style={{
-                                                        width: '1.4em',
-                                                        height: '1.4em',
-                                                        borderRadius: '50%',
-                                                        overflow: 'hidden',
-                                                        border: '1.5px solid var(--secondary)',
-                                                        display: 'flex',
-                                                        alignItems: 'center',
-                                                        justifyContent: 'center',
-                                                        background: 'var(--bg-dark)',
-                                                        flexShrink: 0
-                                                    }}>
-                                                        <img
-                                                            src={`${import.meta.env.VITE_R2_BASE_URL}/logo.png`}
-                                                            alt={post.author}
-                                                            className="news-meta-author-img"
-                                                        />
-                                                    </div>
-                                                    <span>{post.author || "EvilTokkii"}</span>
-                                                </div>
-                                                <span>{new Date(post.published_at || post.created_at).toLocaleDateString()}</span>
-                                            </div>
-                                        </div>
-                                    </article>
-                                </Link>
-                            );
-                        })}
+        <section className="noticias-page">
+            <div className="container">
+                <div className="cr-grid">
+                    
+                    {/* Columna Izquierda: Noticias Principales */}
+                    <div className="cr-feed">
+                        {posts.map(post => (
+                            <MainNewsCard key={post.id} post={post} />
+                        ))}
                     </div>
-                )}
 
-                {!loading && visibleCount < posts.length && (
-                    <div style={{ textAlign: 'center', marginTop: '4rem' }}>
-                        <button
-                            className="btn-primary glow"
-                            onClick={() => setVisibleCount(prev => prev + 10)}
-                            style={{ padding: '1rem 3rem', fontSize: '1.1rem' }}
-                        >
-                            Ver más noticias
-                        </button>
-                    </div>
-                )}
+                    {/* Columna Derecha: Sidebar Minimalista */}
+                    <aside className="cr-sidebar">
+                        <div className="cr-sticky-wrapper">
+                            {sideItems.sorteos.map(item => (
+                                <SidebarNewsCard key={item.id} item={item} type="sorteo" />
+                            ))}
+                            {sideItems.eventos.map(item => (
+                                <SidebarNewsCard key={item.id} item={item} type="evento" />
+                            ))}
+                        </div>
+                    </aside>
 
-                {!loading && posts.length === 0 && (
-                    <div className="text-center" style={{ padding: '4rem 0' }}>
-                        <p className="hero-subtitle">No hay noticias disponibles por el momento.</p>
-                    </div>
-                )}
+                </div>
             </div>
         </section>
     );
-}
+};
 
 export default Noticias;
