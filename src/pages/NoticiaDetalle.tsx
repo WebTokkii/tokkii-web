@@ -1,11 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 
 // Parrafo de Keywords constante para todas las noticias (Oculto para el usuario, visible para SEO)
 const SEO_KEYWORDS_PARAGRAPH = "Keywords: Tokkii, EvilTokkii, Noticias de Videojuegos, Anime, Manga, Cultura Geek, Sorteos, Comunidad, Streaming, Capcom, Pragata, Atomic Heart DLC final, noticia gaming hoy, videojuegos 2026, lanzamientos gaming abril, Atomic Heart expansión, Análisis de juegos, Reviews, Gaming News, Noticias de hoy";
 
-const NoticiaDetalle: React.FC = () => {
+const NoticiaDetalle = () => {
     const { slug } = useParams<{ slug: string }>();
     const [post, setPost] = useState<any>(null);
     const [loading, setLoading] = useState(true);
