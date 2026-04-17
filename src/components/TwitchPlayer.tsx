@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { supabase } from '../lib/supabase';
 
 const TwitchPlayer = () => {
     const [status, setStatus] = useState<{ isLive: boolean; lastVideoId?: string; title?: string } | null>(null);
@@ -7,17 +8,13 @@ const TwitchPlayer = () => {
     useEffect(() => {
         const fetchStatus = async () => {
             try {
-                const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3001';
-                const response = await fetch(`${apiUrl}/api/twitch-status`);
+                // Llamamos a la función SQL que creamos en Supabase
+                const { data, error } = await supabase.rpc('get_twitch_status');
 
-                if (!response.ok) {
-                    throw new Error('API response was not ok');
-                }
-
-                const data = await response.json();
+                if (error) throw error;
                 setStatus(data);
             } catch (error) {
-                console.error('Error fetching Twitch status:', error);
+                console.error('Error fetching Twitch status from Supabase RPC:', error);
                 if (!status) setStatus({ isLive: false });
             } finally {
                 setLoading(false);
@@ -26,8 +23,7 @@ const TwitchPlayer = () => {
 
         fetchStatus();
 
-        // Re-intento automático cada 15 segundos para máxima asertividad
-        const interval = setInterval(fetchStatus, 15000);
+        const interval = setInterval(fetchStatus, 60000); // 1 minuto es suficiente cacheando en DB
         return () => clearInterval(interval);
     }, []);
 
