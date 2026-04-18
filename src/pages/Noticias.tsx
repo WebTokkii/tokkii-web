@@ -15,7 +15,7 @@ const Noticias = () => {
                 const { data: newsData } = await supabase
                     .from('news_articles')
                     .select('*')
-                    .order('published_at', { ascending: false, nullsFirst: false })
+                    .order('published_at', { ascending: false, nullsFirst: true })
                     .order('created_at', { ascending: false });
 
                 // Fetch Sorteos (2) & Eventos (2) from content_items
