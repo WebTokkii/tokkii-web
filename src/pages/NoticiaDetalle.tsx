@@ -167,7 +167,7 @@ const NoticiaDetalle = () => {
                         )}
 
                         {/* Párrafo constante oculto para SEO al final de todas las noticias */}
-                        <div className="seo-hidden-paragraph" aria-hidden="true">
+                        <div className="seo-hidden-paragraph">
                             <p>{SEO_KEYWORDS_PARAGRAPH}</p>
                         </div>
                     </div>
@@ -300,12 +300,17 @@ const NoticiaDetalle = () => {
                     margin: 2.5rem 0;
                 }
                 
-                /* SEO Hidden Paragraph - Fooplroof hiding */
+                /* SEO Hidden Paragraph - Modern hiding technique for SEO (Visible to crawlers/screen readers, hidden from users) */
                 .seo-hidden-paragraph {
-                    display: none !important;
-                    visibility: hidden;
-                    opacity: 0;
-                    pointer-events: none;
+                    position: absolute;
+                    width: 1px;
+                    height: 1px;
+                    padding: 0;
+                    margin: -1px;
+                    overflow: hidden;
+                    clip: rect(0, 0, 0, 0);
+                    white-space: nowrap;
+                    border: 0;
                 }
 
                 @media (max-width: 768px) {

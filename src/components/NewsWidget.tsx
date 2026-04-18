@@ -15,6 +15,7 @@ const NewsWidget: React.FC = () => {
                 const { data, error } = await supabase
                     .from('news_articles')
                     .select('*')
+                    .order('published_at', { ascending: false, nullsFirst: false })
                     .order('created_at', { ascending: false })
                     .limit(3);
 
