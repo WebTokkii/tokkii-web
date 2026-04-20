@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
-import { Plus, Trash2, RotateCcw, Trophy, X, Edit2, Volume2, VolumeX, Eye, EyeOff } from 'lucide-react';
+import { Plus, Trash2, Trophy, X, Edit2, Volume2, VolumeX, Eye, EyeOff } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import './Ruleta.css';
 
@@ -13,7 +13,7 @@ const COLORS = [
 ];
 
 const Ruleta: React.FC = () => {
-    const [participants, setParticipants] = useState<string[]>(['Tokkoo', 'Requiem', 'Zaluu', 'Mago']);
+    const [participants, setParticipants] = useState<string[]>([]);
     const [inputValue, setInputValue] = useState('');
     const [isSpinning, setIsSpinning] = useState(false);
     const [winner, setWinner] = useState<string | null>(null);
@@ -64,9 +64,19 @@ const Ruleta: React.FC = () => {
         const center = size / 2;
         const radius = center - 10;
         const total = participants.length;
-        const arcSize = (Math.PI * 2) / total;
 
         ctx.clearRect(0, 0, size, size);
+
+        if (total === 0) {
+            // Dibujar un círculo vacío o mensaje
+            ctx.beginPath();
+            ctx.arc(center, center, radius, 0, Math.PI * 2);
+            ctx.strokeStyle = 'rgba(255,255,255,0.1)';
+            ctx.stroke();
+            return;
+        }
+
+        const arcSize = (Math.PI * 2) / total;
 
         // Borde exterior
         ctx.beginPath();
@@ -129,8 +139,16 @@ const Ruleta: React.FC = () => {
 
     const addParticipant = () => {
         if (inputValue.trim()) {
-            setParticipants([...participants, inputValue.trim()]);
-            setInputValue('');
+            // Soportar múltiples nombres pegados (separados por cualquier tipo de salto de línea)
+            const names = inputValue
+                .split(/\r\n|\r|\n/)
+                .map(name => name.trim())
+                .filter(name => name.length > 0);
+
+            if (names.length > 0) {
+                setParticipants([...participants, ...names]);
+                setInputValue('');
+            }
         }
     };
 
@@ -183,10 +201,12 @@ const Ruleta: React.FC = () => {
         lastTickAngleRef.current = currentRotation;
     };
 
-    const reset = () => {
-        setRotation(0);
-        setWinner(null);
-        setIsSpinning(false);
+    const [showToast, setShowToast] = useState(false);
+
+    const clearParticipants = () => {
+        setParticipants([]);
+        setShowToast(true);
+        setTimeout(() => setShowToast(false), 3000);
     };
 
     return (
@@ -229,9 +249,6 @@ const Ruleta: React.FC = () => {
                     </div>
 
                     <div className="ruleta-controls">
-                        <button onClick={reset} className="control-btn" title="Reiniciar">
-                            <RotateCcw size={20} />
-                        </button>
                         <button onClick={() => setIsMuted(!isMuted)} className="control-btn" title={isMuted ? "Activar sonido" : "Silenciar"}>
                             {isMuted ? <VolumeX size={20} /> : <Volume2 size={20} />}
                         </button>
@@ -253,16 +270,24 @@ const Ruleta: React.FC = () => {
                     </div>
 
                     <div className="input-group">
-                        <input
-                            type="text"
+                        <textarea
                             value={inputValue}
                             onChange={(e) => setInputValue(e.target.value)}
-                            onKeyDown={(e) => e.key === 'Enter' && addParticipant()}
-                            placeholder="Nombre..."
+                            onKeyDown={(e) => {
+                                if (e.key === 'Enter' && !e.shiftKey) {
+                                    e.preventDefault();
+                                    addParticipant();
+                                }
+                            }}
+                            placeholder="Escribe o pega nombres..."
                             className="add-input"
+                            style={{ resize: 'none', height: '48px', paddingTop: '12px' }}
                         />
-                        <button onClick={addParticipant} className="add-btn">
+                        <button onClick={addParticipant} className="add-btn" title="Agregar">
                             <Plus size={24} />
+                        </button>
+                        <button onClick={clearParticipants} className="add-btn delete" style={{ background: 'var(--secondary)' }} title="Limpiar Lista">
+                            <Trash2 size={24} />
                         </button>
                     </div>
 
@@ -347,6 +372,18 @@ const Ruleta: React.FC = () => {
                                 ))}
                             </div>
                         </motion.div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
+            <AnimatePresence>
+                {showToast && (
+                    <motion.div
+                        initial={{ opacity: 0, y: 50 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: 20 }}
+                        className="ruleta-toast"
+                    >
+                        <span>Lista borrada con éxito</span>
                     </motion.div>
                 )}
             </AnimatePresence>

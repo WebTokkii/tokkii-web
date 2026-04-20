@@ -128,8 +128,16 @@ export default function App() {
   // --- ACCIONES ---
   const addParticipant = () => {
     if (inputValue.trim()) {
-      setParticipants([...participants, inputValue.trim()]);
-      setInputValue('');
+      // Soportar múltiples nombres pegados (separados por cualquier tipo de salto de línea)
+      const names = inputValue
+        .split(/\r\n|\r|\n/)
+        .map(name => name.trim())
+        .filter(name => name.length > 0);
+      
+      if (names.length > 0) {
+        setParticipants([...participants, ...names]);
+        setInputValue('');
+      }
     }
   };
 
@@ -299,13 +307,17 @@ export default function App() {
 
           {/* Input */}
           <div className="flex gap-2 mb-6">
-            <input
-              type="text"
+            <textarea
               value={inputValue}
               onChange={(e) => setInputValue(e.target.value)}
-              onKeyDown={(e) => e.key === 'Enter' && addParticipant()}
-              placeholder="Nombre del participante..."
-              className="flex-1 bg-slate-800 border border-white/10 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-purple-500 transition-all"
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                  e.preventDefault();
+                  addParticipant();
+                }
+              }}
+              placeholder="Escribe o pega nombres..."
+              className="flex-1 bg-slate-800 border border-white/10 rounded-xl px-4 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500 transition-all resize-none h-[48px] custom-scrollbar"
             />
             <button
               onClick={addParticipant}

@@ -255,8 +255,11 @@ const NoticiaDetalle = () => {
                 }
                 .author-name {
                     font-size: 1.1rem;
-                    font-weight: 500;
-                    color: white;
+                    font-weight: 800;
+                    color: var(--secondary);
+                    text-shadow: 0 0 10px rgba(255, 0, 110, 0.4);
+                    text-transform: uppercase;
+                    letter-spacing: 0.5px;
                 }
 
                 .noticia-hero-image {

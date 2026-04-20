@@ -26,6 +26,7 @@
     -webkit-text-fill-color: transparent;
     text-transform: uppercase;
     font-style: italic;
+    padding-right: 0.2em; /* Prevenir que la última letra se corte por el italic */
 }
 
 .ruleta-subtitle {
@@ -420,6 +421,24 @@
     }
 
     .ruleta-title {
-        font-size: 2rem;
+        font-size: 2.5rem;
     }
+}
+
+.ruleta-toast {
+    position: fixed;
+    bottom: 2rem;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--secondary);
+    color: white;
+    padding: 1rem 2rem;
+    border-radius: 1rem;
+    font-weight: 800;
+    box-shadow: 0 10px 30px rgba(255, 0, 110, 0.4);
+    z-index: 2000;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-size: 0.9rem;
+    pointer-events: none;
 }

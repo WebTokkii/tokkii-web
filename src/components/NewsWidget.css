@@ -99,18 +99,12 @@
     letter-spacing: 0.5px;
 }
 
-.meta-author {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-}
-
-.author-avatar {
-    width: 36px;
-    height: 36px;
-    border-radius: 50%;
-    border: 2px solid var(--secondary);
-    box-shadow: 0 0 10px rgba(255, 0, 110, 0.3);
+.meta-author span {
+    color: var(--secondary);
+    text-shadow: 0 0 10px rgba(255, 0, 110, 0.4);
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
 }
 
 /* Indicators */
