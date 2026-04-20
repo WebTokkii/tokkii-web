@@ -48,26 +48,47 @@ const Noticias = () => {
         }).toUpperCase();
     };
 
+    const getRelativeTime = (dateStr: string) => {
+        if (!dateStr) return '';
+        const now = new Date();
+        const past = new Date(dateStr);
+        const diffInMs = now.getTime() - past.getTime();
+        const diffInMins = Math.floor(diffInMs / (1000 * 60));
+        const diffInHours = Math.floor(diffInMs / (1000 * 60 * 60));
+        const diffInDays = Math.floor(diffInMs / (1000 * 60 * 60 * 24));
+
+        if (diffInMins < 1) return 'AHORA MISMO';
+        if (diffInMins < 60) return `HACE ${diffInMins} MINUTO${diffInMins !== 1 ? 'S' : ''}`;
+        if (diffInHours < 24) return `HACE ${diffInHours} HORA${diffInHours !== 1 ? 'S' : ''}`;
+        if (diffInDays < 30) return `HACE ${diffInDays} DÍA${diffInDays !== 1 ? 'S' : ''}`;
+        return formatDate(dateStr);
+    };
+
     const getImageUrl = (image: string) => {
         if (!image) return `${import.meta.env.VITE_R2_BASE_URL}/logo.png`;
         return image.startsWith('http') ? image : `${import.meta.env.VITE_R2_BASE_URL}/${image}`;
     };
 
-    // Componente para Noticia Principal (Estilo CR)
+    // Componente para Noticia Principal (Estilo solicitado)
     const MainNewsCard = ({ post }: { post: any }) => (
-        <Link to={`/noticias/${post.slug}`} className="cr-main-card">
-            <div className="cr-card-image">
-                <img src={getImageUrl(post.header_image)} alt={post.title} />
+        <Link to={`/noticias/${post.slug}`} className="news-modern-card">
+            <div className="news-card-content">
+                <span className="news-card-category">{post.category || 'TENDENCIA'}</span>
+                <h2 className="news-card-title">{post.title}</h2>
+                {post.subtitle && <p className="news-card-excerpt">{post.subtitle}</p>}
+                <span className="news-card-more">LEER MÁS »</span>
+                <div className="news-card-footer">
+                    <span className="footer-item author">
+                        POR {(post.author || 'TOKII').toUpperCase()}
+                    </span>
+                    <span className="footer-divider">-</span>
+                    <span className="footer-item time">
+                        {getRelativeTime(post.published_at || post.created_at)}
+                    </span>
+                </div>
             </div>
-            <div className="cr-card-content">
-                <div className="cr-badges">
-                    <span className="cr-badge brand">ARTÍCULO</span>
-                </div>
-                <h2 className="cr-card-title">{post.title}</h2>
-                <div className="cr-card-meta">
-                    <span className="cr-date">{formatDate(post.published_at || post.created_at)}</span>
-                    <span className="cr-author">POR {post.author || 'TOKII'}</span>
-                </div>
+            <div className="news-card-image">
+                <img src={getImageUrl(post.header_image)} alt={post.title} />
             </div>
         </Link>
     );

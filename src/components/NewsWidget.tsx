@@ -8,6 +8,7 @@ const NewsWidget: React.FC = () => {
     const [loading, setLoading] = useState(true);
     const [currentIndex, setCurrentIndex] = useState(0);
     const timeoutRef = useRef<any>(null);
+    const AUTO_PLAY_TIME = 8000; // 8 segundos por noticia
 
     useEffect(() => {
         const fetchLatest = async () => {
@@ -17,7 +18,7 @@ const NewsWidget: React.FC = () => {
                     .select('*')
                     .order('published_at', { ascending: false, nullsFirst: true })
                     .order('created_at', { ascending: false })
-                    .limit(3);
+                    .limit(5);
 
                 if (error) throw error;
                 setLatestPosts(data || []);
@@ -34,9 +35,10 @@ const NewsWidget: React.FC = () => {
     useEffect(() => {
         if (latestPosts.length > 0) {
             const startAutoPlay = () => {
+                if (timeoutRef.current) clearInterval(timeoutRef.current);
                 timeoutRef.current = setInterval(() => {
                     handleNext();
-                }, 6000);
+                }, AUTO_PLAY_TIME);
             };
 
             startAutoPlay();
@@ -50,47 +52,80 @@ const NewsWidget: React.FC = () => {
         setCurrentIndex((prev) => (prev + 1) % latestPosts.length);
     };
 
-    if (loading || latestPosts.length === 0) return null;
-    return (
-        <aside className="news-widget">
-            <div className="news-header">
-                <h3 className="widget-title">Últimas Noticias</h3>
-            </div>
-            <div className="news-fade-container">
-                {latestPosts.map((post, index) => (
-                    <div
-                        key={post.id}
-                        className={`news-fade-slide ${index === (currentIndex % latestPosts.length) ? 'active' : ''}`}
-                    >
-                        <Link
-                            to={`/noticias/${post.slug}`}
-                            className="news-widget-item-slim"
-                        >
-                            {/* Blurred background layer */}
-                            <div
-                                className="news-slim-bg"
-                                style={{ 
-                                    backgroundImage: `url(${post.header_image ? (post.header_image.startsWith('http') ? post.header_image : `${import.meta.env.VITE_R2_BASE_URL}/${post.header_image}`) : `${import.meta.env.VITE_R2_BASE_URL}/logo.png`})` 
-                                }}
-                            />
+    const handleDotClick = (index: number) => {
+        setCurrentIndex(index);
+    };
 
-                            <div className="news-slim-content">
-                                <div className="news-slim-text">
-                                    <span className="news-widget-tag">NOTICIA</span>
-                                    <h4>{post.title}</h4>
-                                </div>
-                                <div className="news-slim-image">
-                                    <img
-                                        src={post.header_image ? (post.header_image.startsWith('http') ? post.header_image : `${import.meta.env.VITE_R2_BASE_URL}/${post.header_image}`) : `${import.meta.env.VITE_R2_BASE_URL}/logo.png`}
-                                        alt={post.title}
-                                    />
+    const formatDate = (dateStr: string) => {
+        if (!dateStr) return '';
+        const date = new Date(dateStr);
+        const options: Intl.DateTimeFormatOptions = { 
+            day: 'numeric', 
+            month: 'short', 
+            year: 'numeric'
+        };
+        return date.toLocaleDateString('es-ES', options).toUpperCase();
+    };
+
+    const getImageUrl = (post: any) => {
+        if (!post.header_image) return `${import.meta.env.VITE_R2_BASE_URL}/logo.png`;
+        return post.header_image.startsWith('http') ? post.header_image : `${import.meta.env.VITE_R2_BASE_URL}/${post.header_image}`;
+    };
+
+    if (loading || latestPosts.length === 0) return null;
+
+    return (
+        <section className="news-widget-hero">
+            <div className="news-hero-container">
+                {latestPosts.map((post, index) => (
+                    <Link
+                        key={post.id}
+                        to={`/noticias/${post.slug}`}
+                        className={`news-hero-slide ${index === currentIndex ? 'active' : ''}`}
+                    >
+                        <div className="news-hero-image-wrapper">
+                            <img src={getImageUrl(post)} alt={post.title} className="news-hero-img" />
+                            <div className="news-hero-overlay"></div>
+                        </div>
+
+                        <div className="news-hero-content">
+                            <div className="news-hero-tags">
+                                <span className="news-hero-tag">{post.category || 'ARTÍCULO'}</span>
+                            </div>
+                            
+                            <h2 className="news-hero-title">{post.title}</h2>
+                            
+                            <div className="news-hero-meta">
+                                <span className="meta-date">{formatDate(post.published_at || post.created_at)}</span>
+                                <div className="meta-author">
+                                    <img src={`${import.meta.env.VITE_R2_BASE_URL}/logo.png`} alt="Avatar" className="author-avatar" />
+                                    <span>{post.author || 'EvilTokkii'}</span>
                                 </div>
                             </div>
-                        </Link>
-                    </div>
+                        </div>
+                    </Link>
                 ))}
+
+                {/* Progress Indicators ( Estilo Crunchyroll ) */}
+                <div className="news-hero-indicators">
+                    {latestPosts.map((_, index) => (
+                        <div 
+                            key={index} 
+                            className="indicator-track"
+                            onClick={(e) => {
+                                e.preventDefault();
+                                handleDotClick(index);
+                            }}
+                        >
+                            <div 
+                                className={`indicator-bar ${index === currentIndex ? 'filling' : (index < currentIndex ? 'full' : '')}`}
+                                style={{ animationDuration: `${AUTO_PLAY_TIME}ms` }}
+                            ></div>
+                        </div>
+                    ))}
+                </div>
             </div>
-        </aside>
+        </section>
     );
 };
 

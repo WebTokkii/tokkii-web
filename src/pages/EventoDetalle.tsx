@@ -54,17 +54,23 @@ const EventoDetalle: React.FC = () => {
         );
     }
 
+    const getImageUrl = (imagePath: string) => {
+        if (!imagePath) return '';
+        if (imagePath.startsWith('http')) return imagePath;
+        return `${import.meta.env.VITE_R2_BASE_URL}/Imagenes/${imagePath}`;
+    };
+
     return (
         <section className="section fade-in">
             <div className="container">
-                <Link to="/eventos" className="card-link" style={{ marginBottom: '2rem', display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
-                    <FontAwesomeIcon icon={faChevronLeft} /> Volver a Eventos
+                <Link to={evento.tipo === 'sorteo' ? '/sorteos' : '/eventos'} className="card-link" style={{ marginBottom: '2rem', display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
+                    <FontAwesomeIcon icon={faChevronLeft} /> Volver a {evento.tipo === 'sorteo' ? 'Sorteos' : 'Eventos'}
                 </Link>
 
                 <div className="event-detail-card glass" style={{ padding: '3rem', borderRadius: '32px' }}>
                     <div style={{ width: '100%', height: '400px', borderRadius: '24px', overflow: 'hidden', marginBottom: '3rem', boxShadow: '0 20px 40px rgba(0,0,0,0.4)' }}>
                         <img
-                            src={`${import.meta.env.VITE_R2_BASE_URL}/Imagenes/${evento.imagen}`}
+                            src={getImageUrl(evento.imagen)}
                             alt={evento.titulo}
                             style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                         />
@@ -80,7 +86,7 @@ const EventoDetalle: React.FC = () => {
 
                     <div className="event-content" style={{ display: 'grid', gridTemplateColumns: '1.5fr 1fr', gap: '4rem' }}>
                         <div className="event-main-text">
-                            <h3 style={{ fontSize: '2rem', color: '#fff', marginBottom: '1.5rem' }}>Sobre el evento</h3>
+                            <h3 style={{ fontSize: '2rem', color: '#fff', marginBottom: '1.5rem' }}>Sobre el {evento.tipo === 'sorteo' ? 'sorteo' : 'evento'}</h3>
                             <p style={{ fontSize: '1.2rem', lineHeight: '1.8', color: 'rgba(255,255,255,0.8)', marginBottom: '2rem', whiteSpace: 'pre-line' }}>
                                 {evento.detalles || evento.descripcion || ''}
                             </p>

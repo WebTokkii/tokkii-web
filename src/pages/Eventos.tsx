@@ -6,47 +6,54 @@ import '../components/NewsWidget.css';
 import { supabase } from '../lib/supabase';
 import ParticipationForm from '../components/ParticipationForm';
 
-const EventCard: React.FC<{ evento: any }> = ({ evento }) => (
-    <div className="event-highlight" style={{
-        display: 'flex',
-        borderRadius: '28px',
-        overflow: 'hidden',
-        background: 'rgba(255, 255, 255, 0.02)',
-        marginTop: '2.5rem',
-        border: '1px solid rgba(255, 255, 255, 0.08)',
-        boxShadow: '0 30px 60px -12px rgba(0, 0, 0, 0.6)',
-        position: 'relative'
-    }}>
-        <div className="event-image" style={{ flex: '1', maxWidth: '450px', lineHeight: 0 }}>
-            <img
-                src={`${import.meta.env.VITE_R2_BASE_URL}/Imagenes/${evento.imagen}`}
-                alt={evento.titulo}
-                style={{
-                    width: '100%',
-                    height: '100%',
-                    objectFit: 'cover',
-                    display: 'block'
-                }}
-            />
-        </div>
+const EventCard: React.FC<{ evento: any }> = ({ evento }) => {
+    const getImageUrl = (imagePath: string) => {
+        if (!imagePath) return '';
+        if (imagePath.startsWith('http')) return imagePath;
+        return `${import.meta.env.VITE_R2_BASE_URL}/Imagenes/${imagePath}`;
+    };
+
+    return (
+        <div className="event-highlight" style={{
+            display: 'flex',
+            borderRadius: '28px',
+            overflow: 'hidden',
+            background: 'rgba(255, 255, 255, 0.02)',
+            marginTop: '2.5rem',
+            border: '1px solid rgba(255, 255, 255, 0.08)',
+            boxShadow: '0 30px 60px -12px rgba(0, 0, 0, 0.6)',
+            position: 'relative',
+            minHeight: '350px' // Using minHeight instead of fixed height
+        }}>
+            <div className="event-image" style={{ flex: '1', maxWidth: '450px', lineHeight: 0 }}>
+                <img
+                    src={getImageUrl(evento.imagen)}
+                    alt={evento.titulo}
+                    style={{
+                        width: '100%',
+                        height: '100%',
+                        objectFit: 'cover',
+                        display: 'block'
+                    }}
+                />
+            </div>
         <div className="event-details" style={{
             flex: '1.8',
-            padding: '1.5rem 3rem',
+            padding: '2rem 3rem',
             display: 'flex',
             flexDirection: 'column',
             justifyContent: 'flex-start',
-            background: 'linear-gradient(90deg, rgba(0,0,0,0.3) 0%, transparent 100%)',
-            position: 'relative',
-            minHeight: '220px'
+            background: 'linear-gradient(90deg, rgba(0,0,0,0.5) 0%, transparent 100%)',
+            position: 'relative'
         }}>
-            <h2 style={{ fontSize: '3.5rem', marginBottom: '0.4rem', color: '#fff' }}>{evento.titulo}</h2>
-            <h4 style={{ fontSize: '1.4rem', color: 'rgba(255,255,255,0.7)', marginBottom: '1.5rem', fontWeight: '400', lineHeight: '1.4', whiteSpace: 'pre-line' }}>
+            <h2 style={{ fontSize: '2.8rem', marginBottom: '0.5rem', color: '#fff', fontWeight: 'bold', lineHeight: '1.2' }}>{evento.titulo}</h2>
+            <h4 style={{ fontSize: '1.3rem', color: 'rgba(255,255,255,0.7)', marginBottom: '1.5rem', fontWeight: '400', lineHeight: '1.4', whiteSpace: 'pre-line' }}>
                 {evento.descripcion || ''}
             </h4>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginTop: 'auto', gap: '20px', flexWrap: 'wrap' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginTop: 'auto', gap: '20px', flexWrap: 'wrap', paddingBottom: '1rem' }}>
                 <div style={{ display: 'block' }}>
-                    <span style={{ fontWeight: 'bold', color: '#ff4d4d', fontSize: '1.3rem' }}>FECHA:</span>
-                    <span style={{ marginLeft: '10px', color: '#fff', fontSize: '1.3rem' }}>{evento.fecha}</span>
+                    <span style={{ fontWeight: 'bold', color: '#ff4d4d', fontSize: '1.2rem' }}>FECHA:</span>
+                    <span style={{ marginLeft: '10px', color: '#fff', fontSize: '1.2rem' }}>{evento.fecha}</span>
                 </div>
 
                 <div style={{ display: 'flex', gap: '2rem', alignItems: 'center' }}>
@@ -64,7 +71,7 @@ const EventCard: React.FC<{ evento: any }> = ({ evento }) => (
                             transition: 'all 0.3s ease',
                             fontWeight: 'bold',
                             opacity: '0.9',
-                            padding: '0.8rem 0'
+                            padding: '0.5rem 0'
                         }}
                         className="more-info-link"
                         onMouseOver={(e) => {
@@ -80,9 +87,10 @@ const EventCard: React.FC<{ evento: any }> = ({ evento }) => (
                     </Link>
                 </div>
             </div>
+            </div>
         </div>
-    </div>
-);
+    );
+};
 
 const Eventos: React.FC = () => {
     const [eventos, setEventos] = React.useState<any[]>([]);

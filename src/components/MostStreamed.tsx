@@ -1,37 +1,61 @@
-import React from 'react';
+import { useState, useEffect } from 'react';
+import { supabase } from '../lib/supabase';
 import './MostStreamed.css';
 
 interface StreamedItem {
     id: number;
     title: string;
-    image: string;
+    image_url: string;
 }
 
-const mostStreamedData: StreamedItem[] = [
-    { id: 1, title: 'Overwatch', image: `${import.meta.env.VITE_R2_BASE_URL}/Imagenes/Overwatch.png` },
-    { id: 2, title: 'Reanimal', image: `${import.meta.env.VITE_R2_BASE_URL}/Imagenes/Reanimal.png` },
-    { id: 3, title: 'Poppy Playtime', image: `${import.meta.env.VITE_R2_BASE_URL}/Imagenes/PoppyPlayTime.png` },
-    { id: 4, title: 'Teamfight Tactics', image: `${import.meta.env.VITE_R2_BASE_URL}/Imagenes/TeamfightTactics.png` },
-    { id: 5, title: 'GTA V', image: `${import.meta.env.VITE_R2_BASE_URL}/Imagenes/GTA_V.png` },
-    { id: 6, title: 'Just Chatting', image: `${import.meta.env.VITE_R2_BASE_URL}/Imagenes/JustCHatting.png` },
-];
-
 const MostStreamed: React.FC = () => {
+    const [streamedData, setStreamedData] = useState<StreamedItem[]>([]);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        const fetchStreamed = async () => {
+            try {
+                const { data, error } = await supabase
+                    .from('most_streamed')
+                    .select('*')
+                    .order('order_index', { ascending: true });
+
+                if (error) throw error;
+                setStreamedData(data || []);
+            } catch (err) {
+                console.error("Error fetching most streamed:", err);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchStreamed();
+    }, []);
+
+    const getImageUrl = (imagePath: string) => {
+        if (!imagePath) return `${import.meta.env.VITE_R2_BASE_URL}/logo.png`;
+        return imagePath.startsWith('http') ? imagePath : `${import.meta.env.VITE_R2_BASE_URL}/${imagePath}`;
+    };
+
+    if (loading || streamedData.length === 0) return null;
+
     return (
         <section className="most-streamed-section">
-            <div className="news-header">
-                <h3 className="widget-title">Lo más Streameado</h3>
+            <div className="streamed-header">
+                <h3 className="streamed-widget-title">Lo más Streameado</h3>
             </div>
 
-            <div className="streamed-grid">
-                {mostStreamedData.map((item) => (
-                    <div key={item.id} className="streamed-card glass glow-hover">
-                        <div
-                            className="streamed-image"
-                            style={{ backgroundImage: `url(${item.image})` }}
-                        >
-                            <div className="streamed-overlay">
-                                <h4>{item.title}</h4>
+            <div className="streamed-grid-vertical">
+                {streamedData.map((item) => (
+                    <div key={item.id} className="streamed-vertical-card">
+                        <div className="streamed-card-inner">
+                            <img 
+                                src={getImageUrl(item.image_url)} 
+                                alt={item.title} 
+                                className="streamed-card-img"
+                            />
+                            <div className="streamed-card-overlay">
+                                <h4 className="streamed-card-name">{item.title}</h4>
                             </div>
                         </div>
                     </div>

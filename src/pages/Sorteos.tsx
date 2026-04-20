@@ -8,6 +8,82 @@ import '../components/NewsWidget.css';
 import ParticipationForm from '../components/ParticipationForm';
 import { supabase } from '../lib/supabase';
 
+const SorteoCard: React.FC<{ sorteo: any }> = ({ sorteo }) => {
+    const getImageUrl = (imagePath: string) => {
+        if (!imagePath) return '';
+        if (imagePath.startsWith('http')) return imagePath;
+        return `${import.meta.env.VITE_R2_BASE_URL}/Imagenes/${imagePath}`;
+    };
+
+    return (
+        <div className="event-highlight" style={{
+            display: 'flex',
+            borderRadius: '28px',
+            overflow: 'hidden',
+            background: 'rgba(255, 255, 255, 0.02)',
+            marginTop: '2.5rem',
+            border: '1px solid rgba(255, 255, 255, 0.08)',
+            boxShadow: '0 30px 60px -12px rgba(0, 0, 0, 0.6)',
+            position: 'relative',
+            minHeight: '350px' // Using minHeight instead of fixed height
+        }}>
+            <div className="event-image" style={{ flex: '1', maxWidth: '450px', lineHeight: 0 }}>
+                <img
+                    src={getImageUrl(sorteo.imagen)}
+                    alt={sorteo.titulo}
+                    style={{
+                        width: '100%',
+                        height: '100%',
+                        objectFit: 'cover',
+                        display: 'block'
+                    }}
+                />
+            </div>
+            <div className="event-details" style={{
+                flex: '1.8',
+                padding: '2rem 3rem',
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'flex-start',
+                background: 'linear-gradient(90deg, rgba(0,0,0,0.5) 0%, transparent 100%)',
+                position: 'relative'
+            }}>
+                <h2 style={{ fontSize: '2.8rem', marginBottom: '0.5rem', color: '#fff', fontWeight: 'bold', lineHeight: '1.2' }}>{sorteo.titulo}</h2>
+                <h4 style={{ fontSize: '1.3rem', color: 'rgba(255,255,255,0.7)', marginBottom: '1.5rem', fontWeight: '400', lineHeight: '1.4', whiteSpace: 'pre-line' }}>
+                    {sorteo.descripcion || ''}
+                </h4>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginTop: 'auto', gap: '20px', flexWrap: 'wrap', paddingBottom: '1rem' }}>
+                    <div style={{ display: 'block' }}>
+                        <span style={{ fontWeight: 'bold', color: '#ff4d4d', fontSize: '1.2rem' }}>FECHA:</span>
+                        <span style={{ marginLeft: '10px', color: '#fff', fontSize: '1.2rem' }}>{sorteo.fecha}</span>
+                    </div>
+
+                    <div style={{ display: 'flex', gap: '2rem', alignItems: 'center' }}>
+                        <Link
+                            to={`/eventos/${sorteo.slug}`}
+                            style={{
+                                color: '#ff4d4d',
+                                textDecoration: 'none',
+                                fontSize: '1.2rem',
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '8px',
+                                transition: 'all 0.3s ease',
+                                fontWeight: 'bold',
+                                opacity: '0.9',
+                                padding: '0.5rem 0'
+                            }}
+                            className="more-info-link"
+                        >
+                            Más información <FontAwesomeIcon icon={faArrowRight} style={{ fontSize: '1rem' }} />
+                        </Link>
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+};
+
 const Sorteos: React.FC = () => {
     const [selectedSorteo, setSelectedSorteo] = useState<{ id: string, title: string } | null>(null);
     const [showRuleta, setShowRuleta] = useState(localStorage.getItem("tokki_admin") === "true");
@@ -111,36 +187,9 @@ const Sorteos: React.FC = () => {
                         </p>
                     </div>
                 ) : (
-                    <div className="grid">
+                    <div>
                         {sorteosActivos.map((sorteo, i) => (
-                            <div key={i} className="card glass glow-hover">
-                                <div className="card-body">
-                                    <span className="badge">ACTIVO</span>
-                                    <h3>{sorteo.titulo}</h3>
-                                    <p style={{ whiteSpace: 'pre-line' }}>
-                                        {sorteo.descripcion || ''}
-                                    </p>
-                                    <Link
-                                        to={`/eventos/${sorteo.slug}`}
-                                        style={{
-                                            color: '#ff4d4d',
-                                            textDecoration: 'none',
-                                            fontSize: '1.2rem',
-                                            display: 'flex',
-                                            alignItems: 'center',
-                                            gap: '8px',
-                                            transition: 'all 0.3s ease',
-                                            fontWeight: 'bold',
-                                            opacity: '0.9',
-                                            justifyContent: 'center',
-                                            padding: '0.8rem 0'
-                                        }}
-                                        className="more-info-link"
-                                    >
-                                        Más información <FontAwesomeIcon icon={faArrowRight} style={{ fontSize: '1rem' }} />
-                                    </Link>
-                                </div>
-                            </div>
+                            <SorteoCard key={i} sorteo={sorteo} />
                         ))}
                     </div>
                 )}
@@ -172,15 +221,9 @@ const Sorteos: React.FC = () => {
                         </p>
                     </div>
                 ) : (
-                    <div className="grid">
+                    <div>
                         {proximosSorteos.map((sorteo, i) => (
-                            <div key={i} className="card glass">
-                                <div className="card-body">
-                                    <span className="badge" style={{ background: 'rgba(255,255,255,0.1)', color: 'rgba(255,255,255,0.5)' }}>PRÓXIMO</span>
-                                    <h3>{sorteo.titulo}</h3>
-                                    <p style={{ whiteSpace: 'pre-line' }}>{sorteo.descripcion}</p>
-                                </div>
-                            </div>
+                            <SorteoCard key={i} sorteo={sorteo} />
                         ))}
                     </div>
                 )}

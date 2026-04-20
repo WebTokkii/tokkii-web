@@ -95,10 +95,11 @@ const NoticiaDetalle = () => {
                 <article className="noticia-article">
                     <header className="noticia-header">
                         <div className="noticia-tags">
-                            <Link to="/noticias" className="back-btn-minimal" title="Volver a Noticias">
-                                <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round">
+                            <Link to="/noticias" className="back-btn-styled" title="Volver a Noticias">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
                                     <path d="M19 12H5M12 19l-7-7 7-7"/>
                                 </svg>
+                                <span>VOLVER ATRÁS</span>
                             </Link>
                             <span className="tag-badge">ARTÍCULO</span>
                         </div>
@@ -189,17 +190,20 @@ const NoticiaDetalle = () => {
                     gap: 1.5rem;
                     margin-bottom: 2.5rem;
                 }
-                .back-btn-minimal {
+                .back-btn-styled {
                     display: flex;
                     align-items: center;
-                    justify-content: center;
+                    gap: 0.8rem;
                     color: white;
+                    font-weight: 800;
+                    text-transform: uppercase;
+                    font-size: 0.9rem;
+                    letter-spacing: 1px;
                     transition: var(--transition);
-                    filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.2));
                 }
-                .back-btn-minimal:hover {
+                .back-btn-styled:hover {
                     color: var(--secondary);
-                    filter: drop-shadow(0 0 10px rgba(255, 0, 110, 0.5));
+                    transform: translateX(-5px);
                 }
                 .tag-badge {
                     background: var(--secondary);
