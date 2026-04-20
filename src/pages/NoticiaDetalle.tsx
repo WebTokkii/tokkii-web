@@ -119,10 +119,7 @@ const NoticiaDetalle = () => {
                         )}
 
                         <div className="noticia-author">
-                            <div className="author-avatar">
-                                <img src={`${import.meta.env.VITE_R2_BASE_URL}/logo.png`} alt={post.author || "EvilTokkii"} />
-                            </div>
-                            <span className="author-name">{post.author || "EvilTokkii"}</span>
+                            <span className="author-name">por {post.author || "EvilTokkii"}</span>
                         </div>
                     </header>
 

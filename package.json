@@ -8,6 +8,7 @@
     "server": "node server.js",
     "dev:all": "concurrently \"npm run server\" \"npm run dev\"",
     "build": "tsc -b && vite build",
+    "deploy": "npm run build && git add . && git commit -m \"deploy: update build\" && git push origin main",
     "lint": "eslint .",
     "preview": "vite preview"
   },

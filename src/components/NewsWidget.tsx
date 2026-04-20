@@ -98,8 +98,7 @@ const NewsWidget: React.FC = () => {
                             <div className="news-hero-meta">
                                 <span className="meta-date">{formatDate(post.published_at || post.created_at)}</span>
                                 <div className="meta-author">
-                                    <img src={`${import.meta.env.VITE_R2_BASE_URL}/logo.png`} alt="Avatar" className="author-avatar" />
-                                    <span>{post.author || 'EvilTokkii'}</span>
+                                    <span>por {post.author || 'EvilTokkii'}</span>
                                 </div>
                             </div>
                         </div>
