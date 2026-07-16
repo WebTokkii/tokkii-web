@@ -57,16 +57,27 @@ const NoticiaDetalle = () => {
 
     if (loading) {
         return (
-            <section className="section text-center">
+            <section className="section text-center" style={{ minHeight: '75vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                 <div className="container">
-                    <p className="hero-subtitle">Cargando noticia...</p>
+                    <p style={{
+                        color: 'rgba(255, 0, 110, 1)', 
+                        fontSize: '1.4rem', 
+                        fontWeight: 900,
+                        letterSpacing: '2px',
+                        textTransform: 'uppercase',
+                        textShadow: '0 0 20px rgba(255, 0, 110, 0.6)',
+                        margin: 0
+                    }}>
+                        Cargando noticia...
+                    </p>
                     <div className="glow" style={{
                         width: '50px',
                         height: '50px',
-                        margin: '2rem auto',
-                        border: '4px solid var(--primary)',
+                        margin: '2rem auto 0',
+                        border: '4px solid rgba(255, 0, 110, 0.15)',
                         borderRadius: '50%',
-                        borderTopColor: 'transparent',
+                        borderTopColor: 'rgba(255, 0, 110, 1)',
+                        boxShadow: '0 0 15px rgba(255, 0, 110, 0.4)',
                         animation: 'spin 1s linear infinite'
                     }}></div>
                 </div>

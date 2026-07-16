@@ -136,7 +136,18 @@ const Noticias = () => {
 
     if (loading) {
         return (
-            <div className="loading-state" style={{ height: '400px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--muted)' }}>
+            <div className="loading-state" style={{ 
+                minHeight: '75vh', 
+                display: 'flex', 
+                alignItems: 'center', 
+                justifyContent: 'center', 
+                color: 'rgba(255, 0, 110, 1)', 
+                fontSize: '1.4rem', 
+                fontWeight: 900,
+                letterSpacing: '2px',
+                textTransform: 'uppercase',
+                textShadow: '0 0 20px rgba(255, 0, 110, 0.6)' 
+            }}>
                 Cargando noticias...
             </div>
         );

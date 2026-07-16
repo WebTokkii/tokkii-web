@@ -1,0 +1,23 @@
+✨ ¡HOLA! BIENVENIDO A LAS PRUEBAS DE MI WEB ✨
+
+¡Estoy súper emocionada de contarte que la nueva versión de mi web ya está lista en periodo de pruebas! Me encantaría que me ayudes a testearla y a poner a prueba todo lo nuevo antes del lanzamiento oficial. 🚀
+
+Hemos implementado características premium y dinámicas interactivas muy chulas. Aquí tienes una guía rápida de todo lo que puedes explorar y probar:
+
+🎮 1. MINIJUEGOS DIARIOS (¡Inicia sesión con Twitch!)
+   - Entra a la sección de Minijuegos para jugar al Overwatch Quiz, Videojuegos Trivia, Adivina la Bandera, Word Scramble (con letras responsivas en una línea) y Perks de DBD (¡ahora completamente en español!).
+   - Responde rápido y acumula puntos diarios para el ranking.
+
+🏆 2. CREADOR DE TIERLISTS
+   - Diseña y clasifica a tus personajes favoritos de Genshin Impact, Wuthering Waves, Overwatch y Dead by Daylight.
+   - Las casillas ahora tienen diseños de cristal translúcido con fondos artísticos de cada juego que hacen zoom al pasar el cursor.
+
+📢 3. NUEVO CENTRO DE AYUDA Y REPORTES
+   - Consulta las normas de los juegos y FAQs desplegables.
+   - ¡LA PARTE MÁS IMPORTANTE! Si ves algún problema visual en tu móvil/PC, algún bug, o tienes sugerencias de mejora, desplázate hasta el final en la sección de Ayuda y envíame un reporte en el formulario. Me llegará directamente a mi base de datos para corregirlo.
+
+🔗 ENLACE PARA PROBAR: [Pega aquí el enlace de tu web]
+
+⚠️ NOTA: No olvides logearte con Twitch en la parte superior para poder jugar los minijuegos y enviar tus reportes en el Centro de Ayuda.
+
+¡Cualquier comentario o reporte es de oro para mí para dejar la web perfecta! Muchas gracias por tu apoyo y por ayudarme a testear. ❤️👾
