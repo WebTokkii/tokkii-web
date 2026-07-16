@@ -616,41 +616,7 @@ export default function Minijuegos() {
             <p style={{ margin: '0 auto', maxWidth: '650px', color: 'var(--muted)', fontSize: '1rem', lineHeight: 1.6 }}>
               Pon a prueba tus conocimientos en nuestras trivias y juegos diarios con sistema de puntuación.
             </p>
-            {import.meta.env.DEV && userId && (
-              <button
-                onClick={async () => {
-                  const todayStr = new Date().toISOString().split('T')[0];
-                  const { error } = await supabase
-                    .from('user_quiz_completions')
-                    .delete()
-                    .eq('user_id', userId)
-                    .eq('completed_date', todayStr);
-                  if (!error) {
-                    setCompletionsToday([]);
-                    alert('¡Juegos completados hoy restablecidos con éxito en Supabase!');
-                  } else {
-                    alert('Error al restablecer: ' + error.message);
-                  }
-                }}
-                style={{
-                  marginTop: '1.5rem',
-                  padding: '0.6rem 1.2rem',
-                  background: 'rgba(255, 0, 115, 0.15)',
-                  border: '1px solid var(--accent)',
-                  borderRadius: '12px',
-                  color: '#fff',
-                  cursor: 'pointer',
-                  fontSize: '0.9rem',
-                  fontWeight: 'bold',
-                  transition: 'all 0.2s ease',
-                  textShadow: '0 0 8px rgba(255, 0, 115, 0.4)'
-                }}
-                onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(255, 0, 115, 0.3)'}
-                onMouseLeave={(e) => e.currentTarget.style.background = 'rgba(255, 0, 115, 0.15)'}
-              >
-                Restaurar Minijuegos de Hoy (Modo Test)
-              </button>
-            )}
+
           </article>
 
           {!userId && (
