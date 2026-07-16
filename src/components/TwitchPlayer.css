@@ -1,0 +1,279 @@
+.twitch-wrapper {
+    width: 100%;
+}
+
+.twitch-flex-layout {
+    display: grid;
+    grid-template-columns: 1fr 1.3fr;
+    align-items: center;
+    gap: 3rem;
+    width: 100%;
+}
+
+/* Contenedor con transición de difuminado y opacidad */
+.twitch-blur-container {
+    transition: filter 0.6s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    filter: blur(0px);
+    opacity: 1;
+    width: 100%;
+}
+
+.twitch-blur-container.is-transitioning {
+    filter: blur(8px);
+    opacity: 0.5;
+}
+
+/* Lado Izquierdo: Información y Botón */
+.twitch-info-col {
+    text-align: left;
+    width: 100%;
+}
+
+.twitch-status-tag {
+    margin-bottom: 1.5rem;
+}
+
+.twitch-status-online {
+    background: rgba(16, 185, 129, 0.1);
+    color: #10b981;
+    border: 1.5px solid #10b981;
+    padding: 8px 20px;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    font-weight: 900;
+    text-transform: uppercase;
+    box-shadow: 0 0 20px rgba(16, 185, 129, 0.45);
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.twitch-status-online-dot {
+    width: 12px;
+    height: 12px;
+    background: #10b981;
+    border-radius: 50%;
+    display: inline-block;
+    box-shadow: 0 0 6px #10b981;
+}
+
+.twitch-status-offline {
+    background: rgba(239, 68, 68, 0.1);
+    color: #ef4444;
+    border: 1.5px solid #ef4444;
+    padding: 8px 20px;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    font-weight: 900;
+    text-transform: uppercase;
+    box-shadow: 0 0 20px rgba(239, 68, 68, 0.35);
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.twitch-status-offline-dot {
+    width: 12px;
+    height: 12px;
+    background: #ef4444;
+    border-radius: 50%;
+    display: inline-block;
+    box-shadow: 0 0 6px #ef4444;
+}
+
+/* Título de Twitch normalizado al tamaño de "Lo stremeado últimamente" */
+.twitch-title {
+    color: white;
+    margin: 0;
+    font-size: clamp(2rem, 3.5vw, 3rem);
+    font-weight: 800;
+    text-transform: uppercase;
+    line-height: 1.2;
+    letter-spacing: 1px;
+    background: linear-gradient(135deg, #ffffff 30%, rgba(157, 78, 221, 0.6) 100%);
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+/* Subtítulo de Twitch normalizado al tamaño de "Lo stremeado últimamente" */
+.twitch-subtitle {
+    color: var(--text-muted);
+    font-size: clamp(1.1rem, 1.6vw, 1.4rem);
+    margin: 1.2rem 0 2.5rem 0;
+    opacity: 0.9;
+    max-width: 580px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-weight: 600;
+    font-style: italic;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+}
+
+.twitch-actions {
+    margin-bottom: 1.5rem;
+    margin-top: 2.5rem;
+}
+
+.twitch-btn-link {
+    padding: 0.8rem 2rem;
+    font-size: 0.95rem;
+    font-weight: 800;
+    border-radius: 50px;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    text-decoration: none;
+    color: #ffffff;
+    background: linear-gradient(135deg, #9146ff 0%, #772ce8 100%);
+    box-shadow: 0 0 15px rgba(145, 70, 255, 0.4);
+    border: none;
+    transition: all 0.3s ease;
+}
+
+.twitch-btn-link:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 0 25px rgba(145, 70, 255, 0.8);
+    color: #ffffff;
+}
+
+.twitch-autoplay-note {
+    margin-top: 1.5rem;
+    color: #fbbf24;
+    font-size: 0.85rem;
+    opacity: 0.85;
+    line-height: 1.5;
+    max-width: 480px;
+    font-weight: 600;
+    text-shadow: 0 0 5px rgba(0,0,0,0.5);
+}
+
+/* Lado Derecho: Reproductor */
+.twitch-player-col {
+    width: 100%;
+}
+
+.twitch-aspect-ratio-box {
+    position: relative;
+    width: 100%;
+    padding-top: 56.25%; /* 16:9 Aspect Ratio */
+    background: #000;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 20px 45px rgba(0,0,0,0.6);
+    border: 1px solid rgba(255,255,255,0.05);
+}
+
+.twitch-offline-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: block;
+    background-color: #000;
+    cursor: pointer;
+    overflow: hidden;
+}
+
+.twitch-offline-img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain; /* Ajustado de cover a contain para evitar recortes raros */
+    display: block;
+    transition: transform 0.5s ease;
+}
+
+.twitch-offline-container:hover .twitch-offline-img {
+    transform: scale(1.02);
+}
+
+.twitch-offline-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(15, 2, 26, 0.6);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    gap: 10px;
+}
+
+.twitch-offline-container:hover .twitch-offline-overlay {
+    opacity: 1;
+}
+
+.twitch-play-icon {
+    background: #9146ff;
+    color: #fff;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 0 20px rgba(145, 70, 255, 0.8);
+    font-size: 1.5rem;
+    transition: transform 0.3s ease;
+    padding-left: 4px;
+}
+
+.twitch-offline-container:hover .twitch-play-icon {
+    transform: scale(1.1);
+}
+
+.twitch-offline-text {
+    color: #fff;
+    font-size: 0.9rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.8);
+}
+
+.twitch-iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border: none;
+}
+
+.twitch-progress-container {
+    width: 100%;
+    background: rgba(255, 255, 255, 0.05);
+    height: 4px;
+    border-radius: 2px;
+    margin-top: 15px;
+    overflow: hidden;
+    box-shadow: inset 0 1px 2px rgba(0,0,0,0.4);
+}
+
+.twitch-progress-bar {
+    height: 100%;
+    background: linear-gradient(90deg, #9146ff, #ff006e);
+    box-shadow: 0 0 10px rgba(145, 70, 255, 0.8);
+    width: 0%;
+}
+
+@keyframes progress {
+    from { width: 0%; }
+    to { width: 100%; }
+}
+
+/* Responsive breakpoint for wrapping */
+@media (max-width: 900px) {
+    .twitch-flex-layout {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+    }
+}

@@ -1,0 +1,1272 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EvilTokkii - Rediseño Home (Mockup Estático)</title>
+  
+  <!-- Google Fonts: Inter & Outfit -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800;900&family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+  
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <style>
+    /* --------------------------------------------------
+       ESTILOS GLOBALES (index.css integrado)
+       -------------------------------------------------- */
+    :root {
+      --bg: #0F0717;
+      --bg-soft: #161022;
+      --panel: #1C1430;
+      --panel-2: #24193D;
+      --text: #F7EEFF;
+      --text-soft: #BFAFD3;
+      --border: rgba(233, 176, 255, 0.16);
+
+      --primary: #6F00DB;
+      --accent: #FF0073;
+      --highlight: #E9B0FF;
+
+      --gradient-main: linear-gradient(135deg, #6F00DB 0%, #FF0073 60%, #E9B0FF 100%);
+      --gradient-soft: linear-gradient(135deg, rgba(111, 0, 219, 0.20), rgba(255, 0, 115, 0.18), rgba(233, 176, 255, 0.16));
+
+      --shadow-1: 0 10px 30px rgba(0, 0, 0, 0.28);
+      --shadow-2: 0 0 0 1px rgba(233, 176, 255, 0.08), 0 14px 40px rgba(111, 0, 219, 0.22);
+
+      --radius-sm: 12px;
+      --radius-md: 18px;
+      --radius-lg: 26px;
+
+      --max-width: 1280px;
+
+      /* Compatibilidad */
+      --primary-hover: #5600ad;
+      --secondary: var(--accent);
+      --secondary-hover: #e60067;
+      --accent-blue: var(--highlight);
+      --bg-dark: var(--bg);
+      --bg-card: var(--panel);
+      --text-main: var(--text);
+      --text-muted: var(--text-soft);
+      --glass: var(--gradient-soft);
+      --glass-border: var(--border);
+      --transition: all 0.25s ease;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html, body {
+      background:
+        radial-gradient(circle at top left, rgba(111, 0, 219, 0.22), transparent 32%),
+        radial-gradient(circle at top right, rgba(255, 0, 115, 0.18), transparent 28%),
+        linear-gradient(180deg, #0B0612 0%, #0F0717 100%);
+      color: var(--text);
+      font-family: "Inter", "Segoe UI", sans-serif;
+      min-height: 100vh;
+      overflow-x: hidden;
+      line-height: 1.6;
+    }
+
+    a {
+      color: var(--highlight);
+      text-decoration: none;
+      transition: 0.25s ease;
+    }
+
+    a:hover {
+      color: #fff;
+    }
+
+    ul {
+      list-style: none;
+    }
+
+    button {
+      cursor: pointer;
+      border: none;
+      outline: none;
+      font-family: inherit;
+      transition: var(--transition);
+    }
+
+    .container,
+    .site-shell {
+      width: min(100% - 32px, var(--max-width));
+      margin: 0 auto;
+      padding: 0 1rem;
+    }
+
+    /* Navbar / Topbar */
+    .navbar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 80px;
+      display: flex;
+      align-items: center;
+      z-index: 1000;
+      backdrop-filter: blur(16px);
+      background: rgba(15, 7, 23, 0.72);
+      border-bottom: 1px solid rgba(233, 176, 255, 0.10);
+    }
+
+    .navbar.glass {
+      background: rgba(15, 7, 23, 0.72) !important;
+      backdrop-filter: blur(16px) !important;
+      border-radius: 0 !important;
+      border-top: none !important;
+      border-left: none !important;
+      border-right: none !important;
+      border-bottom: 1px solid rgba(233, 176, 255, 0.10) !important;
+      box-shadow: none !important;
+    }
+
+    .nav-content {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+    }
+
+    .logo-container {
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+      font-size: 1.15rem;
+      font-weight: 800;
+      letter-spacing: 0.04em;
+    }
+
+    .logo-img {
+      width: 2.5rem;
+      height: 2.5rem;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid var(--primary);
+    }
+
+    .logo-text {
+      font-size: 1.8rem;
+      font-weight: 800;
+      background: var(--gradient-main);
+      background-clip: text;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 14px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .nav-links a {
+      padding: 10px 14px;
+      border-radius: 999px;
+      color: var(--text-soft);
+      font-weight: 600;
+      transition: var(--transition);
+    }
+
+    .nav-links a:hover,
+    .nav-links a.active {
+      color: #fff;
+      background: rgba(233, 176, 255, 0.08);
+      box-shadow: inset 0 0 0 1px rgba(233, 176, 255, 0.10);
+    }
+
+    /* Cards & Panels */
+    .glass,
+    .panel {
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0.015));
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-1);
+      backdrop-filter: blur(10px);
+    }
+
+    .panel-inner {
+      padding: 22px;
+    }
+
+    .card,
+    .media-card {
+      background: linear-gradient(180deg, rgba(111, 0, 219, 0.10), rgba(255, 0, 115, 0.06));
+      border: 1px solid rgba(233, 176, 255, 0.10);
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      transition: transform .25s ease, box-shadow .25s ease, border-color .25s ease;
+    }
+
+    .card:hover,
+    .media-card:hover {
+      transform: translateY(-4px);
+      border-color: rgba(255, 0, 115, 0.32);
+      box-shadow: 0 20px 40px rgba(111, 0, 219, 0.24);
+    }
+
+    /* Buttons */
+    .button,
+    button,
+    .btn-primary {
+      appearance: none;
+      border: 0;
+      border-radius: 999px;
+      padding: 12px 24px;
+      font-weight: 700;
+      color: white;
+      background: var(--gradient-main);
+      box-shadow: 0 10px 24px rgba(111, 0, 219, 0.28);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: transform .2s ease, box-shadow .2s ease, filter .2s ease;
+      text-decoration: none;
+    }
+
+    .button:hover,
+    button:hover,
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      filter: brightness(1.06);
+      box-shadow: 0 16px 34px rgba(255, 0, 115, 0.24);
+    }
+
+    /* --------------------------------------------------
+       ESTILOS DEL HOME (Home.css & Home.Socials.css)
+       -------------------------------------------------- */
+    .home-wrapper {
+      padding-top: 80px;
+      padding-bottom: 80px;
+    }
+
+    .home-section {
+      position: relative;
+      width: 100%;
+      min-height: 65vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      overflow: hidden;
+      padding: 5rem 0;
+    }
+
+    .home-section.hero-section {
+      padding-top: 110px;
+      padding-bottom: 5rem;
+      text-align: center;
+      min-height: 70vh;
+    }
+
+    .hero-title-frame {
+      background-size: 100% 100%;
+      background-repeat: no-repeat;
+      background-position: center;
+      width: 100%;
+      max-width: 1200px;
+      margin: 0 auto 2.5rem;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 2.6% 3.8% 3.0% 2.2%;
+      box-sizing: border-box;
+      filter: drop-shadow(0 0 35px rgba(111, 0, 219, 0.55));
+    }
+
+    .hero-title-frame .hero-title {
+      margin-bottom: 0;
+      font-size: clamp(2rem, 5.2vw, 5.5rem);
+      text-shadow: 0 0 15px rgba(15, 2, 26, 0.95);
+      white-space: nowrap;
+      font-weight: 900;
+    }
+
+    .hero-title-frame .hero-title .gradient-text {
+      text-shadow: none;
+      filter: drop-shadow(0 0 10px rgba(111, 0, 219, 0.45));
+    }
+
+    .home-section.hero-section .hero-subtitle {
+      font-size: clamp(1.1rem, 1.6vw, 1.6rem);
+      max-width: 900px;
+      margin: 0 auto;
+      line-height: 1.8;
+      color: var(--text-soft);
+    }
+
+    .section-overlay {
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      pointer-events: none;
+    }
+
+    .section-content {
+      position: relative;
+      z-index: 2;
+      width: 100%;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 2rem;
+    }
+
+    .section-hero-content {
+      text-align: center;
+    }
+
+    .section-minimal {
+      padding: 4.5rem 0;
+    }
+
+    .twitch-section-gradient {
+      background: transparent;
+    }
+
+    .juegos-section-gradient {
+      background: linear-gradient(135deg, rgba(15, 7, 23, 0.4) 10%, rgba(36, 25, 61, 0.4) 50%, rgba(111, 0, 219, 0.15) 100%);
+    }
+
+    .redes-section-gradient {
+      background: linear-gradient(135deg, rgba(15, 7, 23, 0.4) 10%, rgba(28, 20, 48, 0.4) 60%, rgba(255, 0, 115, 0.15) 100%);
+    }
+
+    .news-section-bg-dynamic {
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      background-color: transparent;
+    }
+
+    .games-section-title,
+    .socials-section-title {
+      font-size: clamp(2rem, 3.5vw, 3rem);
+      font-weight: 800;
+      color: #fff;
+      text-transform: uppercase;
+      margin-bottom: 1rem;
+      line-height: 1.2;
+    }
+
+    .games-section-subtitle,
+    .socials-section-subtitle {
+      font-size: clamp(1.1rem, 1.6vw, 1.4rem);
+      color: var(--text-soft);
+      max-width: 800px;
+      line-height: 1.6;
+      margin-bottom: 2rem;
+    }
+
+    /* Redes Sociales */
+    .home-socials {
+      display: flex;
+      justify-content: flex-start;
+      gap: 1.8rem;
+      margin: 3.5rem 0 0 0;
+      flex-wrap: wrap;
+    }
+
+    .social-link {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 1.2rem 3.5rem;
+      border-radius: 50px;
+      font-weight: 800;
+      font-size: 1.15rem;
+      color: white;
+      text-decoration: none;
+      transition: var(--transition);
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+    }
+
+    .social-link:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+      color: white;
+    }
+
+    .social-link.twitch:hover {
+      background: #9146FF;
+      border-color: #a970ff;
+      box-shadow: 0 0 20px rgba(145, 70, 255, 0.4);
+    }
+
+    .social-link.instagram:hover {
+      background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
+      border-color: #dc2743;
+      box-shadow: 0 0 20px rgba(220, 39, 67, 0.4);
+    }
+
+    .social-link.tiktok:hover {
+      background: #000000;
+      border-color: #25F4EE;
+      box-shadow: 0 0 20px rgba(37, 244, 238, 0.4);
+    }
+
+    .social-link.x-twitter:hover {
+      background: #000000;
+      border-color: #ffffff;
+      box-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
+    }
+
+    .social-link.discord:hover {
+      background: #5865F2;
+      border-color: #7289da;
+      box-shadow: 0 0 20px rgba(88, 101, 242, 0.4);
+    }
+
+    /* --------------------------------------------------
+       ESTILOS COMPONENTE: TWITCH PLAYER (TwitchPlayer.css)
+       -------------------------------------------------- */
+    .twitch-wrapper {
+      width: 100%;
+    }
+
+    .twitch-flex-layout {
+      display: grid;
+      grid-template-columns: 1fr 1.3fr;
+      align-items: center;
+      gap: 3rem;
+      width: 100%;
+    }
+
+    .twitch-info-col {
+      text-align: left;
+      width: 100%;
+    }
+
+    .twitch-status-tag {
+      margin-bottom: 1.5rem;
+    }
+
+    .twitch-status-online {
+      background: rgba(16, 185, 129, 0.1);
+      color: #10b981;
+      border: 1.5px solid #10b981;
+      padding: 8px 20px;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      font-weight: 900;
+      text-transform: uppercase;
+      box-shadow: 0 0 20px rgba(16, 185, 129, 0.45);
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .twitch-status-online-dot {
+      width: 12px;
+      height: 12px;
+      background: #10b981;
+      border-radius: 50%;
+      display: inline-block;
+      box-shadow: 0 0 6px #10b981;
+    }
+
+    .twitch-title {
+      color: white;
+      margin: 0;
+      font-size: clamp(2rem, 3.5vw, 3rem);
+      font-weight: 800;
+      text-transform: uppercase;
+      line-height: 1.2;
+      letter-spacing: 1px;
+      background: linear-gradient(135deg, #ffffff 30%, rgba(157, 78, 221, 0.6) 100%);
+      background-clip: text;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .twitch-subtitle {
+      color: var(--text-soft);
+      font-size: clamp(1.1rem, 1.6vw, 1.4rem);
+      margin: 1.2rem 0 2.5rem 0;
+      opacity: 0.9;
+      max-width: 580px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      font-weight: 600;
+      font-style: italic;
+      text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+    }
+
+    .twitch-actions {
+      margin-bottom: 1.5rem;
+      margin-top: 2.5rem;
+    }
+
+    .twitch-btn-link {
+      padding: 0.8rem 2rem;
+      font-size: 0.95rem;
+      font-weight: 800;
+      border-radius: 50px;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+      color: #ffffff;
+      background: linear-gradient(135deg, #9146ff 0%, #772ce8 100%);
+      box-shadow: 0 0 15px rgba(145, 70, 255, 0.4);
+      border: none;
+      transition: all 0.3s ease;
+    }
+
+    .twitch-btn-link:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 0 25px rgba(145, 70, 255, 0.8);
+      color: #ffffff;
+    }
+
+    .twitch-player-col {
+      width: 100%;
+    }
+
+    .twitch-aspect-ratio-box {
+      position: relative;
+      width: 100%;
+      padding-top: 56.25%;
+      background: #000;
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 20px 45px rgba(0,0,0,0.6);
+      border: 1px solid rgba(255,255,255,0.05);
+    }
+
+    .twitch-offline-container {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: block;
+      background-color: #000;
+      cursor: pointer;
+      overflow: hidden;
+    }
+
+    .twitch-offline-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      transition: transform 0.5s ease;
+    }
+
+    .twitch-offline-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(15, 7, 23, 0.6);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      gap: 10px;
+    }
+
+    .twitch-offline-container:hover .twitch-offline-overlay {
+      opacity: 1;
+    }
+
+    .twitch-play-icon {
+      background: #9146ff;
+      color: #fff;
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 0 20px rgba(145, 70, 255, 0.8);
+      font-size: 1.5rem;
+      transition: transform 0.3s ease;
+      padding-left: 4px;
+    }
+
+    .twitch-offline-text {
+      color: #fff;
+      font-size: 0.9rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      text-shadow: 0 2px 4px rgba(0,0,0,0.8);
+    }
+
+    /* --------------------------------------------------
+       ESTILOS COMPONENTE: NEWS WIDGET (NewsWidget.css)
+       -------------------------------------------------- */
+    .news-container {
+      margin: 28px auto 60px;
+      width: 100%;
+    }
+
+    .news-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+      margin-bottom: 26px;
+    }
+
+    .news-title {
+      font-size: clamp(2rem, 3vw, 3rem);
+      font-weight: 900;
+      letter-spacing: -0.03em;
+      line-height: 1;
+      color: var(--text);
+      margin: 0;
+    }
+
+    .news-layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1.45fr) minmax(340px, .95fr);
+      gap: 22px;
+      align-items: start;
+    }
+
+    .featured-news {
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+      transition: transform .2s ease;
+      text-decoration: none;
+      color: inherit;
+    }
+
+    .featured-news__image {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      overflow: hidden;
+      background: #111;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border);
+    }
+
+    .featured-news__image img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      transition: transform .35s ease;
+    }
+
+    .featured-news:hover .featured-news__image img {
+      transform: scale(1.03);
+    }
+
+    .featured-news__content {
+      padding-top: 24px;
+    }
+
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 30px;
+      padding: 6px 14px;
+      border-radius: 999px;
+      background: var(--accent);
+      color: #fff;
+      font-weight: 900;
+      font-size: .84rem;
+      line-height: 1;
+      text-transform: uppercase;
+      letter-spacing: -0.01em;
+      margin-bottom: 16px;
+      align-self: flex-start;
+      width: fit-content;
+    }
+
+    .featured-news__title {
+      font-size: clamp(1.8rem, 2.8vw, 3rem);
+      font-weight: 900;
+      letter-spacing: -0.045em;
+      line-height: 1.05;
+      margin: 0 0 18px 0;
+      color: var(--text);
+    }
+
+    .meta {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      color: var(--text-soft);
+    }
+
+    .meta__date {
+      font-size: .95rem;
+      text-transform: uppercase;
+      letter-spacing: -0.02em;
+      color: var(--text-soft);
+    }
+
+    .meta__author {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 600;
+      color: #fff;
+      font-size: 1.1rem;
+    }
+
+    .meta__avatar {
+      width: 34px;
+      height: 34px;
+      border-radius: 999px;
+      overflow: hidden;
+      flex-shrink: 0;
+      border: 1px solid rgba(255,255,255,.12);
+      background: #151515;
+    }
+
+    .meta__avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .news-side {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 26px 18px;
+      min-width: 0;
+    }
+
+    .side-card {
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+      transition: transform .2s ease;
+      text-decoration: none;
+      color: inherit;
+    }
+
+    .side-card__image {
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      overflow: hidden;
+      background: #111;
+      margin-bottom: 14px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border);
+    }
+
+    .side-card__image img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      transition: transform .35s ease;
+    }
+
+    .side-card:hover .side-card__image img {
+      transform: scale(1.04);
+    }
+
+    .side-card .tag {
+      min-height: 28px;
+      padding: 5px 12px;
+      font-size: .78rem;
+      margin-bottom: 12px;
+      align-self: flex-start;
+    }
+
+    .side-card__title {
+      font-size: clamp(1rem, 1.25vw, 1.45rem);
+      font-weight: 900;
+      line-height: 1.16;
+      letter-spacing: -0.03em;
+      margin: 0 0 14px 0;
+      color: var(--text);
+    }
+
+    /* --------------------------------------------------
+       ESTILOS COMPONENTE: MOST STREAMED (MostStreamed.css)
+       -------------------------------------------------- */
+    .most-streamed-section {
+      width: 100%;
+      text-align: left;
+    }
+
+    .streamed-grid-vertical {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 1.5rem;
+    }
+
+    .streamed-vertical-card {
+      position: relative;
+      aspect-ratio: 2 / 3;
+      border-radius: 12px;
+      overflow: hidden;
+      background: #111;
+      cursor: pointer;
+      box-shadow: 0 10px 20px rgba(0,0,0,0.4);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .streamed-card-inner {
+      width: 100%;
+      height: 100%;
+      position: relative;
+    }
+
+    .streamed-card-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.6s ease, opacity 0.3s ease;
+      opacity: 0.7;
+    }
+
+    .streamed-card-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(0deg, rgba(0,0,0,0.9) 0%, transparent 60%);
+      display: flex;
+      align-items: flex-end;
+      padding: 1.2rem;
+      transition: background 0.3s ease;
+    }
+
+    .streamed-card-name {
+      color: #fff;
+      font-size: 1rem;
+      font-weight: 700;
+      margin: 0;
+      transform: translateY(5px);
+      opacity: 0.8;
+      transition: transform 0.3s ease, opacity 0.3s ease;
+      text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+    }
+
+    .streamed-vertical-card:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 15px 30px rgba(255, 0, 110, 0.2);
+    }
+
+    .streamed-vertical-card:hover .streamed-card-img {
+      transform: scale(1.1);
+      opacity: 1;
+    }
+
+    .streamed-vertical-card:hover .streamed-card-overlay {
+      background: linear-gradient(0deg, rgba(255, 0, 110, 0.4) 0%, transparent 70%);
+    }
+
+    .streamed-vertical-card:hover .streamed-card-name {
+      transform: translateY(0);
+      opacity: 1;
+      text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+    }
+
+    /* --------------------------------------------------
+       FOOTER
+       -------------------------------------------------- */
+    .footer {
+      padding: 1.2rem 0;
+      background: var(--bg-dark);
+      border-top: 1px solid var(--glass-border);
+      color: var(--text-soft);
+      font-size: 0.9rem;
+      margin-top: 4rem;
+    }
+
+    .footer-content {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .footer .socials {
+      display: flex;
+      gap: 1.2rem;
+      align-items: center;
+      font-size: 0.85rem;
+    }
+
+    .footer a {
+      color: var(--text-soft);
+      transition: color 0.25s ease;
+    }
+
+    .footer a:hover {
+      color: #fff;
+    }
+
+    /* Responsividad general */
+    @media (max-width: 1200px) {
+      .news-layout {
+        grid-template-columns: 1fr;
+      }
+      .news-side {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+      .streamed-grid-vertical {
+        grid-template-columns: repeat(3, 1fr);
+      }
+    }
+
+    @media (max-width: 900px) {
+      .twitch-flex-layout {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .nav-links {
+        display: none;
+      }
+      .topbar-inner, .nav-content {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 14px;
+      }
+      .home-section {
+        padding: 4rem 0;
+      }
+      .hero-title-frame {
+        max-width: 95%;
+        padding: 4% 3.5% 6% 5.5%;
+      }
+      .hero-title-frame .hero-title {
+        font-size: clamp(1.3rem, 7vw, 3.8rem);
+        white-space: normal;
+      }
+      .home-socials {
+        justify-content: center;
+        gap: 1.2rem;
+      }
+      .social-link {
+        padding: 1rem 2.5rem;
+        font-size: 1rem;
+      }
+    }
+
+    @media (max-width: 600px) {
+      .streamed-grid-vertical {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1rem;
+      }
+      .news-side {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAVBAR / TOPBAR -->
+  <nav class="navbar glass">
+    <div class="container nav-content">
+      <a href="#" class="logo-container">
+        <img src="https://pub-0bf9a87cec964ff49bfd058873c948c3.r2.dev/public/logo.png" alt="Logo" class="logo-img">
+        <span class="logo-text">EvilTokkii</span>
+      </a>
+      <ul class="nav-links">
+        <li><a href="#" class="active">Home</a></li>
+        <li><a href="#">Noticias</a></li>
+        <li><a href="#">Dinámicas</a></li>
+        <li><a href="#">Sobre EvilTokkii</a></li>
+        <li><a href="#">Tierlist</a></li>
+        <li><a href="#">Te recomiendo</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <div class="home-wrapper">
+    
+    <!-- 1. HERO SECTION -->
+    <section class="home-section hero-section" style="background-image: url('https://pub-0bf9a87cec964ff49bfd058873c948c3.r2.dev/public/Fondo_Titulo.png');">
+      <div class="section-overlay" style="background: radial-gradient(circle, rgba(15, 7, 23, 0.35) 0%, rgba(15, 7, 23, 0.85) 100%);"></div>
+      <div class="section-content section-hero-content">
+        <div class="hero-title-frame" style="background-image: url('https://pub-0bf9a87cec964ff49bfd058873c948c3.r2.dev/public/Marco_Titulo_Cropped.png');">
+          <h1 class="hero-title">
+            Bienvenido a <span class="gradient-text">EvilTokkii</span>
+          </h1>
+        </div>
+        <p class="hero-subtitle">
+          Descubre una experiencia única llena de eventos y sorpresas.
+        </p>
+      </div>
+    </section>
+
+    <!-- 2. TWITCH SECTION -->
+    <section class="home-section twitch-section-gradient section-minimal">
+      <div class="section-overlay" style="background: radial-gradient(circle at 70% 30%, rgba(111, 0, 219, 0.08) 0%, rgba(15, 7, 23, 0.98) 100%);"></div>
+      <div class="section-content">
+        <div class="twitch-wrapper">
+          <div class="twitch-flex-layout twitch-blur-container">
+            <!-- Left Info -->
+            <div class="twitch-info-col">
+              <div class="twitch-status-tag">
+                <span class="twitch-status-online">
+                  <span class="twitch-status-online-dot"></span>
+                  ONLINE
+                </span>
+              </div>
+              <h2 class="twitch-title">EvilTokkii está Online!</h2>
+              <p class="twitch-subtitle" title="¡Overwatch 2 en directo con la comunidad! Jugando ranked e interactuando.">
+                ¡Overwatch 2 en directo con la comunidad! Jugando ranked e interactuando.
+              </p>
+              <div class="twitch-actions">
+                <a href="https://www.twitch.tv/eviltokkii" target="_blank" class="twitch-btn-link">
+                  <i class="fab fa-twitch"></i> VER EN TWITCH
+                </a>
+                <p class="twitch-autoplay-note">
+                  Si el vídeo no carga automáticamente, asegúrate de habilitar los permisos de reproducción automática.
+                </p>
+              </div>
+            </div>
+            <!-- Right Player Mockup -->
+            <div class="twitch-player-col">
+              <div class="twitch-aspect-ratio-box">
+                <img src="https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&w=1200&q=80" alt="Twitch Stream Placeholder" style="position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover;">
+                <div style="position: absolute; inset: 0; background: rgba(0,0,0,0.3); display: flex; align-items: center; justify-content: center;">
+                  <div class="twitch-play-icon" style="transform: scale(1.2);">▶</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3. NOTICIAS SECTION -->
+    <section class="home-section news-section-bg-dynamic section-minimal" style="background-image: url('https://images.unsplash.com/photo-1511512578047-dfb367046420?auto=format&fit=crop&w=1200&q=80');">
+      <div class="section-overlay" style="background: linear-gradient(90deg, rgba(15, 7, 23, 0.98) 0%, rgba(15, 7, 23, 0.9) 50%, rgba(15, 7, 23, 0.8) 100%);"></div>
+      <div class="section-content">
+        <div class="news-container">
+          <div class="news-header">
+            <h2 class="news-title">En Tendencia</h2>
+          </div>
+          <div class="news-layout">
+            <!-- Main Featured News -->
+            <article class="featured-news">
+              <div class="featured-news__image">
+                <img src="https://images.unsplash.com/photo-1511512578047-dfb367046420?auto=format&fit=crop&w=1200&q=80" alt="Gran Torneo">
+              </div>
+              <div class="featured-news__content">
+                <span class="tag">Eventos</span>
+                <h3 class="featured-news__title">Gran Torneo de Comunidad este Fin de Semana</h3>
+                <div class="meta">
+                  <div class="meta__author">
+                    <div class="meta__author">
+                      <div class="meta__avatar">
+                        <img src="https://ui-avatars.com/api/?name=EvilTokkii&background=6F00DB&color=fff&bold=true&rounded=true" alt="EvilTokkii">
+                      </div>
+                      <span>EVILTOKKII</span>
+                    </div>
+                  </div>
+                  <div class="meta__date">09 JUL, 2026</div>
+                </div>
+              </div>
+            </article>
+
+            <!-- Sidebar news cards -->
+            <div class="news-side">
+              <article class="side-card">
+                <div class="side-card__image">
+                  <img src="https://images.unsplash.com/photo-1612287230202-1bf1d85d1bdf?auto=format&fit=crop&w=600&q=80" alt="Noticia 1">
+                </div>
+                <span class="tag">Anuncios</span>
+                <h4 class="side-card__title">¡Nuevos Emotes Disponibles en el Canal!</h4>
+                <div class="meta">
+                  <div class="meta__date">07 JUL, 2026</div>
+                </div>
+              </article>
+
+              <article class="side-card">
+                <div class="side-card__image">
+                  <img src="https://images.unsplash.com/photo-1538481199705-c710c4e965fc?auto=format&fit=crop&w=600&q=80" alt="Noticia 2">
+                </div>
+                <span class="tag">Sorteos</span>
+                <h4 class="side-card__title">Resultados del Sorteo Mensual de Subs</h4>
+                <div class="meta">
+                  <div class="meta__date">05 JUL, 2026</div>
+                </div>
+              </article>
+
+              <article class="side-card">
+                <div class="side-card__image">
+                  <img src="https://images.unsplash.com/photo-1550745165-9bc0b252726f?auto=format&fit=crop&w=600&q=80" alt="Noticia 3">
+                </div>
+                <span class="tag">Juegos</span>
+                <h4 class="side-card__title">Overwatch 2: Resumen de la Nueva Temporada</h4>
+                <div class="meta">
+                  <div class="meta__date">03 JUL, 2026</div>
+                </div>
+              </article>
+
+              <article class="side-card">
+                <div class="side-card__image">
+                  <img src="https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&w=600&q=80" alt="Noticia 4">
+                </div>
+                <span class="tag">Comunidad</span>
+                <h4 class="side-card__title">Especial de 24 Horas: Calendario Completo</h4>
+                <div class="meta">
+                  <div class="meta__date">30 JUN, 2026</div>
+                </div>
+              </article>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 4. MOST STREAMED SECTION -->
+    <section class="home-section juegos-section-gradient section-minimal">
+      <div class="section-overlay" style="background: radial-gradient(circle at 30% 70%, rgba(111, 0, 219, 0.08) 0%, rgba(15, 7, 23, 0.98) 100%);"></div>
+      <div class="section-content">
+        <div class="games-section-header">
+          <h2 class="games-section-title">Lo stremeado últimamente</h2>
+          <p class="games-section-subtitle">
+            Estos son los mundos que hemos estado explorando juntos. Juegos para reír, competir y, sobre todo, disfrutar de un espacio agradable en la mejor compañía.
+          </p>
+          <div style="margin-bottom: 3rem;">
+            <a href="https://www.twitch.tv/eviltokkii" target="_blank" class="btn-primary">
+              <i class="fas fa-gamepad"></i> ¡ÚNETE AL PRÓXIMO DIRECTO!
+            </a>
+          </div>
+        </div>
+
+        <section class="most-streamed-section">
+          <div class="streamed-grid-vertical">
+            <!-- Game Card 1 -->
+            <div class="streamed-vertical-card">
+              <div class="streamed-card-inner">
+                <img src="https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&w=600&q=80" alt="Overwatch 2" class="streamed-card-img">
+                <div class="streamed-card-overlay">
+                  <h4 class="streamed-card-name">Overwatch 2</h4>
+                </div>
+              </div>
+            </div>
+            <!-- Game Card 2 -->
+            <div class="streamed-vertical-card">
+              <div class="streamed-card-inner">
+                <img src="https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&fit=crop&w=600&q=80" alt="Valorant" class="streamed-card-img">
+                <div class="streamed-card-overlay">
+                  <h4 class="streamed-card-name">Valorant</h4>
+                </div>
+              </div>
+            </div>
+            <!-- Game Card 3 -->
+            <div class="streamed-vertical-card">
+              <div class="streamed-card-inner">
+                <img src="https://images.unsplash.com/photo-1614680376593-902f74fa0d41?auto=format&fit=crop&w=600&q=80" alt="Just Chatting" class="streamed-card-img">
+                <div class="streamed-card-overlay">
+                  <h4 class="streamed-card-name">Just Chatting</h4>
+                </div>
+              </div>
+            </div>
+            <!-- Game Card 4 -->
+            <div class="streamed-vertical-card">
+              <div class="streamed-card-inner">
+                <img src="https://images.unsplash.com/photo-1607604276583-eef5d076aa5f?auto=format&fit=crop&w=600&q=80" alt="Lethal Company" class="streamed-card-img">
+                <div class="streamed-card-overlay">
+                  <h4 class="streamed-card-name">Lethal Company</h4>
+                </div>
+              </div>
+            </div>
+            <!-- Game Card 5 -->
+            <div class="streamed-vertical-card">
+              <div class="streamed-card-inner">
+                <img src="https://images.unsplash.com/photo-1538481199705-c710c4e965fc?auto=format&fit=crop&w=600&q=80" alt="Minecraft" class="streamed-card-img">
+                <div class="streamed-card-overlay">
+                  <h4 class="streamed-card-name">Minecraft</h4>
+                </div>
+              </div>
+            </div>
+            <!-- Game Card 6 -->
+            <div class="streamed-vertical-card">
+              <div class="streamed-card-inner">
+                <img src="https://images.unsplash.com/photo-1605810230434-7631ac76ec81?auto=format&fit=crop&w=600&q=80" alt="Indies Variados" class="streamed-card-img">
+                <div class="streamed-card-overlay">
+                  <h4 class="streamed-card-name">Indies Variados</h4>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+    </section>
+
+    <!-- 5. SOCIALS / COMUNIDAD SECTION -->
+    <section class="home-section redes-section-gradient section-minimal">
+      <div class="section-overlay" style="background: radial-gradient(circle at 50% 50%, rgba(255, 0, 115, 0.08) 0%, rgba(15, 7, 23, 0.98) 100%);"></div>
+      <div class="section-content">
+        <div class="socials-section-header">
+          <h2 class="socials-section-title">Únete a nuestra comunidad</h2>
+          <p class="socials-section-subtitle">
+            Sígueme en mis redes sociales para no perderte ningún directo, evento especial, sorteo o actualización de la comunidad. ¡Te espero!
+          </p>
+        </div>
+
+        <div class="home-socials">
+          <a href="https://www.twitch.tv/eviltokkii" target="_blank" class="social-link twitch">
+            <i class="fab fa-twitch"></i> <span>Twitch</span>
+          </a>
+          <a href="https://www.instagram.com/eviltokkii" target="_blank" class="social-link instagram">
+            <i class="fab fa-instagram"></i> <span>Instagram</span>
+          </a>
+          <a href="https://www.tiktok.com/@eviltokkii" target="_blank" class="social-link tiktok">
+            <i class="fab fa-tiktok"></i> <span>TikTok</span>
+          </a>
+          <a href="https://x.com/EvilTokkii" target="_blank" class="social-link x-twitter">
+            <i class="fab fa-x-twitter"></i> <span>Twitter</span>
+          </a>
+          <a href="https://discord.com/invite/Kxvw4KfSBF" target="_blank" class="social-link discord">
+            <i class="fab fa-discord"></i> <span>Discord</span>
+          </a>
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="container footer-content">
+      <p>&copy; 2026 EvilTokkii. Todos los derechos reservados.</p>
+      <div class="socials">
+        <a href="https://www.twitch.tv/eviltokkii" target="_blank">Twitch</a>
+        <a href="https://www.instagram.com/eviltokkii" target="_blank">Instagram</a>
+        <a href="https://www.tiktok.com/@eviltokkii" target="_blank">TikTok</a>
+        <a href="https://x.com/EvilTokkii" target="_blank">X</a>
+        <a href="https://discord.com/invite/Kxvw4KfSBF" target="_blank">Discord</a>
+      </div>
+      <a href="#" style="color: rgba(255,255,255,0.4); font-size: 0.8rem;">Políticas y Privacidad</a>
+    </div>
+  </footer>
+
+</body>
+</html>

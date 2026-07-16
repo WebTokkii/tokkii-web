@@ -5,15 +5,15 @@ import Footer from './components/Footer';
 import ScrollToTop from './components/ScrollToTop';
 import AnalyticsTracker from './components/AnalyticsTracker';
 import Home from './pages/Home';
-import Eventos from './pages/Eventos';
-import Sorteos from './pages/Sorteos';
+import Dinamicas from './pages/Dinamicas';
 import Sobre from './pages/Sobre';
 import Noticias from './pages/Noticias';
 import NoticiaDetalle from './pages/NoticiaDetalle';
-import TeRecomiendo from './pages/TeRecomiendo';
 import EventoDetalle from './pages/EventoDetalle';
 import TierList from './pages/TierList';
-import Politicas from './pages/Politicas';
+import Minijuegos from './pages/Minijuegos';
+import Perfil from './pages/Perfil';
+import Ayuda from './pages/Ayuda';
 import NotFound from './pages/NotFound';
 
 const App: React.FC = () => {
@@ -27,15 +27,15 @@ const App: React.FC = () => {
         <main>
           <Routes>
             <Route path="/" element={<Home />} />
-            <Route path="/eventos" element={<Eventos />} />
-            <Route path="/eventos/:slug" element={<EventoDetalle />} />
-            <Route path="/sorteos" element={<Sorteos />} />
+            <Route path="/dinamicas" element={<Dinamicas />} />
+            <Route path="/dinamicas/:slug" element={<EventoDetalle />} />
             <Route path="/sobre" element={<Sobre />} />
-            <Route path="/tierlist" element={<TierList />} />
+            <Route path="/tierlists" element={<TierList />} />
             <Route path="/noticias" element={<Noticias />} />
             <Route path="/noticias/:slug" element={<NoticiaDetalle />} />
-            <Route path="/te-recomiendo" element={<TeRecomiendo />} />
-            <Route path="/politicas" element={<Politicas />} />
+            <Route path="/minijuegos" element={<Minijuegos />} />
+            <Route path="/perfil" element={<Perfil />} />
+            <Route path="/ayuda" element={<Ayuda />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </main>

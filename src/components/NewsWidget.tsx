@@ -1,14 +1,15 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
-import './NewsWidget.css';
 
-const NewsWidget: React.FC = () => {
+interface NewsWidgetProps {
+    onActiveNewsChange?: (url: string) => void;
+}
+
+const NewsWidget: React.FC<NewsWidgetProps> = ({ onActiveNewsChange }) => {
     const [latestPosts, setLatestPosts] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
-    const [currentIndex, setCurrentIndex] = useState(0);
-    const timeoutRef = useRef<any>(null);
-    const AUTO_PLAY_TIME = 8000; // 8 segundos por noticia
+    const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
 
     useEffect(() => {
         const fetchLatest = async () => {
@@ -33,28 +34,14 @@ const NewsWidget: React.FC = () => {
     }, []);
 
     useEffect(() => {
-        if (latestPosts.length > 0) {
-            const startAutoPlay = () => {
-                if (timeoutRef.current) clearInterval(timeoutRef.current);
-                timeoutRef.current = setInterval(() => {
-                    handleNext();
-                }, AUTO_PLAY_TIME);
-            };
-
-            startAutoPlay();
-            return () => {
-                if (timeoutRef.current) clearInterval(timeoutRef.current);
-            };
+        if (latestPosts.length > 0 && onActiveNewsChange) {
+            const activeIndex = hoveredIndex !== null ? hoveredIndex : 0;
+            const activePost = latestPosts[activeIndex];
+            if (activePost) {
+                onActiveNewsChange(getImageUrl(activePost));
+            }
         }
-    }, [latestPosts, currentIndex]);
-
-    const handleNext = () => {
-        setCurrentIndex((prev) => (prev + 1) % latestPosts.length);
-    };
-
-    const handleDotClick = (index: number) => {
-        setCurrentIndex(index);
-    };
+    }, [latestPosts, hoveredIndex, onActiveNewsChange]);
 
     const formatDate = (dateStr: string) => {
         if (!dateStr) return '';
@@ -72,59 +59,87 @@ const NewsWidget: React.FC = () => {
         return post.header_image.startsWith('http') ? post.header_image : `${import.meta.env.VITE_R2_BASE_URL}/${post.header_image}`;
     };
 
+    const getAuthorAvatar = (authorName: string) => {
+        const name = authorName || 'EvilTokkii';
+        return `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=6F00DB&color=fff&bold=true&rounded=true`;
+    };
+
     if (loading || latestPosts.length === 0) return null;
 
-    return (
-        <section className="news-widget-hero">
-            <div className="news-hero-container">
-                {latestPosts.map((post, index) => (
-                    <Link
-                        key={post.id}
-                        to={`/noticias/${post.slug}`}
-                        className={`news-hero-slide ${index === currentIndex ? 'active' : ''}`}
-                    >
-                        <div className="news-hero-image-wrapper">
-                            <img src={getImageUrl(post)} alt={post.title} className="news-hero-img" />
-                            <div className="news-hero-overlay"></div>
-                        </div>
+    const mainPost = latestPosts[0];
+    const sidePosts = latestPosts.slice(1, 5);
 
-                        <div className="news-hero-content">
-                            <div className="news-hero-tags">
-                                <span className="news-hero-tag">{post.category || 'ARTÍCULO'}</span>
-                            </div>
-                            
-                            <h2 className="news-hero-title">{post.title}</h2>
-                            
-                            <div className="news-hero-meta">
-                                <span className="meta-date">{formatDate(post.published_at || post.created_at)}</span>
-                                <div className="meta-author">
-                                    <span>por {post.author || 'EvilTokkii'}</span>
+    return (
+        <div>
+            {/* Encabezado */}
+            <div className="section-head">
+                <div>
+                    <div className="kicker">Editorial</div>
+                    <h2 className="title">En Tendencia</h2>
+                </div>
+            </div>
+
+            {/* Layout principal */}
+            <div className="news-grid">
+                {/* Noticia destacada */}
+                {mainPost && (
+                    <Link 
+                        to={`/noticias/${mainPost.slug}`} 
+                        className="featured glass"
+                        onMouseEnter={() => setHoveredIndex(0)}
+                        onMouseLeave={() => setHoveredIndex(null)}
+                        aria-label={`Abrir noticia principal: ${mainPost.title}`}
+                    >
+                        <div className="img">
+                            <img src={getImageUrl(mainPost)} alt={mainPost.title} />
+                        </div>
+                        <div className="content">
+                            <span className="tag">{mainPost.category || 'Anuncios'}</span>
+                            <h3>{mainPost.title}</h3>
+                            <div className="meta">
+                                <div className="author">
+                                    <span style={{ fontSize: '0.88rem', color: 'rgba(255,255,255,0.6)', fontWeight: 500, marginRight: '4px' }}>por</span>
+                                    <span style={{ color: 'var(--accent)', fontWeight: 700 }}>{mainPost.author || 'EvilTokkii'}</span>
                                 </div>
+                                <div className="date">{formatDate(mainPost.published_at || mainPost.created_at)}</div>
                             </div>
                         </div>
                     </Link>
-                ))}
+                )}
 
-                {/* Progress Indicators ( Estilo Crunchyroll ) */}
-                <div className="news-hero-indicators">
-                    {latestPosts.map((_, index) => (
-                        <div 
-                            key={index} 
-                            className="indicator-track"
-                            onClick={(e) => {
-                                e.preventDefault();
-                                handleDotClick(index);
-                            }}
-                        >
-                            <div 
-                                className={`indicator-bar ${index === currentIndex ? 'filling' : (index < currentIndex ? 'full' : '')}`}
-                                style={{ animationDuration: `${AUTO_PLAY_TIME}ms` }}
-                            ></div>
-                        </div>
-                    ))}
+                {/* Columna derecha */}
+                <div className="news-side">
+                    {sidePosts.map((post, idx) => {
+                        const originalIndex = idx + 1;
+                        return (
+                            <Link 
+                                key={post.id} 
+                                to={`/noticias/${post.slug}`} 
+                                className="side glass"
+                                onMouseEnter={() => setHoveredIndex(originalIndex)}
+                                onMouseLeave={() => setHoveredIndex(null)}
+                                aria-label={`Abrir noticia: ${post.title}`}
+                            >
+                                <div className="img">
+                                    <img src={getImageUrl(post)} alt={post.title} />
+                                </div>
+                                <div className="content">
+                                    <span className="tag">{post.category || 'Anuncios'}</span>
+                                    <h4>{post.title}</h4>
+                                    <div className="meta">
+                                        <div className="date">{formatDate(post.published_at || post.created_at)}</div>
+                                        <span style={{ opacity: 0.4 }}>•</span>
+                                        <div className="author-simple" style={{ fontSize: '.88rem', color: 'rgba(255,255,255,0.6)', fontWeight: 600 }}>
+                                            por <span style={{ color: 'var(--accent)', fontWeight: 700 }}>{(post.author || 'EVILTOKKII').toUpperCase()}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </Link>
+                        );
+                    })}
                 </div>
             </div>
-        </section>
+        </div>
     );
 };
 

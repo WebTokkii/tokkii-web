@@ -4,10 +4,11 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "powershell -Command \"$env:BROWSER='msedge'; vite --open\"",
+    "dev": "powershell -Command \"$env:BROWSER='brave'; vite --open\"",
     "server": "node server.js",
     "dev:all": "concurrently \"npm run server\" \"npm run dev\"",
     "build": "tsc -b && vite build",
+    "sync-news": "node sync_rss.js",
     "deploy": "npm run build && git add . && git commit -m \"deploy: update build\" && git push origin main",
     "lint": "eslint .",
     "preview": "vite preview"
@@ -20,6 +21,7 @@
     "@supabase/supabase-js": "^2.98.0",
     "@types/react-router-dom": "^5.3.3",
     "axios": "^1.13.5",
+    "blueimp-md5": "^2.19.0",
     "cors": "^2.8.6",
     "dotenv": "^17.3.1",
     "express": "^5.2.1",
@@ -33,6 +35,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.39.1",
+    "@types/blueimp-md5": "^2.18.2",
     "@types/node": "^24.10.1",
     "@types/react": "^19.2.7",
     "@types/react-dom": "^19.2.3",

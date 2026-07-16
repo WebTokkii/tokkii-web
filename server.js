@@ -2,6 +2,7 @@ import express from "express";
 import cors from "cors";
 import axios from "axios";
 import dotenv from "dotenv";
+import { syncRssFeeds } from "./sync_rss_module.js";
 
 dotenv.config();
 
@@ -268,4 +269,14 @@ const PORT = process.env.PORT || 3001;
 
 app.listen(PORT, () => {
   console.log(`Servidor corriendo en puerto ${PORT}`);
+  
+  // Run initial news sync on server startup (imports 4 new articles translated to Spanish)
+  syncRssFeeds(4);
+
+  // Schedule to sync 4 new news articles every 12 hours
+  const TWELVE_HOURS = 12 * 60 * 60 * 1000;
+  setInterval(() => {
+    console.log("Running scheduled 12-hour RSS Feed Sync...");
+    syncRssFeeds(4);
+  }, TWELVE_HOURS);
 });

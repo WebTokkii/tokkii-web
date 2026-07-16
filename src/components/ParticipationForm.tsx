@@ -66,16 +66,16 @@ const ParticipationForm: React.FC<ParticipationFormProps> = ({ tipo, itemId, ite
                                 <FontAwesomeIcon icon={faXmark} />
                             </button>
 
-                            <h2 className="section-title" style={{ marginBottom: '1rem', textAlign: 'left', fontSize: '1.8rem' }}>
+                            <h2 style={{ marginBottom: '0.5rem', textAlign: 'left', fontSize: '2rem', fontWeight: 800, color: '#fff', fontFamily: "'Outfit', sans-serif" }}>
                                 Participar en {tipo === 'evento' ? 'Evento' : 'Sorteo'}
                             </h2>
-                            <p className="section-description" style={{ marginBottom: '2rem', textAlign: 'left', opacity: 0.8 }}>
-                                Rellena tus datos para participar en: <strong>{itemTitle}</strong>
+                            <p style={{ marginBottom: '2rem', textAlign: 'left', fontSize: '1.1rem', color: 'rgba(255,255,255,0.7)', lineHeight: '1.5' }}>
+                                Rellena tus datos para participar en: <span style={{ color: '#ff006e', fontWeight: 'bold' }}>{itemTitle}</span>
                             </p>
 
-                            <form className="contact-form" onSubmit={handleSubmit} style={{ marginTop: '0' }}>
-                                <div className="form-group">
-                                    <label style={{ display: 'block', marginBottom: '8px', color: 'rgba(255,255,255,0.7)', fontSize: '0.9rem' }}>Nombre / Nickname</label>
+                            <form className="contact-form" onSubmit={handleSubmit} style={{ marginTop: '0', display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+                                <div className="form-group" style={{ marginBottom: '0' }}>
+                                    <label style={{ display: 'block', marginBottom: '8px', color: 'rgba(255,255,255,0.7)', fontSize: '0.95rem', fontWeight: 600 }}>Nombre / Nickname</label>
                                     <input
                                         type="text"
                                         placeholder="Tu nombre"
@@ -87,12 +87,12 @@ const ParticipationForm: React.FC<ParticipationFormProps> = ({ tipo, itemId, ite
                                     />
                                 </div>
 
-                                <div className="form-group">
-                                    <label style={{ display: 'block', marginBottom: '8px', color: 'rgba(255,255,255,0.7)', fontSize: '0.9rem' }}>Detalles adicionales (BattleTag, Discord, etc)</label>
+                                <div className="form-group" style={{ marginBottom: '0' }}>
+                                    <label style={{ display: 'block', marginBottom: '8px', color: 'rgba(255,255,255,0.7)', fontSize: '0.95rem', fontWeight: 600 }}>Detalles adicionales (BattleTag, Discord, etc)</label>
                                     <textarea
                                         placeholder="Escribe aquí los datos necesarios..."
                                         className="glass-input"
-                                        style={{ minHeight: '100px' }}
+                                        style={{ minHeight: '120px', resize: 'vertical' }}
                                         value={mensaje}
                                         onChange={(e) => setMensaje(e.target.value)}
                                         required
@@ -102,8 +102,8 @@ const ParticipationForm: React.FC<ParticipationFormProps> = ({ tipo, itemId, ite
 
                                 <button
                                     type="submit"
-                                    className="btn-primary glow"
-                                    style={{ width: '100%', marginTop: '1rem' }}
+                                    className="btn primary"
+                                    style={{ width: '100%', marginTop: '0.5rem' }}
                                     disabled={loading}
                                 >
                                     {loading ? "Registrando..." : "Confirmar Participación"}

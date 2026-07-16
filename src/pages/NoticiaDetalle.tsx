@@ -95,12 +95,26 @@ const NoticiaDetalle = () => {
                 <article className="noticia-article">
                     <header className="noticia-header">
                         <div className="noticia-tags">
-                            <Link to="/noticias" className="back-btn-styled" title="Volver a Noticias">
-                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
-                                    <path d="M19 12H5M12 19l-7-7 7-7"/>
-                                </svg>
-                                <span>VOLVER ATRÁS</span>
-                            </Link>
+                            {(() => {
+                                const getPostCategory = () => {
+                                    if (post && post.content_blocks && Array.isArray(post.content_blocks)) {
+                                        const meta = post.content_blocks.find((b: any) => b.type === 'metadata');
+                                        if (meta && meta.category) {
+                                            return meta.category.toLowerCase() === 'anime' ? 'animes' : 'videojuegos';
+                                        }
+                                    }
+                                    return 'videojuegos';
+                                };
+                                const postCategory = getPostCategory();
+                                return (
+                                    <Link to="/noticias" state={{ category: postCategory }} className="back-btn-styled" title="Volver a Noticias">
+                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                                            <path d="M19 12H5M12 19l-7-7 7-7"/>
+                                        </svg>
+                                        <span>VOLVER ATRÁS</span>
+                                    </Link>
+                                );
+                            })()}
                             <span className="tag-badge">ARTÍCULO</span>
                         </div>
                         
@@ -119,7 +133,8 @@ const NoticiaDetalle = () => {
                         )}
 
                         <div className="noticia-author">
-                            <span className="author-name">por {post.author || "EvilTokkii"}</span>
+                            <span className="by-prefix">por</span>
+                            <span className="author-name">{post.author || "EvilTokkii"}</span>
                         </div>
                     </header>
 
@@ -239,7 +254,7 @@ const NoticiaDetalle = () => {
                 .noticia-author {
                     display: flex;
                     align-items: center;
-                    gap: 0.8rem;
+                    gap: 6px;
                 }
                 .author-avatar {
                     width: 32px;
@@ -252,6 +267,13 @@ const NoticiaDetalle = () => {
                     width: 100%;
                     height: 100%;
                     object-fit: cover;
+                }
+                .by-prefix {
+                    font-size: 0.9rem;
+                    color: rgba(255, 255, 255, 0.7);
+                    text-transform: lowercase;
+                    font-weight: 500;
+                    margin-right: 2px;
                 }
                 .author-name {
                     font-size: 1.1rem;
@@ -304,6 +326,38 @@ const NoticiaDetalle = () => {
                     margin: 2.5rem 0;
                 }
                 
+                /* Override source/external link button inside news content to turquoise glass */
+                .noticia-content a[style*="display"], 
+                .noticia-content a[style*="border-radius"],
+                .noticia-content a[class*="btn"] {
+                    display: block !important;
+                    background: linear-gradient(180deg, rgba(255, 255, 255, .04), rgba(255, 255, 255, .01)) !important;
+                    border: 1px solid rgba(51, 236, 192, 0.45) !important;
+                    box-shadow: 0 0 14px rgba(51, 236, 192, 0.18) !important;
+                    color: #fff !important;
+                    text-shadow: none !important;
+                    padding: 14px 24px !important;
+                    border-radius: 999px !important;
+                    text-align: center !important;
+                    text-transform: uppercase !important;
+                    font-weight: 800 !important;
+                    font-size: 0.9rem !important;
+                    text-decoration: none !important;
+                    margin: 2.5rem auto !important;
+                    max-width: 100% !important;
+                    transition: all 0.25s ease !important;
+                    backdrop-filter: blur(12px) !important;
+                    -webkit-backdrop-filter: blur(12px) !important;
+                }
+
+                .noticia-content a[style*="display"]:hover,
+                .noticia-content a[style*="border-radius"]:hover,
+                .noticia-content a[class*="btn"]:hover {
+                    border-color: rgba(51, 236, 192, 0.85) !important;
+                    box-shadow: 0 0 25px rgba(51, 236, 192, 0.45) !important;
+                    transform: translateY(-2px) !important;
+                }
+
                 /* SEO Hidden Paragraph - Modern hiding technique for SEO (Visible to crawlers/screen readers, hidden from users) */
                 .seo-hidden-paragraph {
                     position: absolute;

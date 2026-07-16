@@ -20,11 +20,11 @@ async function testTwitch() {
     const token = tokenResponse.data.access_token;
     console.log("Token obtenido:", token.substring(0, 5) + "...");
 
-    console.log("Checking streams for eviltokkii...");
-    const streamResponse = await axios.get(
-      "https://api.twitch.tv/helix/streams",
+    console.log("Checking user profile for eviltokkii...");
+    const userResponse = await axios.get(
+      "https://api.twitch.tv/helix/users",
       {
-        params: { user_login: "eviltokkii" },
+        params: { login: "eviltokkii" },
         headers: {
           "Client-ID": process.env.TWITCH_CLIENT_ID,
           Authorization: `Bearer ${token}`,
@@ -32,13 +32,7 @@ async function testTwitch() {
       }
     );
 
-    console.log("Stream data:", JSON.stringify(streamResponse.data, null, 2));
-    
-    if (streamResponse.data.data.length > 0) {
-      console.log("STATUS: ONLINE");
-    } else {
-      console.log("STATUS: OFFLINE");
-    }
+    console.log("User data:", JSON.stringify(userResponse.data, null, 2));
 
   } catch (error) {
     console.error("Error:", error.response?.data || error.message);
@@ -46,3 +40,4 @@ async function testTwitch() {
 }
 
 testTwitch();
+

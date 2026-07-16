@@ -1,453 +1,1323 @@
-import React, { useState } from 'react';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faTriangleExclamation } from '@fortawesome/free-solid-svg-icons';
+import React, { useState, useEffect, useRef } from 'react';
+import { 
+  GENSHIN_CHARACTERS
+} from '../data/GenshinDb';
+import {
+  WUTHERING_WAVES_CHARACTERS
+} from '../data/WutheringWavesDb';
+import {
+  OVERWATCH_CHARACTERS
+} from '../data/OverwatchDb';
+import {
+  DBD_CHARACTERS
+} from '../data/DbdDb';
+import './TierList.css';
+interface Character {
+  id: string;
+  name: string;
+  element: string;
+  weapon: string;
+  rarity: 4 | 5;
+  imgUrl: string;
+}
+import { 
+  Plus, 
+  Trash2, 
+  ArrowUp, 
+  ArrowDown, 
+  RotateCcw, 
+  Search, 
+  Palette, 
+  Info, 
+  Layers, 
+  Sparkles,
+  HelpCircle,
+  X,
+  Maximize2
+} from 'lucide-react';
 
-interface Hero {
-    id: string;
-    name: string;
-    img: string;
+interface Tier {
+  id: string;
+  label: string;
+  color: string;
+  characterIds: string[];
 }
 
-interface TierState {
-    [key: string]: Hero[];
-}
+const PRESET_COLORS = [
+  '#ff4b4b', // Crimson
+  '#ff7f3f', // Orange
+  '#ffc000', // Gold
+  '#d2d200', // Lime Yellow
+  '#00d27f', // Mint Green
+  '#00b0f0', // Hydro Blue
+  '#0070c0', // Deep Blue
+  '#a256df', // Purple
+  '#ff66cc', // Pink
+  '#556677'  // Steel Grey
+];
 
-const TierRow: React.FC<{
-    tier: { id: string, label: string, color: string },
-    heroes: Hero[],
-    onDrop: (index?: number) => void,
-    onDragStart: (hero: Hero) => void,
-    onLabelChange: (newLabel: string) => void
-}> = ({ tier, heroes, onDrop, onDragStart, onLabelChange }) => {
-    return (
-        <div
-            className="tier-row"
-            onDragOver={(e) => e.preventDefault()}
-            onDrop={() => onDrop()}
-            style={{
-                display: 'flex',
-                alignItems: 'stretch',
-                marginBottom: '8px',
-                borderRadius: '12px',
-                overflow: 'hidden',
-                background: 'rgba(255, 255, 255, 0.02)',
-                border: '1px solid rgba(255, 255, 255, 0.05)',
-                minHeight: '100px'
-            }}
-        >
-            <div className="tier-label" style={{
-                width: '100px',
-                backgroundColor: tier.color,
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                color: '#000',
-                fontWeight: '900',
-                flexShrink: 0,
-                cursor: 'text',
-                padding: '10px',
-                textAlign: 'center'
-            }}>
-                <textarea
-                    defaultValue={tier.label}
-                    onBlur={(e) => onLabelChange(e.target.value)}
-                    spellCheck={false}
-                    style={{
-                        width: '100%',
-                        background: 'none',
-                        border: 'none',
-                        outline: 'none',
-                        color: '#000',
-                        fontWeight: '900',
-                        fontSize: '1.4rem',
-                        textAlign: 'center',
-                        resize: 'none',
-                        fontFamily: 'inherit',
-                        textTransform: 'uppercase',
-                        height: 'auto',
-                        overflow: 'hidden',
-                        lineHeight: '1.1',
-                        display: 'block'
-                    }}
-                    onInput={(e) => {
-                        const target = e.target as HTMLTextAreaElement;
-                        target.style.height = 'auto';
-                        target.style.height = target.scrollHeight + 'px';
-                    }}
-                    onKeyDown={(e) => {
-                        if (e.key === 'Enter') e.preventDefault();
-                    }}
-                />
-            </div>
-            <div className="tier-dropzone" style={{
-                flex: 1,
-                padding: '15px',
-                display: 'flex',
-                flexWrap: 'wrap',
-                gap: '12px',
-                alignContent: 'flex-start'
-            }}>
-                {heroes.map((hero, index) => (
-                    <div
-                        key={hero.id}
-                        draggable
-                        onDragStart={() => onDragStart(hero)}
-                        onDragOver={(e) => {
-                            e.preventDefault();
-                            e.stopPropagation();
-                        }}
-                        onDrop={(e) => {
-                            e.preventDefault();
-                            e.stopPropagation();
-                            onDrop(index);
-                        }}
-                        className="hero-tile"
-                        style={{
-                            width: '80px',
-                            height: '80px',
-                            borderRadius: '10px',
-                            backgroundImage: `url(${hero.img})`,
-                            backgroundSize: 'cover',
-                            backgroundPosition: 'center',
-                            cursor: 'grab',
-                            border: `2px solid ${tier.color}`,
-                            boxShadow: `0 0 15px ${tier.color}66`,
-                            transition: 'all 0.2s ease'
-                        }}
-                    />
-                ))}
-            </div>
-        </div>
-    );
+const INITIAL_TIERS: Tier[] = [
+  { id: 'must-pull', label: 'Must Pull', color: '#ff4b4b', characterIds: [] },
+  { id: 's', label: 'S', color: '#ff7f3f', characterIds: [] },
+  { id: 'a', label: 'A', color: '#ffc000', characterIds: [] },
+  { id: 'b', label: 'B', color: '#00d27f', characterIds: [] },
+  { id: 'c', label: 'C', color: '#00b0f0', characterIds: [] }
+];
+
+// Map Element names to their corresponding icon colors/badges for Genshin
+const GENSHIN_ELEMENT_COLORS: Record<string, string> = {
+  Anemo: 'var(--color-anemo)',
+  Geo: 'var(--color-geo)',
+  Electro: 'var(--color-electro)',
+  Dendro: 'var(--color-dendro)',
+  Hydro: 'var(--color-hydro)',
+  Pyro: 'var(--color-pyro)',
+  Cryo: 'var(--color-cryo)',
 };
 
-const TierList: React.FC = () => {
-    const [tierConfig, setTierConfig] = useState([
-        { id: 'S', label: 'S', color: '#ff4b4b' },
-        { id: 'A', label: 'A', color: '#ff9f43' },
-        { id: 'B', label: 'B', color: '#feca57' },
-        { id: 'C', label: 'C', color: '#1dd1a1' },
-        { id: 'D', label: 'D', color: '#576574' },
-    ]);
+// Map Element names to their corresponding icon colors/badges for Wuthering Waves
+const WUWA_ELEMENT_COLORS: Record<string, string> = {
+  Aero: 'var(--color-aero)',
+  Glacio: 'var(--color-glacio)',
+  Fusion: 'var(--color-fusion)',
+  Electro: 'var(--color-electro)',
+  Spectro: 'var(--color-spectro)',
+  Havoc: 'var(--color-havoc)',
+};
 
-    const initialHeroes: Hero[] = [
-        { id: "ana", name: "Ana", img: `${import.meta.env.VITE_R2_BASE_URL}/Overwatch/Ana.png` },
-        { id: "anran", name: "Anran", img: `${import.meta.env.VITE_R2_BASE_URL}/Overwatch/Anran.png` },
-        { id: "ashe", name: "Ashe", img: `${import.meta.env.VITE_R2_BASE_URL}/Overwatch/Ashe.png` },
-        { id: "baptiste", name: "Baptiste", img: `${import.meta.env.VITE_R2_BASE_URL}/Overwatch/Baptiste.png` },
-        { id: "bastion", name: "Bastion", img: `${import.meta.env.VITE_R2_BASE_URL}/Overwatch/Bastion.png` },
-        { id: "brigitte", name: "Brigitte", img: `${import.meta.env.VITE_R2_BASE_URL}/Overwatch/Brigitte.png` },
-        { id: "cassidy", name: "Cassidy", img: `${import.meta.env.VITE_R2_BASE_URL}/Overwatch/Cassidy.png` },
-        { id: "dva", name: "D.va", img: `${import.meta.env.VITE_R2_BASE_URL}/Overwatch/D.va.png` },
-        { id: "domina", name: "Domina", img: `${import.meta.env.VITE_R2_BASE_URL}/Overwatch/Domina.png` },
-        { id: "doomfist", name: "Doomfist", img: `${import.meta.env.VITE_R2_BASE_URL}/Overwatch/Doomfist.png` },
-        { id: "echo", name: "Echo", img: `${import.meta.env.VITE_R2_BASE_URL}/Overwatch/Echo.png` },
-        { id: "emre", name: "Emre", img: `${import.meta.env.VITE_R2_BASE_URL}/Overwatch/Emre.png` },
-        { id: "freja", name: "Freja", img: `${import.meta.env.VITE_R2_BASE_URL}/Overwatch/Freja.png` },
-        { id: "genji", name: "Genji", img: `${import.meta.env.VITE_R2_BASE_URL}/Overwatch/Genji.png` },
-        { id: "hanzo", name: "Hanzo", img: `${import.meta.env.VITE_R2_BASE_URL}/Overwatch/Hanzo.png` },
-        { id: "hazard", name: "Hazard", img: `${import.meta.env.VITE_R2_BASE_URL}/Overwatch/Hazard.png` },
-        { id: "illari", name: "Illari", img: `${import.meta.env.VITE_R2_BASE_URL}/Overwatch/Illari.png` },
-        { id: "jetpackcat", name: "JetPackCat", img: `${import.meta.env.VITE_R2_BASE_URL}/Overwatch/JetPackCat.png` },
-        { id: "junkerqueen", name: "Junker Queen", img: `${import.meta.env.VITE_R2_BASE_URL}/Overwatch/JunkerQueen.png` },
-        { id: "junkrat", name: "Junkrat", img: `${import.meta.env.VITE_R2_BASE_URL}/Overwatch/Junkrat.png` },
-        { id: "juno", name: "Juno", img: `${import.meta.env.VITE_R2_BASE_URL}/Overwatch/Juno.png` },
-        { id: "kiriko", name: "Kiriko", img: `${import.meta.env.VITE_R2_BASE_URL}/Overwatch/Kiriko.png` },
-        { id: "lifeweaver", name: "Lifeweaver", img: `${import.meta.env.VITE_R2_BASE_URL}/Overwatch/Lifeweaver.png` },
-        { id: "lucio", name: "Lucio", img: `${import.meta.env.VITE_R2_BASE_URL}/Overwatch/Lucio.png` },
-        { id: "mauga", name: "Mauga", img: `${import.meta.env.VITE_R2_BASE_URL}/Overwatch/Mauga.png` },
-        { id: "mei", name: "Mei", img: `${import.meta.env.VITE_R2_BASE_URL}/Overwatch/Mei.png` },
-        { id: "mercy", name: "Mercy", img: `${import.meta.env.VITE_R2_BASE_URL}/Overwatch/Mercy.png` },
-        { id: "mizuki", name: "Mizuki", img: `${import.meta.env.VITE_R2_BASE_URL}/Overwatch/Mizuki.png` },
-        { id: "moira", name: "Moira", img: `${import.meta.env.VITE_R2_BASE_URL}/Overwatch/Moira.png` },
-        { id: "orisa", name: "Orisa", img: `${import.meta.env.VITE_R2_BASE_URL}/Overwatch/Orisa.png` },
-        { id: "pharah", name: "Pharah", img: `${import.meta.env.VITE_R2_BASE_URL}/Overwatch/Pharah.png` },
-        { id: "ramatra", name: "Ramatra", img: `${import.meta.env.VITE_R2_BASE_URL}/Overwatch/Ramatra.png` },
-        { id: "reaper", name: "Reaper", img: `${import.meta.env.VITE_R2_BASE_URL}/Overwatch/Reaper.png` },
-        { id: "reinhardt", name: "Reinhardt", img: `${import.meta.env.VITE_R2_BASE_URL}/Overwatch/Reinhardt.png` },
-        { id: "roadhog", name: "RoadHog", img: `${import.meta.env.VITE_R2_BASE_URL}/Overwatch/RoadHog.png` },
-        { id: "sigma", name: "Sigma", img: `${import.meta.env.VITE_R2_BASE_URL}/Overwatch/Sigma.png` },
-        { id: "sojourn", name: "Sojourn", img: `${import.meta.env.VITE_R2_BASE_URL}/Overwatch/Sojourn.png` },
-        { id: "soldado76", name: "Soldado 76", img: `${import.meta.env.VITE_R2_BASE_URL}/Overwatch/Soldado76.png` },
-        { id: "sombra", name: "Sombra", img: `${import.meta.env.VITE_R2_BASE_URL}/Overwatch/Sombra.png` },
-        { id: "symmetra", name: "Symmetra", img: `${import.meta.env.VITE_R2_BASE_URL}/Overwatch/Symmetra.png` },
-        { id: "torbjorn", name: "Torbjörn", img: `${import.meta.env.VITE_R2_BASE_URL}/Overwatch/Torbjörn.png` },
-        { id: "tracer", name: "Tracer", img: `${import.meta.env.VITE_R2_BASE_URL}/Overwatch/Tracer.png` },
-        { id: "vendeta", name: "Vendeta", img: `${import.meta.env.VITE_R2_BASE_URL}/Overwatch/Vendeta.png` },
-        { id: "venture", name: "Venture", img: `${import.meta.env.VITE_R2_BASE_URL}/Overwatch/Venture.png` },
-        { id: "widowmaker", name: "Widowmaker", img: `${import.meta.env.VITE_R2_BASE_URL}/Overwatch/Widowmaker.png` },
-        { id: "winston", name: "Winston", img: `${import.meta.env.VITE_R2_BASE_URL}/Overwatch/Winston.png` },
-        { id: "wreckingball", name: "Wrecking Ball", img: `${import.meta.env.VITE_R2_BASE_URL}/Overwatch/WreckingBall.png` },
-        { id: "wuyang", name: "Wuyang", img: `${import.meta.env.VITE_R2_BASE_URL}/Overwatch/Wuyang.png` },
-        { id: "zarya", name: "Zarya", img: `${import.meta.env.VITE_R2_BASE_URL}/Overwatch/Zarya.png` },
-        { id: "zenyatta", name: "Zenyatta", img: `${import.meta.env.VITE_R2_BASE_URL}/Overwatch/Zenyatta.png` },
-    ];
+const GENSHIN_WEAPONS: Record<string, string> = {
+  Sword: 'Espada',
+  Claymore: 'Mandoble',
+  Polearm: 'Lanza',
+  Bow: 'Arco',
+  Catalyst: 'Catalizador',
+};
 
-    const [tiers, setTiers] = useState<TierState>({
-        S: [],
-        A: [],
-        B: [],
-        C: [],
-        D: [],
-        pool: initialHeroes
+const WUWA_WEAPONS: Record<string, string> = {
+  Sword: 'Espada',
+  Broadblade: 'Espada Pesada',
+  Pistols: 'Pistolas',
+  Gauntlets: 'Guanteletes',
+  Rectifier: 'Rectificador',
+};
+
+// Map Element names to their corresponding icon colors/badges for Overwatch (Roles)
+const OVERWATCH_ELEMENT_COLORS: Record<string, string> = {
+  Tank: 'var(--color-tank)',
+  Damage: 'var(--color-damage)',
+  Support: 'var(--color-support)',
+};
+
+const OVERWATCH_WEAPONS: Record<string, string> = {
+  Overwatch: 'Overwatch',
+  Talon: 'Talon',
+  Neutral: 'Neutral/Otros',
+};
+
+// DBD specific elements and types mapping
+const DBD_ELEMENT_COLORS: Record<string, string> = {
+  Survivor: '#00d27f', // Green
+  Killer: '#ff4b4b',    // Red
+};
+
+const DBD_WEAPONS: Record<string, string> = {
+  Original: 'Original',
+  Licenciado: 'Licenciado',
+};
+
+export default function TierList() {
+  // Database map for quick lookups
+  const charactersMap = useRef<Record<string, Character>>(
+    GENSHIN_CHARACTERS.reduce((acc, char) => {
+      acc[char.id] = char;
+      return acc;
+    }, {} as Record<string, Character>)
+  );
+
+  // States
+  const [tiers, setTiers] = useState<Tier[]>(() => {
+    const saved = localStorage.getItem('genshin_tierlist_tiers');
+    return saved ? JSON.parse(saved) : INITIAL_TIERS;
+  });
+
+  const [pool, setPool] = useState<string[]>(() => {
+    const savedTiers = localStorage.getItem('genshin_tierlist_tiers');
+    if (savedTiers) {
+      const parsedTiers: Tier[] = JSON.parse(savedTiers);
+      const placedIds = new Set(parsedTiers.flatMap(t => t.characterIds));
+      return GENSHIN_CHARACTERS.filter(c => !placedIds.has(c.id)).map(c => c.id);
+    }
+    return GENSHIN_CHARACTERS.map(c => c.id);
+  });
+
+  // Mobile / click accessibility selection
+  const [selectedCharId, setSelectedCharId] = useState<string | null>(null);
+
+  // Row currently showing color picker popover
+  const [activeColorPickerRowId, setActiveColorPickerRowId] = useState<string | null>(null);
+
+  // Presentation fullscreen modal states
+  const [isFullModalOpen, setIsFullModalOpen] = useState(false);
+
+
+
+  // Active view state ('home' menu of 4 cards, or 'editor')
+  const [currentView, setCurrentView] = useState<'home' | 'editor'>('home');
+
+  // Active template state
+  const [currentTemplateId, setCurrentTemplateId] = useState<'genshin' | 'wuwa' | 'overwatch' | 'dbd'>('genshin');
+
+  // Dynamic values based on active template
+  const elementColors = 
+    currentTemplateId === 'genshin' ? GENSHIN_ELEMENT_COLORS : 
+    currentTemplateId === 'wuwa' ? WUWA_ELEMENT_COLORS : 
+    currentTemplateId === 'overwatch' ? OVERWATCH_ELEMENT_COLORS :
+    DBD_ELEMENT_COLORS;
+
+  const weaponsMap = 
+    currentTemplateId === 'genshin' ? GENSHIN_WEAPONS : 
+    currentTemplateId === 'wuwa' ? WUWA_WEAPONS : 
+    currentTemplateId === 'overwatch' ? OVERWATCH_WEAPONS :
+    DBD_WEAPONS;
+
+  // Re-sync states when template ID changes
+  useEffect(() => {
+    const storageKey = 
+      currentTemplateId === 'genshin' ? 'genshin_tierlist_tiers' : 
+      currentTemplateId === 'wuwa' ? 'wuwa_tierlist_tiers' : 
+      currentTemplateId === 'overwatch' ? 'overwatch_tierlist_tiers' :
+      'dbd_tierlist_tiers';
+      
+    const characters = 
+      currentTemplateId === 'genshin' ? GENSHIN_CHARACTERS : 
+      currentTemplateId === 'wuwa' ? WUTHERING_WAVES_CHARACTERS : 
+      currentTemplateId === 'overwatch' ? OVERWATCH_CHARACTERS :
+      DBD_CHARACTERS;
+    
+    // Rebuild quick lookup map
+    charactersMap.current = characters.reduce((acc, char) => {
+      acc[char.id] = char as Character;
+      return acc;
+    }, {} as Record<string, Character>);
+    
+    const saved = localStorage.getItem(storageKey);
+    let loadedTiers = INITIAL_TIERS;
+    if (saved) {
+      loadedTiers = JSON.parse(saved);
+    } else {
+      loadedTiers = INITIAL_TIERS.map(t => ({ ...t, characterIds: [] }));
+    }
+    
+    setTiers(loadedTiers);
+    
+    const placedIds = new Set(loadedTiers.flatMap(t => t.characterIds));
+    const loadedPool = characters.filter(c => !placedIds.has(c.id)).map(c => c.id);
+    // Sort initial pool alphabetically
+    loadedPool.sort((a, b) => {
+      const nameA = charactersMap.current[a]?.name || '';
+      const nameB = charactersMap.current[b]?.name || '';
+      return nameA.localeCompare(nameB);
+    });
+    setPool(loadedPool);
+    
+    setSelectedCharId(null);
+    setActiveDragCharId(null);
+    setActiveElementFilter(null);
+    setActiveWeaponFilter(null);
+    setActiveRarityFilter(null);
+    setSearchQuery('');
+  }, [currentTemplateId]);
+
+  // Dock auto-hide states
+  const [isDockHidden, setIsDockHidden] = useState(false);
+  const dockTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    if (pool.length === 0) {
+      dockTimeoutRef.current = setTimeout(() => {
+        setIsDockHidden(true);
+      }, 2000);
+    } else {
+      if (dockTimeoutRef.current) {
+        clearTimeout(dockTimeoutRef.current);
+        dockTimeoutRef.current = null;
+      }
+      setIsDockHidden(false);
+    }
+    return () => {
+      if (dockTimeoutRef.current) {
+        clearTimeout(dockTimeoutRef.current);
+      }
+    };
+  }, [pool.length]);
+
+  // Mouse/Touch drag-to-scroll horizontal pool ref and states
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+  
+  // Pointer-drag state machine
+  const [pressedCharId, setPressedCharId] = useState<string | null>(null);
+  const [dragMode, setDragMode] = useState<'scroll' | 'drag' | null>(null);
+  const [dragStart, setDragStart] = useState({ x: 0, y: 0, scrollLeft: 0 });
+  const [dragPosition, setDragPosition] = useState({ x: 0, y: 0 });
+  const [hoveredTierId, setHoveredTierId] = useState<string | null>(null);
+  const [activeDragCharId, setActiveDragCharId] = useState<string | null>(null);
+  const [hasPointerMoved, setHasPointerMoved] = useState(false);
+
+  const getTierIdFromPoint = (x: number, y: number): string | null => {
+    const element = document.elementFromPoint(x, y);
+    if (!element) return null;
+    
+    const tierRow = element.closest('.tier-row');
+    if (tierRow) {
+      return tierRow.getAttribute('data-tier-id');
+    }
+    
+    const poolSection = element.closest('.pool-section');
+    if (poolSection) {
+      return 'pool';
+    }
+    
+    return null;
+  };
+
+  const handleCharCardPointerDown = (charId: string, e: React.PointerEvent) => {
+    if (e.pointerType === 'mouse' && e.button !== 0) return;
+    
+    // Prevent default touch scroll and drag behaviors
+    e.preventDefault();
+    
+    const initialScroll = scrollContainerRef.current ? scrollContainerRef.current.scrollLeft : 0;
+    setPressedCharId(charId);
+    setDragStart({ x: e.clientX, y: e.clientY, scrollLeft: initialScroll });
+    setDragPosition({ x: e.clientX, y: e.clientY }); // Initialize position immediately to prevent 1-frame ghost flash!
+    setDragMode(null);
+    setHasPointerMoved(false);
+  };
+
+  const handlePoolPointerDown = (e: React.PointerEvent) => {
+    if (e.pointerType === 'mouse' && e.button !== 0) return;
+    
+    const target = e.target as HTMLElement;
+    if (target.closest('.character-card') || target.closest('button')) return;
+    
+    const initialScroll = scrollContainerRef.current ? scrollContainerRef.current.scrollLeft : 0;
+    setPressedCharId('pool-scroll');
+    setDragStart({ x: e.clientX, y: e.clientY, scrollLeft: initialScroll });
+    setDragMode('scroll'); // Scroll directly on container click
+    setHasPointerMoved(false);
+  };
+
+  useEffect(() => {
+    const handlePointerMove = (e: PointerEvent) => {
+      if (!pressedCharId) return;
+
+      // Prevent default selection, scrolling and text drags
+      if (e.cancelable) {
+        e.preventDefault();
+      }
+
+      const diffX = e.clientX - dragStart.x;
+      const diffY = e.clientY - dragStart.y;
+
+      if (dragMode === null) {
+        // Detect movement threshold (10px) to determine mode
+        if (Math.abs(diffX) > 10 || Math.abs(diffY) > 10) {
+          setHasPointerMoved(true);
+          if (Math.abs(diffX) >= Math.abs(diffY)) {
+            setDragMode('scroll');
+          } else if (diffY < -10) {
+            // Drag character card upwards
+            setDragMode('drag');
+            setActiveDragCharId(pressedCharId);
+            setSelectedCharId(null); // Clear click selection
+            document.body.classList.add('dragging-active'); // Prevent text selection globally
+          } else {
+            // Treat downwards as scrolling or ignore
+            setDragMode('scroll');
+          }
+        }
+      } else if (dragMode === 'scroll') {
+        if (scrollContainerRef.current) {
+          scrollContainerRef.current.scrollLeft = dragStart.scrollLeft - diffX;
+        }
+      } else if (dragMode === 'drag') {
+        setDragPosition({ x: e.clientX, y: e.clientY });
+        
+        // Find hovered tier row dynamically
+        const currentTierId = getTierIdFromPoint(e.clientX, e.clientY);
+        setHoveredTierId(currentTierId);
+      }
+    };
+
+    const handlePointerUp = (e: PointerEvent) => {
+      if (!pressedCharId) return;
+
+      if (dragMode === 'drag' && activeDragCharId) {
+        if (hoveredTierId && hoveredTierId !== 'pool') {
+          moveCharacter(activeDragCharId, hoveredTierId);
+        } else {
+          moveToPool(activeDragCharId);
+        }
+      } else if (dragMode === null && !hasPointerMoved && pressedCharId !== 'pool-scroll') {
+        // Treated as standard click selection
+        handleCharCardClick(pressedCharId, e as any);
+      }
+
+      document.body.classList.remove('dragging-active');
+      setPressedCharId(null);
+      setDragMode(null);
+      setActiveDragCharId(null);
+      setHoveredTierId(null);
+      setHasPointerMoved(false);
+    };
+
+    const handleGlobalDragStart = (e: DragEvent) => {
+      if (pressedCharId) {
+        e.preventDefault();
+      }
+    };
+
+    window.addEventListener('pointermove', handlePointerMove, { passive: false });
+    window.addEventListener('pointerup', handlePointerUp);
+    window.addEventListener('pointercancel', handlePointerUp);
+    window.addEventListener('dragstart', handleGlobalDragStart);
+
+    return () => {
+      window.removeEventListener('pointermove', handlePointerMove);
+      window.removeEventListener('pointerup', handlePointerUp);
+      window.removeEventListener('pointercancel', handlePointerUp);
+      window.removeEventListener('dragstart', handleGlobalDragStart);
+    };
+  }, [pressedCharId, dragStart, dragMode, activeDragCharId, hoveredTierId, hasPointerMoved]);
+
+  const scrollPool = (direction: 'left' | 'right') => {
+    if (!scrollContainerRef.current) return;
+    const scrollAmount = 400;
+    const container = scrollContainerRef.current;
+    const targetScroll = direction === 'left' 
+      ? container.scrollLeft - scrollAmount 
+      : container.scrollLeft + scrollAmount;
+      
+    container.scrollTo({
+      left: targetScroll,
+      behavior: 'smooth'
+    });
+  };
+
+  // Filters
+  const [searchQuery, setSearchQuery] = useState('');
+  const [activeElementFilter, setActiveElementFilter] = useState<string | null>(null);
+  const [activeWeaponFilter, setActiveWeaponFilter] = useState<string | null>(null);
+  const [activeRarityFilter, setActiveRarityFilter] = useState<number | null>(null);
+
+  // Save state on change
+  useEffect(() => {
+    localStorage.setItem('genshin_tierlist_tiers', JSON.stringify(tiers));
+  }, [tiers]);
+
+  // Drag and Drop handlers
+  const handleDragStart = (e: React.DragEvent, charId: string) => {
+    setDragMode(null); // Clear custom pointer modes
+    e.dataTransfer.setData('text/plain', charId);
+    setSelectedCharId(null); // Clear click selection if dragging
+    setActiveDragCharId(charId); // Trigger dock to reappear!
+  };
+
+  const handleDragEnd = () => {
+    setActiveDragCharId(null);
+  };
+
+  const handleDrop = (e: React.DragEvent, targetTierId: string, targetIndex?: number) => {
+    e.preventDefault();
+    const charId = e.dataTransfer.getData('text/plain');
+    if (!charId) return;
+
+    moveCharacter(charId, targetTierId, targetIndex);
+  };
+
+  const handleDropOnPool = (e: React.DragEvent) => {
+    e.preventDefault();
+    const charId = e.dataTransfer.getData('text/plain');
+    if (!charId) return;
+
+    moveToPool(charId);
+  };
+
+  // Move character logic
+  const moveCharacter = (charId: string, targetTierId: string, targetIndex?: number) => {
+    setTiers(prevTiers => {
+      // 1. Remove character from any previous tier
+      const cleanedTiers = prevTiers.map(t => ({
+        ...t,
+        characterIds: t.characterIds.filter(id => id !== charId)
+      }));
+
+      // 2. Add character to target tier
+      return cleanedTiers.map(t => {
+        if (t.id === targetTierId) {
+          const list = [...t.characterIds];
+          if (typeof targetIndex === 'number') {
+            list.splice(targetIndex, 0, charId);
+          } else {
+            list.push(charId);
+          }
+          return { ...t, characterIds: list };
+        }
+        return t;
+      });
     });
 
-    const [draggedHero, setDraggedHero] = useState<{ hero: Hero, fromTier: string } | null>(null);
+    // 3. Remove character from pool
+    setPool(prevPool => prevPool.filter(id => id !== charId));
+    setSelectedCharId(null);
+    setActiveDragCharId(null);
+  };
 
-    const handleDragStart = (hero: Hero, fromTier: string) => {
-        setDraggedHero({ hero, fromTier });
-    };
+  const moveToPool = (charId: string) => {
+    // 1. Remove from all tiers
+    setTiers(prevTiers => prevTiers.map(t => ({
+      ...t,
+      characterIds: t.characterIds.filter(id => id !== charId)
+    })));
 
-    const handleDrop = (toTier: string, toIndex?: number) => {
-        if (!draggedHero) return;
-        const { hero, fromTier } = draggedHero;
+    // 2. Append back to pool and sort alphabetically
+    setPool(prevPool => {
+      if (prevPool.includes(charId)) return prevPool;
+      const newPool = [...prevPool, charId];
+      return newPool.sort((a, b) => {
+        const nameA = charactersMap.current[a]?.name || '';
+        const nameB = charactersMap.current[b]?.name || '';
+        return nameA.localeCompare(nameB);
+      });
+    });
 
-        setTiers(prev => {
-            const newTiers = { ...prev };
-            if (fromTier === toTier) {
-                const list = [...newTiers[fromTier]];
-                const oldIndex = list.findIndex(h => h.id === hero.id);
-                if (oldIndex !== -1) {
-                    list.splice(oldIndex, 1);
-                    const targetIndex = typeof toIndex === 'number' ? toIndex : list.length;
-                    list.splice(targetIndex, 0, hero);
-                    newTiers[fromTier] = list;
-                }
-            } else {
-                newTiers[fromTier] = newTiers[fromTier].filter(h => h.id !== hero.id);
-                const destList = [...newTiers[toTier]];
-                if (typeof toIndex === 'number') {
-                    destList.splice(toIndex, 0, hero);
-                } else {
-                    destList.push(hero);
-                }
-                newTiers[toTier] = destList;
-            }
-            return newTiers;
+    setSelectedCharId(null);
+    setActiveDragCharId(null);
+  };
+
+  // Click-to-Move handler (touch and ease-of-use mobile support)
+  const handleCharCardClick = (charId: string, e?: React.MouseEvent | PointerEvent) => {
+    if (e) e.stopPropagation();
+    if (selectedCharId === charId) {
+      // Deselect
+      setSelectedCharId(null);
+    } else {
+      setSelectedCharId(charId);
+    }
+  };
+
+  const handleTierRowClick = (tierId: string) => {
+    if (selectedCharId) {
+      moveCharacter(selectedCharId, tierId);
+    }
+  };
+
+  const handlePoolAreaClick = () => {
+    if (selectedCharId) {
+      moveToPool(selectedCharId);
+    }
+  };
+
+  // Row Manipulation
+  const handleUpdateLabel = (tierId: string, newLabel: string) => {
+    setTiers(prev => prev.map(t => t.id === tierId ? { ...t, label: newLabel } : t));
+  };
+
+  const handleSetRowColor = (tierId: string, color: string) => {
+    setTiers(prev => prev.map(t => t.id === tierId ? { ...t, color } : t));
+    setActiveColorPickerRowId(null);
+  };
+
+  const handleAddTier = () => {
+    const newId = `tier-${Date.now()}`;
+    const colors = PRESET_COLORS;
+    const randomColor = colors[tiers.length % colors.length];
+    
+    setTiers(prev => [
+      ...prev,
+      {
+        id: newId,
+        label: 'Nuevo Tier',
+        color: randomColor,
+        characterIds: []
+      }
+    ]);
+  };
+
+  const handleRemoveTier = (tierId: string) => {
+    const tierToRemove = tiers.find(t => t.id === tierId);
+    if (!tierToRemove) return;
+
+    // Return characters back to pool and sort alphabetically
+    if (tierToRemove.characterIds.length > 0) {
+      setPool(prev => {
+        const newPool = [...prev, ...tierToRemove.characterIds];
+        return newPool.sort((a, b) => {
+          const nameA = charactersMap.current[a]?.name || '';
+          const nameB = charactersMap.current[b]?.name || '';
+          return nameA.localeCompare(nameB);
         });
-        setDraggedHero(null);
+      });
+    }
+
+    setTiers(prev => prev.filter(t => t.id !== tierId));
+  };
+
+  const handleMoveTier = (index: number, direction: 'up' | 'down') => {
+    const targetIndex = direction === 'up' ? index - 1 : index + 1;
+    if (targetIndex < 0 || targetIndex >= tiers.length) return;
+
+    setTiers(prev => {
+      const copy = [...prev];
+      const temp = copy[index];
+      copy[index] = copy[targetIndex];
+      copy[targetIndex] = temp;
+      return copy;
+    });
+  };
+
+  const handleReset = () => {
+    if (window.confirm('¿Seguro que quieres restablecer la tier list? Se devolverán todos los personajes al pool.')) {
+      const characters = 
+        currentTemplateId === 'genshin' ? GENSHIN_CHARACTERS : 
+        currentTemplateId === 'wuwa' ? WUTHERING_WAVES_CHARACTERS : 
+        currentTemplateId === 'overwatch' ? OVERWATCH_CHARACTERS :
+        DBD_CHARACTERS;
+      setTiers(INITIAL_TIERS.map(t => ({ ...t, characterIds: [] })));
+      // Reset pool and sort alphabetically
+      const sortedIds = characters.map(c => c.id).sort((a, b) => {
+        const nameA = charactersMap.current[a]?.name || '';
+        const nameB = charactersMap.current[b]?.name || '';
+        return nameA.localeCompare(nameB);
+      });
+      setPool(sortedIds);
+      setSelectedCharId(null);
+    }
+  };
+
+  // Filtering Pool
+  const filteredPool = pool.filter(charId => {
+    const char = charactersMap.current[charId];
+    if (!char) return false;
+
+    // Search query match
+    if (searchQuery && !char.name.toLowerCase().includes(searchQuery.toLowerCase())) {
+      return false;
+    }
+
+    // Element match
+    if (activeElementFilter && char.element !== activeElementFilter) {
+      return false;
+    }
+
+    // Weapon match
+    if (activeWeaponFilter && char.weapon !== activeWeaponFilter) {
+      return false;
+    }
+
+    // Rarity match
+    if (activeRarityFilter && char.rarity !== activeRarityFilter) {
+      return false;
+    }
+
+    return true;
+  });
+
+  // Dynamic card size inside presentation modal based on viewport height and tiers configuration
+  const [windowHeight, setWindowHeight] = useState(window.innerHeight);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setWindowHeight(window.innerHeight);
     };
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
-    const resetTierlist = () => {
-        setTiers({ S: [], A: [], B: [], C: [], D: [], pool: initialHeroes });
-    };
+  const getPresenterCardSize = () => {
+    // Height of header + padding is approx 60px in presentation modal (no header, only padding)
+    const availableHeight = windowHeight - 60;
+    const numRows = tiers.length;
+    
+    // Theoretical max height per row
+    const maxRowHeight = availableHeight / numRows;
+    
+    // Card height should be maxRowHeight - padding (approx 12px)
+    let calculatedSize = maxRowHeight - 12;
+    
+    // Limit between a minimum of 36px and maximum of 90px
+    calculatedSize = Math.max(36, Math.min(90, calculatedSize));
+    
+    // Also adjust if there are too many characters in a single row (to prevent horizontal overflow)
+    const maxCharsInARow = Math.max(...tiers.map(t => t.characterIds.length), 1);
+    if (maxCharsInARow > 12) {
+      // Scale down card size horizontally if a row is very crowded
+      const horizontalLimit = 1000 / maxCharsInARow; // 1000px available max width
+      calculatedSize = Math.min(calculatedSize, horizontalLimit);
+    }
+    
+    return Math.max(36, Math.floor(calculatedSize));
+  };
+  const presenterCardSize = getPresenterCardSize();
 
-    const updateLabel = (id: string, newLabel: string) => {
-        setTierConfig(prev => prev.map(t => t.id === id ? { ...t, label: newLabel } : t));
-    };
+  return (
+    <div className="app-container">
+      <>
+        {/* Title Header Banner */}
+      {currentView === 'home' ? (
+        <div className="home-dashboard" style={{ padding: '1rem 0', display: 'flex', flexDirection: 'column', gap: '2.5rem' }}>
+          <article className="hero-main glass" style={{ margin: '0 auto', textAlign: 'center', padding: '40px 34px', width: '100%', maxWidth: '900px' }}>
+            <div className="eyebrow" style={{ display: 'inline-flex', margin: '0 auto 18px' }}>
+              <span className="dot"></span>Creador de Tierlists
+            </div>
+            <h1 style={{ margin: '0 auto 16px', maxWidth: 'none', fontSize: '3rem', fontWeight: 900 }}>Selecciona una Plantilla</h1>
+            <p style={{ margin: '0 auto', maxWidth: '650px', color: 'var(--muted)', fontSize: '1rem', lineHeight: 1.6 }}>
+              Elige el juego que deseas clasificar y empieza a organizar tus personajes favoritos de inmediato.
+            </p>
+          </article>
 
-    // Efecto para Auto-scroll durante el Drag & Drop
-    React.useEffect(() => {
-        let scrollSpeed = 0;
-        let animationFrameId: number;
+          <div className="game-tabs-grid">
+              {[
+                { id: 'genshin', name: 'Genshin Impact', desc: 'Edita la tierlist de personajes oficiales del parche Snezhnaya, incluyendo a Odette y Alyosha.', color: '#33ecc0', bg: '/Imagenes/tierlist_genshin.png' },
+                { id: 'wuwa', name: 'Wuthering Waves', desc: 'Clasifica a todos los Resonadores y formas de Rover jugables hasta la versión 3.5.', color: '#b874ec', bg: '/Imagenes/tierlist_wuwa.png' },
+                { id: 'overwatch', name: 'Overwatch', desc: 'Crea la tierlist definitiva de héroes incluyendo a Anran, Domina, Hazard y Jetpack Cat.', color: '#f08226', bg: '/Imagenes/tierlist_overwatch.png' },
+                { id: 'dbd', name: 'Dead by Daylight', desc: 'Clasifica supervivientes y asesinos oficiales más tus personajes personalizados.', color: '#00d27f', bg: '/Imagenes/tierlist_dbd.png' }
+              ].map((g) => {
+                  return (
+                      <div
+                          key={g.id}
+                          onClick={() => {
+                              setCurrentTemplateId(g.id as any);
+                              setCurrentView('editor');
+                          }}
+                          className="glass"
+                          style={{
+                              position: 'relative',
+                              overflow: 'hidden',
+                              cursor: 'pointer',
+                              padding: '2rem 1.5rem',
+                              borderRadius: '24px',
+                              boxShadow: 'var(--shadow)',
+                              transition: 'all 0.3s ease',
+                              textAlign: 'left'
+                          }}
+                          onMouseEnter={(e) => {
+                              e.currentTarget.style.borderColor = 'var(--accent)';
+                              e.currentTarget.style.boxShadow = '0 0 30px rgba(255, 0, 115, 0.15)';
+                              e.currentTarget.style.transform = 'translateY(-4px)';
+                              const bgImg = e.currentTarget.querySelector('.card-bg-img') as HTMLImageElement;
+                              if (bgImg) bgImg.style.transform = 'scale(1.08)';
+                          }}
+                          onMouseLeave={(e) => {
+                              e.currentTarget.style.borderColor = 'rgba(233, 176, 255, .08)';
+                              e.currentTarget.style.boxShadow = 'var(--shadow)';
+                              e.currentTarget.style.transform = 'none';
+                              const bgImg = e.currentTarget.querySelector('.card-bg-img') as HTMLImageElement;
+                              if (bgImg) bgImg.style.transform = 'scale(1)';
+                          }}
+                      >
+                          {/* Background image underlay with 50% opacity */}
+                          {g.bg && (
+                              <div style={{
+                                  position: 'absolute',
+                                  top: 0,
+                                  left: 0,
+                                  right: 0,
+                                  bottom: 0,
+                                  zIndex: 0,
+                                  opacity: 0.5,
+                                  overflow: 'hidden'
+                              }}>
+                                  <img 
+                                      src={g.bg} 
+                                      alt="background" 
+                                      className="card-bg-img"
+                                      style={{
+                                          width: '100%',
+                                          height: '100%',
+                                          objectFit: 'cover',
+                                          filter: 'brightness(0.3) contrast(1.15)',
+                                          transition: 'transform 0.5s cubic-bezier(0.16, 1, 0.3, 1)',
+                                          pointerEvents: 'none'
+                                      }}
+                                  />
+                              </div>
+                          )}
 
-        const handleGlobalDragOver = (e: DragEvent) => {
-            if (!draggedHero) return;
+                          <div style={{ position: 'relative', zIndex: 1, pointerEvents: 'none' }}>
+                              <h3 style={{
+                                  color: '#fff',
+                                  fontSize: '1.4rem',
+                                  fontWeight: 800,
+                                  marginBottom: '0.75rem',
+                                  fontFamily: 'var(--font-primary)',
+                                  textShadow: `0 0 10px ${g.color}33`
+                              }}>
+                                  {g.name}
+                              </h3>
+                              <p style={{
+                                  color: 'var(--text-muted)',
+                                  fontSize: '0.95rem',
+                                  lineHeight: 1.5,
+                                  margin: 0
+                              }}>
+                                  {g.desc}
+                              </p>
+                          </div>
+                      </div>
+                  );
+              })}
+          </div>
+        </div>
+      ) : (
+        <>
+          {/* Back button to Templates */}
+          <div style={{ marginBottom: '1.5rem', display: 'flex', justifyContent: 'flex-start' }}>
+            <button 
+              onClick={() => setCurrentView('home')} 
+              className="btn btn-secondary"
+              style={{
+                background: 'rgba(255,255,255,0.03)',
+                borderColor: 'rgba(255,255,255,0.08)',
+                padding: '0.5rem 1.25rem',
+                borderRadius: '999px',
+                fontSize: '0.9rem',
+                fontWeight: 600,
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '8px'
+              }}
+            >
+              &larr; Volver a Plantillas
+            </button>
+          </div>
 
-            const threshold = 150; // Distancia desde el borde para empezar a scrollear
-            const maxSpeed = 20;
+          <header className="header-banner">
+            <span className="header-tag">
+              <Sparkles size={12} style={{ marginRight: 4, display: 'inline' }} />
+              {currentTemplateId === 'genshin' ? 'Snezhnaya Update' : currentTemplateId === 'wuwa' ? 'Versión 3.5' : currentTemplateId === 'overwatch' ? 'Temporada 1 (2026)' : 'Dead by Daylight'}
+            </span>
+            <h1 className="header-title">
+              {currentTemplateId === 'genshin' ? 'Genshin Impact Tier List Maker' : currentTemplateId === 'wuwa' ? 'Wuthering Waves Tier List Maker' : currentTemplateId === 'overwatch' ? 'Overwatch Tier List Maker' : 'Dead by Daylight Tier List Maker'}
+            </h1>
+            <p className="header-subtitle">
+              {currentTemplateId === 'genshin' ? (
+                <>
+                  Crea tu tier list definitiva de Genshin Impact. Incluye a todos los personajes hasta la versión 6.7, 
+                  además de los nuevos de la versión 7.0: <strong>Odette</strong> y <strong>Alyosha</strong>. Arrastra los iconos o selecciónalos para moverlos.
+                </>
+              ) : currentTemplateId === 'wuwa' ? (
+                <>
+                  Crea tu tier list definitiva de Wuthering Waves. Incluye a todos los personajes y formas de Rover de Spectro y Havoc hasta la versión 3.5. Arrastra los iconos o selecciónalos para moverlos.
+                </>
+              ) : currentTemplateId === 'overwatch' ? (
+                <>
+                  Crea tu tier list definitiva de Overwatch. Incluye a todos los héroes clásicos y los nuevos introducidos en el parche de la Temporada 1 de 2026 como <strong>Anran</strong>, <strong>Domina</strong>, <strong>Freja</strong>, <strong>Hazard</strong> y <strong>Jetpack Cat</strong>. Arrastra los iconos o selecciónalos para moverlos.
+                </>
+              ) : (
+                <>
+                  Crea tu tier list definitiva de Dead by Daylight. Incluye a todos los supervivientes y asesinos. Arrastra los iconos o selecciónalos para moverlos.
+                </>
+              )}
+            </p>
+          </header>
 
-            if (e.clientY < threshold) {
-                // Scrollear hacia arriba
-                scrollSpeed = -Math.max(1, (threshold - e.clientY) / threshold * maxSpeed);
-            } else if (window.innerHeight - e.clientY < threshold) {
-                // Scrollear hacia abajo
-                scrollSpeed = Math.max(1, (threshold - (window.innerHeight - e.clientY)) / threshold * maxSpeed);
-            } else {
-                scrollSpeed = 0;
-            }
-        };
+      {/* Control Buttons & Search Panel */}
+      <section className="controls-bar">
+        <div className="controls-left">
+          <button onClick={handleAddTier} className="btn btn-primary">
+            <Plus size={16} />
+            Añadir Fila
+          </button>
+          <button onClick={handleReset} className="btn btn-danger">
+            <RotateCcw size={16} />
+            Reiniciar
+          </button>
+          <button onClick={() => setIsFullModalOpen(true)} className="btn btn-accent">
+            <Maximize2 size={16} />
+            Full Tierlist
+          </button>
+        </div>
+        
+        <div className="controls-right">
+          <div className="search-container">
+            <Search className="search-icon" />
+            <input 
+              type="text" 
+              placeholder="Buscar personaje..." 
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="search-input"
+            />
+            {searchQuery && (
+              <button 
+                onClick={() => setSearchQuery('')}
+                style={{
+                  position: 'absolute',
+                  right: '10px',
+                  top: '50%',
+                  transform: 'translateY(-50%)',
+                  background: 'none',
+                  border: 'none',
+                  color: 'var(--text-muted)',
+                  cursor: 'pointer'
+                }}
+              >
+                <X size={14} />
+              </button>
+            )}
+          </div>
+        </div>
+      </section>
 
-        const scrollLoop = () => {
-            if (scrollSpeed !== 0) {
-                window.scrollBy(0, scrollSpeed);
-            }
-            animationFrameId = requestAnimationFrame(scrollLoop);
-        };
+      {/* Interactive Mobile Guidance Notice */}
+      {selectedCharId && (
+        <div className="mobile-notice">
+          <Info size={16} />
+          <span>
+            Has seleccionado a <strong>{charactersMap.current[selectedCharId]?.name}</strong>. Haz clic en la fila de destino o en el pool para moverlo.
+          </span>
+        </div>
+      )}
 
-        if (draggedHero) {
-            window.addEventListener('dragover', handleGlobalDragOver);
-            animationFrameId = requestAnimationFrame(scrollLoop);
-        }
-
-        return () => {
-            window.removeEventListener('dragover', handleGlobalDragOver);
-            cancelAnimationFrame(animationFrameId);
-        };
-    }, [draggedHero]);
-
-    return (
-        <section className="section fade-in">
-            <div className="container-fluid" style={{ padding: '0 2rem' }}>
-                <h1 className="section-title text-center">Tierlist Overwatch Personalizada</h1>
-
-                <div className="warning-box glass" style={{
-                    maxWidth: '1200px',
-                    margin: '2.5rem auto 1.5rem',
-                    border: '2px solid #ff4d4d',
-                    padding: '1.5rem 2rem',
-                    borderRadius: '16px',
-                    display: 'flex',
-                    gap: '1.5rem',
-                    alignItems: 'center',
-                    background: 'rgba(255, 77, 77, 0.05)',
-                    boxShadow: '0 0 30px rgba(255, 77, 77, 0.1)'
-                }}>
-                    <FontAwesomeIcon icon={faTriangleExclamation} style={{ color: '#ff4d4d', fontSize: '2rem' }} />
-                    <div style={{ textAlign: 'left' }}>
-                        <p style={{ color: '#ff4d4d', fontWeight: 'bold', fontSize: '1.1rem', marginBottom: '0.5rem', textShadow: '0 0 10px rgba(255, 77, 77, 0.3)' }}>
-                            Información Legal
-                        </p>
-                        <p style={{ margin: 0, lineHeight: '1.5', color: 'rgba(255,255,255,0.9)', fontSize: '0.9rem' }}>
-                            Overwatch y todos los personajes, nombres y elementos relacionados son marcas registradas y propiedad de Blizzard Entertainment.
-                            Esta página web es un proyecto independiente de carácter informativo y no está afiliada, patrocinada ni respaldada por Blizzard Entertainment.
-                        </p>
-                    </div>
-                </div>
-
-                <div className="tierlist-main-layout" style={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    gap: '4rem',
-                    alignItems: 'center',
-                    marginTop: '5rem',
-                    position: 'relative',
-                    width: '100%'
-                }}>
-
-
-                    {/* Tiers arriba */}
-                    <div className="tiers-section" style={{ width: '100%', maxWidth: '1200px', position: 'relative' }}>
-                        {/* Botón Reset alineado con la grilla */}
-                        <button
-                            onClick={resetTierlist}
-                            style={{
-                                position: 'absolute',
-                                top: '-35px',
-                                right: '0',
-                                background: 'none',
-                                border: 'none',
-                                color: '#ff4d4d',
-                                fontSize: '0.9rem',
-                                fontWeight: 'bold',
-                                cursor: 'pointer',
-                                textShadow: '0 0 8px rgba(255, 77, 77, 0.6)',
-                                textTransform: 'uppercase',
-                                letterSpacing: '1px',
-                                zIndex: 10
-                            }}
-                        >
-                            Resetear
-                        </button>
-                        <div className="tiers-grid">
-                            {tierConfig.map(t => (
-                                <TierRow
-                                    key={t.id}
-                                    tier={t}
-                                    heroes={tiers[t.id]}
-                                    onDrop={(idx) => handleDrop(t.id, idx)}
-                                    onDragStart={(hero) => handleDragStart(hero, t.id)}
-                                    onLabelChange={(label) => updateLabel(t.id, label)}
-                                />
-                            ))}
-                        </div>
-                    </div>
-
-                    {/* Pool de personajes abajo */}
-                    <div className="pool-section glass" style={{
-                        width: '100%',
-                        maxWidth: '1200px',
-                        padding: '2rem',
-                        borderRadius: '32px',
-                        display: 'flex',
-                        flexDirection: 'column',
-                        border: '1px solid rgba(255, 77, 77, 0.2)',
-                        boxShadow: '0 15px 40px rgba(0,0,0,0.4)',
-                        marginBottom: '4rem'
-                    }}>
-                        <h3 style={{ marginBottom: '1.5rem', color: '#fff', fontSize: '1.4rem', textAlign: 'center', textTransform: 'uppercase', letterSpacing: '2px' }}>Héroes disponibles</h3>
-                        <div
-                            className="hero-pool"
-                            onDragOver={(e) => e.preventDefault()}
-                            onDrop={() => handleDrop('pool')}
-                            style={{
-                                display: 'grid',
-                                gridTemplateColumns: 'repeat(12, 1fr)',
-                                gap: '12px',
-                                background: 'rgba(0,0,0,0.2)',
-                                padding: '20px',
-                                borderRadius: '20px',
-                                border: '1px solid rgba(255,255,255,0.05)'
-                            }}
-                        >
-                            {tiers.pool.map((hero, index) => (
-                                <div
-                                    key={hero.id}
-                                    draggable
-                                    onDragStart={() => handleDragStart(hero, 'pool')}
-                                    onDragOver={(e) => { e.preventDefault(); e.stopPropagation(); }}
-                                    onDrop={(e) => { e.preventDefault(); e.stopPropagation(); handleDrop('pool', index); }}
-                                    className="hero-tile"
-                                    style={{
-                                        width: '70px',
-                                        height: '70px',
-                                        borderRadius: '8px',
-                                        backgroundImage: `url(${hero.img})`,
-                                        backgroundSize: 'cover',
-                                        backgroundPosition: 'center',
-                                        cursor: 'grab',
-                                        border: '2px solid #000',
-                                        boxShadow: '0 0 15px rgba(0, 0, 0, 0.8)',
-                                        transition: 'all 0.2s ease',
-                                        margin: 'auto'
-                                    }}
-                                />
-                            ))}
-                        </div>
-                    </div>
-                </div>
+      {/* The main Tier List Board */}
+      <main className="tierlist-board">
+        {tiers.map((tier, index) => (
+          <div 
+            key={tier.id} 
+            className={`tier-row ${hoveredTierId === tier.id ? 'drag-over' : ''}`}
+            data-tier-id={tier.id}
+            onClick={() => handleTierRowClick(tier.id)}
+          >
+            {/* Tier Label (Left Sidebar) */}
+            <div 
+              className="tier-label-wrapper"
+              style={{ 
+                background: 'linear-gradient(180deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.01))',
+                borderLeft: `5px solid ${tier.color}`,
+                backdropFilter: 'blur(12px)',
+                WebkitBackdropFilter: 'blur(12px)'
+              }}
+              onClick={(e) => {
+                // If selected character exists, move it. Otherwise allow label rename or color click.
+                if (selectedCharId) {
+                  e.stopPropagation();
+                  handleTierRowClick(tier.id);
+                }
+              }}
+            >
+              <textarea
+                value={tier.label}
+                onChange={(e) => handleUpdateLabel(tier.id, e.target.value)}
+                placeholder="TIER"
+                className="tier-label-textarea"
+                rows={1}
+                spellCheck={false}
+                onClick={(e) => e.stopPropagation()} // Prevents select action on input focus
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') e.preventDefault();
+                }}
+              />
             </div>
 
-            <style>{`
-                .hero-tile:hover { 
-                    transform: scale(1.1); 
-                    z-index: 10; 
-                    filter: brightness(1.2);
-                }
-                .hero-tile:active { cursor: grabbing; }
+            {/* Tier Dropzone (Center Content Area) */}
+            <div 
+              className="tier-dropzone"
+              onDragOver={(e) => {
+                e.preventDefault();
+                e.currentTarget.classList.add('drag-over');
+              }}
+              onDragLeave={(e) => {
+                e.currentTarget.classList.remove('drag-over');
+              }}
+              onDrop={(e) => {
+                e.currentTarget.classList.remove('drag-over');
+                handleDrop(e, tier.id);
+              }}
+            >
+              {tier.characterIds.map((charId, idx) => {
+                const char = charactersMap.current[charId];
+                if (!char) return null;
+                return (
+                  <div
+                    key={char.id}
+                    draggable
+                    onDragStart={(e) => handleDragStart(e, char.id)}
+                    onDragEnd={handleDragEnd}
+                    onClick={(e) => handleCharCardClick(char.id, e)}
+                    onDragOver={(e) => e.preventDefault()}
+                    onDrop={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      handleDrop(e, tier.id, idx);
+                    }}
+                    className={`character-card rarity-${char.rarity}-card element-${char.element.toLowerCase()}-glow ${selectedCharId === char.id ? 'selected' : ''}`}
+                    style={{ backgroundImage: `url(${char.imgUrl})` }}
+                  >
+                    <div className="character-name-overlay">{char.name}</div>
+                  </div>
+                );
+              })}
+            </div>
 
-                .custom-scrollbar::-webkit-scrollbar {
-                    width: 6px;
-                }
-                .custom-scrollbar::-webkit-scrollbar-track {
-                    background: rgba(255, 255, 255, 0.02);
-                    border-radius: 10px;
-                }
-                .custom-scrollbar::-webkit-scrollbar-thumb {
-                    background: rgba(255, 77, 77, 0.3);
-                    border-radius: 10px;
-                }
-                .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-                    background: rgba(255, 77, 77, 0.5);
-                }
+            {/* Tier Controls (Right Sidebar) */}
+            <div className="tier-actions" onClick={(e) => e.stopPropagation()}>
+              <button 
+                onClick={() => handleMoveTier(index, 'up')} 
+                disabled={index === 0}
+                className="action-btn"
+                title="Mover fila arriba"
+              >
+                <ArrowUp size={14} />
+              </button>
+              <button 
+                onClick={() => handleMoveTier(index, 'down')} 
+                disabled={index === tiers.length - 1}
+                className="action-btn"
+                title="Mover fila abajo"
+              >
+                <ArrowDown size={14} />
+              </button>
+              <button 
+                onClick={() => setActiveColorPickerRowId(activeColorPickerRowId === tier.id ? null : tier.id)} 
+                className="action-btn"
+                title="Cambiar Color"
+              >
+                <Palette size={14} />
+              </button>
+              <button 
+                onClick={() => handleRemoveTier(tier.id)} 
+                className="action-btn delete"
+                title="Eliminar fila"
+              >
+                <Trash2 size={14} />
+              </button>
 
-                @media (max-width: 1100px) {
-                    .tierlist-main-layout {
-                        flex-direction: column;
-                    }
-                    .pool-section {
-                        width: 100% !important;
-                        position: relative !important;
-                        top: 0 !important;
-                        max-height: 400px !important;
-                    }
-                    .tierlist-main-layout > button {
-                        top: -30px !important;
-                    }
-                }
-            `}</style>
-        </section>
-    );
-};
+              {/* Color Picker Overlay */}
+              {activeColorPickerRowId === tier.id && (
+                <div className="color-picker-overlay">
+                  {PRESET_COLORS.map(color => (
+                    <div
+                      key={color}
+                      className="color-dot"
+                      style={{ backgroundColor: color, color }}
+                      onClick={() => handleSetRowColor(tier.id, color)}
+                    />
+                  ))}
+                  <button 
+                    onClick={() => setActiveColorPickerRowId(null)}
+                    className="action-btn"
+                    style={{ marginLeft: 8 }}
+                  >
+                    <X size={14} />
+                  </button>
+                </div>
+              )}
+            </div>
+          </div>
+        ))}
+      </main>
 
-export default TierList;
+      {/* Reserves Shelf / Character Pool */}
+      <section 
+        className="pool-section"
+        onClick={handlePoolAreaClick}
+        onDragOver={(e) => e.preventDefault()}
+        onDrop={handleDropOnPool}
+      >
+        <div className="pool-header-row">
+          <div className="pool-title-group">
+            <Layers size={20} style={{ color: 'var(--color-geo)' }} />
+            <h2 style={{ fontSize: '1.25rem' }}>
+              {currentTemplateId === 'overwatch' ? 'Héroes Disponibles' : 'Personajes Disponibles'}
+            </h2>
+            <span className="pool-count">
+              {filteredPool.length} / {
+                currentTemplateId === 'genshin' ? GENSHIN_CHARACTERS.length : 
+                currentTemplateId === 'wuwa' ? WUTHERING_WAVES_CHARACTERS.length : 
+                currentTemplateId === 'overwatch' ? OVERWATCH_CHARACTERS.length :
+                DBD_CHARACTERS.length
+              }
+            </span>
+          </div>
+        </div>
+
+        {/* Filter System Shelf (placed underneath characters row) */}
+        <div className="filters-container" onClick={(e) => e.stopPropagation()}>
+          {/* Element Filter */}
+          <div className="filter-row">
+            <span className="filter-label">
+              {currentTemplateId === 'overwatch' ? 'Rol:' : currentTemplateId === 'dbd' ? 'Bando:' : 'Elemento:'}
+            </span>
+            <div className="filter-group">
+              <button 
+                onClick={() => setActiveElementFilter(null)}
+                className={`filter-tag ${activeElementFilter === null ? 'active' : ''}`}
+              >
+                Todos
+              </button>
+              {Object.keys(elementColors).map(el => (
+                <button
+                  key={el}
+                  onClick={() => setActiveElementFilter(activeElementFilter === el ? null : el)}
+                  className={`filter-tag ${activeElementFilter === el ? 'active' : ''} ${el.toLowerCase()}`}
+                  style={activeElementFilter === el ? { borderColor: elementColors[el], color: elementColors[el] } : {}}
+                >
+                  {el}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Weapon Filter */}
+          <div className="filter-row">
+            <span className="filter-label">
+              {currentTemplateId === 'overwatch' ? 'Facción:' : currentTemplateId === 'dbd' ? 'Origen:' : 'Arma:'}
+            </span>
+            <div className="filter-group">
+              <button 
+                onClick={() => setActiveWeaponFilter(null)}
+                className={`filter-tag ${activeWeaponFilter === null ? 'active' : ''}`}
+              >
+                Todas
+              </button>
+              {Object.keys(weaponsMap).map(w => (
+                <button
+                  key={w}
+                  onClick={() => setActiveWeaponFilter(activeWeaponFilter === w ? null : w)}
+                  className={`filter-tag ${activeWeaponFilter === w ? 'active' : ''}`}
+                >
+                  {weaponsMap[w]}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Rarity Filter */}
+          {currentTemplateId !== 'overwatch' && currentTemplateId !== 'dbd' && (
+            <div className="filter-row">
+              <span className="filter-label">Rareza:</span>
+              <div className="filter-group">
+                <button 
+                  onClick={() => setActiveRarityFilter(null)}
+                  className={`filter-tag ${activeRarityFilter === null ? 'active' : ''}`}
+                >
+                  Todas
+                </button>
+                <button 
+                  onClick={() => setActiveRarityFilter(5)}
+                  className={`filter-tag rarity-5 ${activeRarityFilter === 5 ? 'active' : ''}`}
+                >
+                  5 Estrellas
+                </button>
+                <button 
+                  onClick={() => setActiveRarityFilter(4)}
+                  className={`filter-tag rarity-4 ${activeRarityFilter === 4 ? 'active' : ''}`}
+                >
+                  4 Estrellas
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+
+        <div className="mobile-notice" style={{ marginTop: 0 }}>
+          <Info size={14} />
+          <span>
+            <strong>Tip Móvil:</strong> Toca un personaje para seleccionarlo, luego toca cualquier fila arriba para asignarlo.
+          </span>
+        </div>
+      </section>
+
+      {/* Floating horizontal scroll pool ( macOS / iOS Dock style bubble ) */}
+      <div 
+        className={`pool-horizontal-wrapper ${currentTemplateId === 'dbd' ? 'dbd-pool-wrapper' : ''} ${isDockHidden && !activeDragCharId ? 'hidden-dock' : ''}`}
+        onClick={(e) => e.stopPropagation()}
+        onDragOver={(e) => e.preventDefault()}
+        onDrop={handleDropOnPool}
+      >
+          {filteredPool.length > 0 && (
+            <button 
+              onClick={() => scrollPool('left')}
+              className="pool-scroll-btn left"
+              title="Desplazar izquierda"
+            >
+              &#8592;
+            </button>
+          )}
+
+          <div 
+            ref={scrollContainerRef}
+            className="pool-horizontal-scroll"
+            onPointerDown={handlePoolPointerDown}
+          >
+            {filteredPool.length > 0 ? (
+              filteredPool.map(charId => {
+                const char = charactersMap.current[charId];
+                if (!char) return null;
+                return (
+                  <div
+                    key={char.id}
+                    draggable={false}
+                    onDragStart={(e) => e.preventDefault()}
+                    onMouseDown={(e) => e.preventDefault()}
+                    onTouchStart={(e) => e.preventDefault()}
+                    onPointerDown={(e) => handleCharCardPointerDown(char.id, e)}
+                    className={`character-card ${currentTemplateId === 'dbd' ? 'dbd-pool-card' : ''} rarity-${char.rarity}-card element-${char.element.toLowerCase()}-glow ${selectedCharId === char.id ? 'selected' : ''}`}
+                    style={{ 
+                      backgroundImage: `url(${char.imgUrl})`, 
+                      flexShrink: 0,
+                      opacity: activeDragCharId === char.id ? 0.35 : 1,
+                      cursor: activeDragCharId === char.id ? 'grabbing' : 'grab'
+                    }}
+                    title={`${char.name} (${char.element} - ${char.weapon})`}
+                  >
+                    <div className="character-name-overlay">{char.name}</div>
+                  </div>
+                );
+              })
+            ) : pool.length > 0 ? (
+              <div className="pool-grid-empty">
+                <HelpCircle size={32} />
+                <p>No se encontraron personajes con los filtros seleccionados.</p>
+              </div>
+            ) : null}
+          </div>
+
+          {filteredPool.length > 0 && (
+            <button 
+              onClick={() => scrollPool('right')}
+              className="pool-scroll-btn right"
+              title="Desplazar derecha"
+            >
+              &#8594;
+            </button>
+          )}
+        </div>
+
+      {/* Custom drag-and-drop overlay preview */}
+      {activeDragCharId && dragMode === 'drag' && (
+        <div 
+          className="custom-drag-preview"
+          style={{
+            position: 'fixed',
+            left: dragPosition.x - 43,
+            top: dragPosition.y - 43, // Restored vertical offset to center under cursor
+            pointerEvents: 'none',
+            zIndex: 9999,
+            transform: 'scale(1.05)',
+            opacity: 0.95,
+            transition: 'none',
+          }}
+        >
+          <div 
+            className={`character-card rarity-${charactersMap.current[activeDragCharId]?.rarity}-card element-${charactersMap.current[activeDragCharId]?.element.toLowerCase()}-glow`}
+            style={{ 
+              backgroundImage: `url(${charactersMap.current[activeDragCharId]?.imgUrl})`,
+              transition: 'none',
+              transform: 'none'
+            }}
+          />
+        </div>
+      )}
+
+      {/* Presentation Fullscreen Modal */}
+      {isFullModalOpen && (
+        <div className="fullscreen-presenter-overlay" onDragOver={(e) => e.preventDefault()}>
+          {/* Floating presentation controllers (saves vertical space) */}
+          <div className="presenter-floating-actions">
+            <button 
+              onClick={() => setIsFullModalOpen(false)} 
+              className="presenter-icon-btn close-btn"
+              title="Cerrar presentación"
+            >
+              <X size={18} />
+            </button>
+          </div>
+
+          <div className="presenter-board-container">
+            <div className="tierlist-board clean-board">
+              {tiers.map((tier) => (
+                <div 
+                  key={tier.id} 
+                  className={`tier-row ${hoveredTierId === tier.id ? 'drag-over' : ''}`}
+                  data-tier-id={tier.id}
+                  onClick={() => handleTierRowClick(tier.id)}
+                >
+                  <div 
+                    className="tier-label-wrapper"
+                    style={{ 
+                      background: 'linear-gradient(180deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.01))',
+                      borderLeft: `5px solid ${tier.color}`,
+                      backdropFilter: 'blur(12px)',
+                      WebkitBackdropFilter: 'blur(12px)'
+                    }}
+                    onClick={(e) => {
+                      if (selectedCharId) {
+                        e.stopPropagation();
+                        handleTierRowClick(tier.id);
+                      }
+                    }}
+                  >
+                    <span className="tier-label-text">{tier.label || 'TIER'}</span>
+                  </div>
+
+                  <div 
+                    className="tier-dropzone"
+                    onDragOver={(e) => {
+                      e.preventDefault();
+                      e.currentTarget.classList.add('drag-over');
+                    }}
+                    onDragLeave={(e) => {
+                      e.currentTarget.classList.remove('drag-over');
+                    }}
+                    onDrop={(e) => {
+                      e.currentTarget.classList.remove('drag-over');
+                      handleDrop(e, tier.id);
+                    }}
+                  >
+                    {tier.characterIds.map((charId, idx) => {
+                      const char = charactersMap.current[charId];
+                      if (!char) return null;
+                      return (
+                        <div
+                          key={char.id}
+                          draggable
+                          onDragStart={(e) => handleDragStart(e, char.id)}
+                          onDragEnd={handleDragEnd}
+                          onClick={(e) => handleCharCardClick(char.id, e)}
+                          onDragOver={(e) => e.preventDefault()}
+                          onDrop={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            handleDrop(e, tier.id, idx);
+                          }}
+                          className={`character-card rarity-${char.rarity}-card element-${char.element.toLowerCase()}-glow`}
+                          style={{ 
+                            backgroundImage: `url(${char.imgUrl})`,
+                            width: `${presenterCardSize}px`,
+                            height: `${presenterCardSize}px`,
+                            borderRadius: `${Math.max(6, Math.floor(presenterCardSize * 0.16))}px`
+                          }}
+                        >
+                          {presenterCardSize >= 72 && (
+                            <div className="character-name-overlay">{char.name}</div>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+        </>
+      )}
+
+
+      </>
+    </div>
+  );
+}

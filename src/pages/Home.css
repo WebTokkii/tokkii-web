@@ -1,0 +1,50 @@
+/* Hoja de estilos limpia para el Home */
+
+.home-wrapper {
+    margin-bottom: -40px; /* Compensa el padding-bottom de main global */
+}
+
+.home-section {
+    position: relative;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    padding: 6rem 0; /* Espaciado vertical cómodo y estilizado */
+}
+
+.home-section.hero-section {
+    padding-top: 140px;
+    padding-bottom: 7rem;
+    text-align: center;
+}
+
+.section-content {
+    position: relative;
+    z-index: 2;
+    width: 100%;
+    max-width: var(--max-width);
+    margin: 0 auto;
+    padding: 0 2rem;
+}
+
+.section-minimal {
+    padding: 6rem 0;
+}
+
+/* Responsividad para móviles */
+@media (max-width: 768px) {
+    .home-section.hero-section {
+        padding-top: 100px;
+        padding-bottom: 5rem;
+    }
+
+    .home-section {
+        padding: 4rem 0;
+    }
+    
+    .section-content {
+        padding: 0 1.5rem;
+    }
+}

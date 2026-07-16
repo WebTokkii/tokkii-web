@@ -2,34 +2,33 @@ import { Link } from 'react-router-dom';
 
 const Footer: React.FC = () => {
     return (
-        <footer className="footer" style={{ padding: '1.2rem 0', borderTop: '1px solid rgba(255,255,255,0.05)' }}>
-            <div className="container" style={{
+        <footer className="footer" style={{ padding: '1.5rem 0' }}>
+            <div className="wrap" style={{
                 display: 'flex',
-                justifyContent: 'space-between',
                 alignItems: 'center',
+                justifyContent: 'center',
+                gap: '1.5rem',
                 flexWrap: 'wrap',
-                gap: '1rem'
+                fontSize: '0.88rem',
+                color: 'rgba(255, 255, 255, 0.45)',
+                textAlign: 'center'
             }}>
-                <p style={{ margin: 0, opacity: 0.6, fontSize: '0.85rem' }}>
-                    &copy; 2026 EvilTokkii.
-                </p>
+                <span>&copy; 2026 EvilTokkii.</span>
+                <span>•</span>
 
-                <div className="socials" style={{ display: 'flex', gap: '1.2rem', alignItems: 'center', fontSize: '0.85rem' }}>
-                    <a href="https://www.twitch.tv/eviltokkii" target="_blank" rel="noopener noreferrer">Twitch</a>
-                    <a href="https://www.instagram.com/eviltokkii" target="_blank" rel="noopener noreferrer">Instagram</a>
-                    <a href="https://www.tiktok.com/@eviltokkii" target="_blank" rel="noopener noreferrer">TikTok</a>
-                    <a href="https://x.com/EvilTokkii" target="_blank" rel="noopener noreferrer">X</a>
-                    <a href="https://discord.com/invite/Kxvw4KfSBF" target="_blank" rel="noopener noreferrer">Discord</a>
+                {/* Redes Sociales */}
+                <div className="socials" style={{ 
+                    display: 'flex', 
+                    gap: '1.5rem', 
+                    alignItems: 'center', 
+                    fontWeight: 700
+                }}>
+                    <a href="https://www.twitch.tv/eviltokkii" target="_blank" rel="noopener noreferrer" style={{ color: 'rgba(255, 255, 255, 0.7)', textDecoration: 'none', transition: 'color 0.2s' }} className="footer-link-hover">Twitch</a>
+                    <a href="https://www.instagram.com/eviltokkii" target="_blank" rel="noopener noreferrer" style={{ color: 'rgba(255, 255, 255, 0.7)', textDecoration: 'none', transition: 'color 0.2s' }} className="footer-link-hover">Instagram</a>
+                    <a href="https://www.tiktok.com/@eviltokkii" target="_blank" rel="noopener noreferrer" style={{ color: 'rgba(255, 255, 255, 0.7)', textDecoration: 'none', transition: 'color 0.2s' }} className="footer-link-hover">TikTok</a>
+                    <a href="https://x.com/EvilTokkii" target="_blank" rel="noopener noreferrer" style={{ color: 'rgba(255, 255, 255, 0.7)', textDecoration: 'none', transition: 'color 0.2s' }} className="footer-link-hover">X</a>
+                    <a href="https://discord.com/invite/Kxvw4KfSBF" target="_blank" rel="noopener noreferrer" style={{ color: 'rgba(255, 255, 255, 0.7)', textDecoration: 'none', transition: 'color 0.2s' }} className="footer-link-hover">Discord</a>
                 </div>
-
-                <Link to="/politicas" style={{
-                    color: 'rgba(255,255,255,0.4)',
-                    textDecoration: 'none',
-                    fontSize: '0.8rem',
-                    transition: 'all 0.3s ease'
-                }} className="legal-link-hover">
-                    Políticas y Privacidad
-                </Link>
             </div>
         </footer>
     );
