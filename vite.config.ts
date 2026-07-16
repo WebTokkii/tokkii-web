@@ -7,7 +7,7 @@ process.env.BROWSER = 'msedge'
 
 export default defineConfig({
   // 🔗 Necesario para GitHub Pages (nombre exacto del repo)
-  base: '/tokkii-web/',
+  base: '/',
 
   plugins: [react()],
 
