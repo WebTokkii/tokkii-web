@@ -640,7 +640,7 @@ export default function Minijuegos() {
                 WebkitBackdropFilter: 'blur(12px)',
                 letterSpacing: '1px'
               }}>
-                ⚠️ Logea para porder realizar los minijuegos.
+                ⚠️ Logea para poder realizar los minijuegos.
               </div>
             </div>
           )}
