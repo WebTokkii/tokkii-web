@@ -132,7 +132,16 @@ const DinamicaCardVertical: React.FC<{ item: any, hoverColor?: string, style?: R
                         <span style={{ fontSize: '0.75rem', fontWeight: 'bold', color: '#ff4d4d', letterSpacing: '1px' }}>FECHA</span>
                         <span style={{ fontSize: '0.9rem', color: '#fff', fontWeight: '600' }}>{item.fecha}</span>
                     </div>
-                    {item.slug ? (
+                    {item.estado === 'terminado' || item.estado === 'finalizado' ? (
+                        <span style={{
+                            color: 'rgba(255, 255, 255, 0.35)',
+                            fontSize: '0.95rem',
+                            fontWeight: '800',
+                            letterSpacing: '0.5px'
+                        }}>
+                            Finalizado
+                        </span>
+                    ) : item.slug ? (
                         <Link
                             to={`/dinamicas/${item.slug}`}
                             style={{
@@ -432,7 +441,7 @@ const Dinamicas: React.FC = () => {
         .sort((a, b) => parseFecha(a.fecha, a.created_at).getTime() - parseFecha(b.fecha, b.created_at).getTime());
 
     const eventosTerminados = items
-        .filter(i => i.tipo === 'evento' && (i.estado === 'terminado' || i.estado === 'finalizado'))
+        .filter(i => (i.tipo === 'evento' || i.tipo === 'sorteo') && (i.estado === 'terminado' || i.estado === 'finalizado'))
         .sort((a, b) => parseFecha(b.fecha, b.created_at).getTime() - parseFecha(a.fecha, a.created_at).getTime());
 
     const displayProximas = proximasDinamicas.length > 0 ? proximasDinamicas : [{
