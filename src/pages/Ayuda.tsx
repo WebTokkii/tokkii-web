@@ -76,18 +76,40 @@ const Ayuda: React.FC = () => {
     const [imagePreviews, setImagePreviews] = useState<string[]>([]);
     const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
     const [submitStatus, setSubmitStatus] = useState<{ success?: boolean; message?: string } | null>(null);
+    const [username, setUsername] = useState<string>('');
     
     const fileInputRef = useRef<HTMLInputElement>(null);
 
     useEffect(() => {
+        const fetchProfile = async (sessionUser: any) => {
+            if (!sessionUser) {
+                setUsername('');
+                return;
+            }
+            try {
+                const { data } = await supabase
+                    .from('profiles')
+                    .select('username')
+                    .eq('id', sessionUser.id)
+                    .single();
+                if (data?.username) {
+                    setUsername(data.username);
+                }
+            } catch (err) {
+                console.error('Error fetching profile:', err);
+            }
+        };
+
         // Obtener sesión activa
         supabase.auth.getSession().then(({ data: { session } }) => {
             setUser(session?.user ?? null);
+            fetchProfile(session?.user ?? null);
         });
 
         // Escuchar cambios de sesión
         const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
             setUser(session?.user ?? null);
+            fetchProfile(session?.user ?? null);
         });
 
         return () => subscription.unsubscribe();
@@ -150,11 +172,12 @@ const Ayuda: React.FC = () => {
                 }
             }
 
-            // 2. Guardar reporte en Supabase con los URLs de R2
+            // 2. Guardar reporte en Supabase con los URLs de R2 y el username
             const { error } = await supabase
                 .from('user_reports')
                 .insert({
                     user_id: user.id,
+                    username: username || user?.user_metadata?.name || user?.user_metadata?.full_name || 'Desconocido',
                     report_type: reportType,
                     description: description.trim(),
                     images: imageUrls

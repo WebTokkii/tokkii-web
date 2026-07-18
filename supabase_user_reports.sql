@@ -8,11 +8,14 @@ CREATE TABLE IF NOT EXISTS public.user_reports (
     report_type VARCHAR(50) NOT NULL, -- 'bug', 'sugerencia', 'cambio'
     description TEXT NOT NULL,
     images JSONB DEFAULT '[]'::jsonb, -- Array de URLs de imágenes en Cloudflare R2
+    username VARCHAR(100), -- Nombre de usuario de Twitch del reportante
     created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
--- En caso de que la tabla 'user_reports' ya existiera previamente, aseguramos agregar la columna 'images'
+-- En caso de que la tabla 'user_reports' ya existiera previamente, aseguramos agregar las columnas faltantes
 ALTER TABLE public.user_reports ADD COLUMN IF NOT EXISTS images JSONB DEFAULT '[]'::jsonb;
+ALTER TABLE public.user_reports ADD COLUMN IF NOT EXISTS username VARCHAR(100);
+
 
 
 -- 2. Habilitar RLS (Row Level Security)
