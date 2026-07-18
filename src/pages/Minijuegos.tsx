@@ -313,7 +313,7 @@ export default function Minijuegos() {
     if (type === 'dbd_perks') {
       const activeDbdPerks = (dbMinigames['dbd'] || DBD_PERKS).filter(perk => {
         const parts = perk.image.split('/');
-        const imgName = parts[parts.length - 1];
+        const imgName = parts[parts.length - 1].replace('.png', '');
         return DOWNLOADED_PERKS.has(imgName);
       });
 
