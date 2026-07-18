@@ -309,18 +309,44 @@ export default function Minijuegos() {
     };
 
     if (type === 'dbd_perks') {
-      const activeDbdPerks = dbMinigames['dbd'] || DBD_PERKS;
+      const activeDbdPerks = (dbMinigames['dbd'] || DBD_PERKS).filter(perk => {
+        const parts = perk.image.split('/');
+        const imgName = parts[parts.length - 1];
+        return DOWNLOADED_PERKS.has(imgName);
+      });
+
+      // Calculate dayIndex since a fixed epoch
+      const startOfEpoch = new Date('2026-01-01');
+      const localToday = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+      const msInDay = 24 * 60 * 60 * 1000;
+      const dayIndex = Math.floor((localToday.getTime() - startOfEpoch.getTime()) / msInDay);
+
+      const totalPerks = activeDbdPerks.length;
+      const blockSize = 15;
+      let dayBlock;
+
+      if (totalPerks <= blockSize) {
+        dayBlock = activeDbdPerks;
+      } else {
+        const totalBlocks = Math.floor(totalPerks / blockSize);
+        const currentBlockIdx = Math.abs(dayIndex) % totalBlocks;
+        const startIndex = currentBlockIdx * blockSize;
+        dayBlock = activeDbdPerks.slice(startIndex, startIndex + blockSize);
+      }
+
       const selectedPerks = [];
-      const tempPerks = [...activeDbdPerks];
+      const tempPerks = [...dayBlock];
+      
       for (let i = 0; i < 15; i++) {
         const randIdx = Math.floor(random() * tempPerks.length);
         const perk = tempPerks.splice(randIdx, 1)[0];
         if (perk) {
           const incorrectOptions = [];
           const potentialIncorrect = activeDbdPerks.filter(p => p.role === perk.role && p.name !== perk.name);
+          const tempIncorrect = [...potentialIncorrect];
           for (let j = 0; j < 3; j++) {
-            const randIncIdx = Math.floor(random() * potentialIncorrect.length);
-            const incPerk = potentialIncorrect.splice(randIncIdx, 1)[0];
+            const randIncIdx = Math.floor(random() * tempIncorrect.length);
+            const incPerk = tempIncorrect.splice(randIncIdx, 1)[0];
             if (incPerk) {
               incorrectOptions.push(incPerk.name);
             }
