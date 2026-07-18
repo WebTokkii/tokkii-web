@@ -1082,6 +1082,96 @@ export default function Minijuegos() {
                             </div>
                           )}
                         </div>
+                      ) : quizType === 'covers' ? (
+                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1.3fr', gap: '2.5rem', alignItems: 'center', width: '100%', minHeight: '340px' }} className="covers-side-layout">
+                          {/* Left Column: Cover Art */}
+                          <div style={{ textAlign: 'center', display: 'flex', justifyContent: 'center' }}>
+                            <div style={{
+                              display: 'inline-block',
+                              padding: '12px',
+                              background: 'rgba(255, 255, 255, 0.02)',
+                              borderRadius: '24px',
+                              border: '1px solid rgba(255, 255, 255, 0.08)',
+                              boxShadow: 'var(--shadow)',
+                              backdropFilter: 'blur(10px)',
+                              width: '100%',
+                              maxWidth: '260px'
+                            }}>
+                              <img 
+                                src={quizQuestions[currentQuestionIdx].image || ''} 
+                                alt="Video Game Cover" 
+                                style={{
+                                  width: '100%',
+                                  height: 'auto',
+                                  maxHeight: '340px',
+                                  display: 'block',
+                                  borderRadius: '16px',
+                                  objectFit: 'contain'
+                                }} 
+                              />
+                            </div>
+                          </div>
+
+                          {/* Right Column: Question & Options */}
+                          <div style={{ display: 'flex', flexDirection: 'column', width: '100%' }}>
+                            <h2 style={{ fontSize: '1.4rem', fontWeight: 800, marginBottom: '1.5rem', textAlign: 'left' }}>
+                              {quizQuestions[currentQuestionIdx].text}
+                            </h2>
+
+                            {/* Opciones en cuadrícula */}
+                            <div style={{ display: 'grid', gap: '0.75rem', width: '100%' }}>
+                              {quizQuestions[currentQuestionIdx].options.map((option: string, idx: number) => {
+                                const isCorrect = idx === quizQuestions[currentQuestionIdx].answerIndex;
+                                const isSelected = idx === selectedOptionIdx;
+                                
+                                let btnBg = 'rgba(255,255,255,0.02)';
+                                let btnBorder = '1px solid rgba(255,255,255,0.06)';
+                                let color = '#fff';
+
+                                if (isAnswerRevealed) {
+                                  if (isCorrect) {
+                                    btnBg = 'rgba(0, 210, 127, 0.15)';
+                                    btnBorder = '1px solid #00d27f';
+                                  } else if (isSelected) {
+                                    btnBg = 'rgba(255, 77, 77, 0.15)';
+                                    btnBorder = '1px solid #ff4d4d';
+                                  } else {
+                                    btnBg = 'rgba(255,255,255,0.01)';
+                                    color = 'rgba(255,255,255,0.2)';
+                                  }
+                                } else if (isSelected) {
+                                  btnBg = 'rgba(255,255,255,0.08)';
+                                  btnBorder = '1px solid rgba(255,255,255,0.2)';
+                                }
+
+                                return (
+                                  <button
+                                    key={idx}
+                                    disabled={isAnswerRevealed}
+                                    onClick={() => handleSelectOption(idx)}
+                                    style={{
+                                      padding: '1rem',
+                                      borderRadius: '12px',
+                                      background: btnBg,
+                                      border: btnBorder,
+                                      color: color,
+                                      textAlign: 'left',
+                                      fontSize: '1rem',
+                                      fontWeight: 600,
+                                      display: 'flex',
+                                      gap: '10px',
+                                      transition: 'all 0.2s ease',
+                                      cursor: isAnswerRevealed ? 'default' : 'pointer'
+                                    }}
+                                  >
+                                    <span style={{ opacity: 0.5 }}>{String.fromCharCode(65 + idx)})</span>
+                                    <span>{option}</span>
+                                  </button>
+                                );
+                              })}
+                            </div>
+                          </div>
+                        </div>
                       ) : (
                         <>
                           {quizType === 'audio_music' ? (
@@ -1140,7 +1230,7 @@ export default function Minijuegos() {
                               </div>
                               <h2 style={{ marginTop: '1.5rem', fontSize: '1.4rem', fontWeight: 800 }}>¿Cómo se llama esta habilidad (Perk)?</h2>
                             </div>
-                          ) : (quizType === 'disney' || quizType === 'covers') ? (
+                          ) : quizType === 'disney' ? (
                             <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
                               <div style={{
                                 display: 'inline-block',
