@@ -74,6 +74,24 @@ export default function Minijuegos() {
   const [completionsToday, setCompletionsToday] = useState<string[]>([]);
   const [streakAwardInfo, setStreakAwardInfo] = useState<{ show: boolean; days: number; points: number } | null>(null);
 
+  // Database custom minigames config
+  const [dbMinigames, setDbMinigames] = useState<Record<string, any>>({});
+
+  useEffect(() => {
+    supabase
+      .from('minigames_content')
+      .select('*')
+      .then(({ data, error }) => {
+        if (!error && data) {
+          const dict: Record<string, any> = {};
+          data.forEach(row => {
+            dict[row.game_type] = row.data;
+          });
+          setDbMinigames(dict);
+        }
+      });
+  }, []);
+
   const triggerStreakAward = async () => {
     if (!userId) return;
     
@@ -291,14 +309,15 @@ export default function Minijuegos() {
     };
 
     if (type === 'dbd_perks') {
+      const activeDbdPerks = dbMinigames['dbd'] || DBD_PERKS;
       const selectedPerks = [];
-      const tempPerks = [...DBD_PERKS];
+      const tempPerks = [...activeDbdPerks];
       for (let i = 0; i < 15; i++) {
         const randIdx = Math.floor(random() * tempPerks.length);
         const perk = tempPerks.splice(randIdx, 1)[0];
         if (perk) {
           const incorrectOptions = [];
-          const potentialIncorrect = DBD_PERKS.filter(p => p.role === perk.role && p.name !== perk.name);
+          const potentialIncorrect = activeDbdPerks.filter(p => p.role === perk.role && p.name !== perk.name);
           for (let j = 0; j < 3; j++) {
             const randIncIdx = Math.floor(random() * potentialIncorrect.length);
             const incPerk = potentialIncorrect.splice(randIncIdx, 1)[0];
@@ -330,16 +349,16 @@ export default function Minijuegos() {
     const dayIndex = Math.floor((localToday.getTime() - startOfEpoch.getTime()) / msInDay);
 
     const sourceQuestions = 
-      type === 'flags' ? FLAG_QUESTIONS :
-      type === 'overwatch' ? OVERWATCH_QUESTIONS : 
-      type === 'games' ? GAMES_QUESTIONS : 
-      type === 'word_scramble' ? SCRAMBLE_WORDS.map(w => ({
+      type === 'flags' ? (dbMinigames['flags'] || FLAG_QUESTIONS) :
+      type === 'overwatch' ? (dbMinigames['overwatch'] || OVERWATCH_QUESTIONS) : 
+      type === 'games' ? (dbMinigames['games'] || GAMES_QUESTIONS) : 
+      type === 'word_scramble' ? (dbMinigames['scramble'] || SCRAMBLE_WORDS.map(w => ({
         scrambleWord: w.word,
         scrambleHint: w.hint,
         options: [],
         answerIndex: 0
-      })) :
-      MUSIC_HITS_QUESTIONS;
+      }))) :
+      (dbMinigames['music'] || MUSIC_HITS_QUESTIONS);
 
     const totalQuestions = sourceQuestions.length;
     const blockSize = 15;
