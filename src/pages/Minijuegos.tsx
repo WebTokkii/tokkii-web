@@ -8,6 +8,7 @@ import { FLAG_QUESTIONS } from '../data/FlagQuestions';
 import { SCRAMBLE_WORDS } from '../data/ScrambleWords';
 import { DBD_PERKS } from '../data/DbdPerks';
 import { DISNEY_QUESTIONS } from '../data/DisneyQuestions';
+import { COVERS_QUESTIONS } from '../data/CoversQuestions';
 import { DOWNLOADED_PERKS } from '../data/DbdPerksDownloaded';
 import md5 from 'blueimp-md5';
 import './TierList.css'; // Reuse existing glass styles
@@ -53,7 +54,7 @@ interface QuizQuestion {
 
 export default function Minijuegos() {
   const [currentView, setCurrentView] = useState<'hub' | 'quiz'>('hub');
-  const [quizType, setQuizType] = useState<'overwatch' | 'games' | 'audio_music' | 'flags' | 'word_scramble' | 'dbd_perks' | 'disney'>('overwatch');
+  const [quizType, setQuizType] = useState<'overwatch' | 'games' | 'audio_music' | 'flags' | 'word_scramble' | 'dbd_perks' | 'disney' | 'covers'>('overwatch');
   
   // Quiz play states
   const [quizQuestions, setQuizQuestions] = useState<QuizQuestion[]>([]);
@@ -290,7 +291,7 @@ export default function Minijuegos() {
     }
   };
 
-  const getDailyQuestions = (type: 'overwatch' | 'games' | 'audio_music' | 'flags' | 'word_scramble' | 'dbd_perks' | 'disney') => {
+  const getDailyQuestions = (type: 'overwatch' | 'games' | 'audio_music' | 'flags' | 'word_scramble' | 'dbd_perks' | 'disney' | 'covers') => {
     const today = new Date();
     const dateStr = `${today.getFullYear()}-${today.getMonth() + 1}-${today.getDate()}`;
     
@@ -387,6 +388,7 @@ export default function Minijuegos() {
         answerIndex: 0
       }))) :
       type === 'disney' ? (dbMinigames['disney'] || DISNEY_QUESTIONS) :
+      type === 'covers' ? (dbMinigames['covers'] || COVERS_QUESTIONS) :
       (dbMinigames['music'] || MUSIC_HITS_QUESTIONS);
 
     const totalQuestions = sourceQuestions.length;
@@ -428,7 +430,7 @@ export default function Minijuegos() {
     return shuffled;
   };
 
-  const startQuiz = (type: 'overwatch' | 'games' | 'audio_music' | 'flags' | 'word_scramble' | 'dbd_perks' | 'disney') => {
+  const startQuiz = (type: 'overwatch' | 'games' | 'audio_music' | 'flags' | 'word_scramble' | 'dbd_perks' | 'disney' | 'covers') => {
     if (!userId) {
       alert("Inicia sesión con Twitch para realizar las trivias diarias.");
       return;
@@ -700,7 +702,8 @@ export default function Minijuegos() {
                 { id: 'flags', name: 'Adivina la Bandera', desc: 'Trivia de geografía mundial para identificar las banderas de diferentes países.', color: '#ff4d4d', bg: '/Imagenes/minijuego_flags.png' },
                 { id: 'word_scramble', name: 'Word Scramble', desc: 'Adivina la palabra desordenada con la ayuda de una pista. 15 palabras diarias. +3 puntos por acierto.', color: '#d833ff', bg: '/Imagenes/minijuego_scramble.png' },
                 { id: 'dbd_perks', name: 'Perks de DBD', desc: 'Identifica la perk de Dead by Daylight a partir de su icono. 15 preguntas diarias. +3 puntos por acierto.', color: '#00d27f', bg: '/Imagenes/minijuego_dbd.png' },
-                { id: 'disney', name: 'Personajes Disney', desc: 'Adivina qué personaje de Disney es a partir de su imagen. 15 preguntas diarias. +3 puntos por acierto.', color: '#ffdd00', bg: '/Imagenes/minijuego_disney.png' }
+                { id: 'disney', name: 'Personajes Disney', desc: 'Adivina qué personaje de Disney es a partir de su imagen. 15 preguntas diarias. +3 puntos por acierto.', color: '#ffdd00', bg: '/Imagenes/minijuego_disney.png' },
+                { id: 'covers', name: 'Carátulas de Juegos', desc: 'Adivina el videojuego a partir de su carátula o box art limpio y sin logos. 15 preguntas diarias. +3 puntos por acierto.', color: '#a855f7', bg: '/Imagenes/minijuego_covers.png' }
               ].map((g) => {
                   const isCompleted = completionsToday.includes(g.id);
                   const isLocked = !userId;
@@ -1137,7 +1140,7 @@ export default function Minijuegos() {
                               </div>
                               <h2 style={{ marginTop: '1.5rem', fontSize: '1.4rem', fontWeight: 800 }}>¿Cómo se llama esta habilidad (Perk)?</h2>
                             </div>
-                          ) : quizType === 'disney' ? (
+                          ) : (quizType === 'disney' || quizType === 'covers') ? (
                             <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
                               <div style={{
                                 display: 'inline-block',
@@ -1150,11 +1153,12 @@ export default function Minijuegos() {
                               }}>
                                 <img 
                                   src={quizQuestions[currentQuestionIdx].image || ''} 
-                                  alt="Disney Character" 
+                                  alt="Quiz Illustration" 
                                   style={{
-                                    height: '140px',
+                                    height: '180px',
                                     display: 'block',
-                                    borderRadius: '16px'
+                                    borderRadius: '16px',
+                                    objectFit: 'contain'
                                   }} 
                                 />
                               </div>
