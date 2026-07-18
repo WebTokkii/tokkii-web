@@ -967,7 +967,7 @@ export default function Minijuegos() {
                   padding: '2rem', 
                   borderRadius: '24px',
                   width: '100%',
-                  maxWidth: '650px',
+                  maxWidth: quizType === 'covers' ? '850px' : '650px',
                   boxShadow: '0 25px 60px rgba(0,0,0,0.65), 0 0 35px rgba(255, 0, 110, 0.15)',
                   border: '1px solid rgba(255, 0, 110, 0.22)',
                   maxHeight: '95vh',
