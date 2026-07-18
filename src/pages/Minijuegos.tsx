@@ -290,7 +290,7 @@ export default function Minijuegos() {
     }
   };
 
-  const getDailyQuestions = (type: 'overwatch' | 'games' | 'audio_music' | 'flags' | 'word_scramble' | 'dbd_perks') => {
+  const getDailyQuestions = (type: 'overwatch' | 'games' | 'audio_music' | 'flags' | 'word_scramble' | 'dbd_perks' | 'disney') => {
     const today = new Date();
     const dateStr = `${today.getFullYear()}-${today.getMonth() + 1}-${today.getDate()}`;
     
@@ -311,7 +311,7 @@ export default function Minijuegos() {
     };
 
     if (type === 'dbd_perks') {
-      const activeDbdPerks = (dbMinigames['dbd'] || DBD_PERKS).filter(perk => {
+      const activeDbdPerks = (dbMinigames['dbd'] || DBD_PERKS).filter((perk: any) => {
         const parts = perk.image.split('/');
         const imgName = parts[parts.length - 1].replace('.png', '');
         return DOWNLOADED_PERKS.has(imgName);
@@ -344,7 +344,7 @@ export default function Minijuegos() {
         const perk = tempPerks.splice(randIdx, 1)[0];
         if (perk) {
           const incorrectOptions = [];
-          const potentialIncorrect = activeDbdPerks.filter(p => p.role === perk.role && p.name !== perk.name);
+          const potentialIncorrect = activeDbdPerks.filter((p: any) => p.role === perk.role && p.name !== perk.name);
           const tempIncorrect = [...potentialIncorrect];
           for (let j = 0; j < 3; j++) {
             const randIncIdx = Math.floor(random() * tempIncorrect.length);
