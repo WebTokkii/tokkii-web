@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCoins, faGamepad, faEnvelope, faInfoCircle, faPaperPlane, faBug, faLightbulb, faExchangeAlt } from '@fortawesome/free-solid-svg-icons';
+import { faCoins, faGamepad, faEnvelope, faInfoCircle, faPaperPlane, faBug, faLightbulb, faExchangeAlt, faPaperclip, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { supabase } from '../lib/supabase';
 import './Home.css';
 
@@ -72,8 +72,12 @@ const Ayuda: React.FC = () => {
     // Estados del formulario de reporte
     const [reportType, setReportType] = useState<string>('bug');
     const [description, setDescription] = useState<string>('');
+    const [selectedImages, setSelectedImages] = useState<File[]>([]);
+    const [imagePreviews, setImagePreviews] = useState<string[]>([]);
     const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
     const [submitStatus, setSubmitStatus] = useState<{ success?: boolean; message?: string } | null>(null);
+    
+    const fileInputRef = useRef<HTMLInputElement>(null);
 
     useEffect(() => {
         // Obtener sesión activa
@@ -89,6 +93,24 @@ const Ayuda: React.FC = () => {
         return () => subscription.unsubscribe();
     }, []);
 
+    const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (e.target.files) {
+            const files = Array.from(e.target.files);
+            setSelectedImages(prev => [...prev, ...files]);
+            
+            const newPreviews = files.map(file => URL.createObjectURL(file));
+            setImagePreviews(prev => [...prev, ...newPreviews]);
+        }
+    };
+
+    const handleRemoveImage = (index: number) => {
+        setSelectedImages(prev => prev.filter((_, i) => i !== index));
+        setImagePreviews(prev => {
+            URL.revokeObjectURL(prev[index]);
+            return prev.filter((_, i) => i !== index);
+        });
+    };
+
     const handleSubmitReport = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!user) return;
@@ -101,18 +123,50 @@ const Ayuda: React.FC = () => {
         setSubmitStatus(null);
 
         try {
+            let imageUrls: string[] = [];
+
+            // 1. Subir imágenes a R2 mediante la Edge Function 'clever-api'
+            if (selectedImages.length > 0) {
+                for (const image of selectedImages) {
+                    const { data, error: uploadErr } = await supabase.functions.invoke('clever-api', {
+                        body: { fileName: image.name, fileType: image.type }
+                    });
+
+                    if (uploadErr || !data) {
+                        throw new Error(uploadErr ? uploadErr.message : 'Error generando presigned URL');
+                    }
+
+                    const uploadRes = await fetch(data.presignedUrl, {
+                        method: 'PUT',
+                        body: image,
+                        headers: { 'Content-Type': image.type }
+                    });
+
+                    if (!uploadRes.ok) {
+                        throw new Error(`Mala conexión con R2: ${uploadRes.statusText}`);
+                    }
+
+                    imageUrls.push(data.finalPublicUrl);
+                }
+            }
+
+            // 2. Guardar reporte en Supabase con los URLs de R2
             const { error } = await supabase
                 .from('user_reports')
                 .insert({
                     user_id: user.id,
                     report_type: reportType,
-                    description: description.trim()
+                    description: description.trim(),
+                    images: imageUrls
                 });
 
             if (error) throw error;
 
             setSubmitStatus({ success: true, message: '¡Tu reporte ha sido enviado con éxito! Muchas gracias por ayudarnos a mejorar.' });
             setDescription('');
+            setSelectedImages([]);
+            imagePreviews.forEach(url => URL.revokeObjectURL(url));
+            setImagePreviews([]);
         } catch (err: any) {
             setSubmitStatus({ success: false, message: 'Error al enviar reporte: ' + err.message });
         } finally {
@@ -315,25 +369,94 @@ const Ayuda: React.FC = () => {
                                         </div>
                                     )}
 
-                                    <button
-                                        type="submit"
-                                        disabled={isSubmitting}
-                                        className="btn primary"
-                                        style={{
-                                            display: 'flex',
-                                            alignItems: 'center',
-                                            justifyContent: 'center',
-                                            gap: '10px',
-                                            padding: '0.8rem',
-                                            fontSize: '1rem',
-                                            fontWeight: 'bold',
-                                            cursor: isSubmitting ? 'default' : 'pointer',
-                                            opacity: isSubmitting ? 0.6 : 1
-                                        }}
-                                    >
-                                        <FontAwesomeIcon icon={faPaperPlane} />
-                                        {isSubmitting ? 'Enviando...' : 'Enviar Reporte'}
-                                    </button>
+                                    {imagePreviews.length > 0 && (
+                                        <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', marginTop: '5px' }}>
+                                            {imagePreviews.map((preview, idx) => (
+                                                <div key={idx} style={{ position: 'relative', width: '80px', height: '80px', borderRadius: '8px', overflow: 'hidden', border: '1px solid rgba(255,255,255,0.2)' }}>
+                                                    <img src={preview} alt="preview" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => handleRemoveImage(idx)}
+                                                        style={{
+                                                            position: 'absolute',
+                                                            top: '2px',
+                                                            right: '2px',
+                                                            background: 'rgba(255, 77, 77, 0.85)',
+                                                            border: 'none',
+                                                            borderRadius: '50%',
+                                                            width: '20px',
+                                                            height: '20px',
+                                                            display: 'flex',
+                                                            alignItems: 'center',
+                                                            justifyContent: 'center',
+                                                            color: '#fff',
+                                                            cursor: 'pointer',
+                                                            fontSize: '0.75rem'
+                                                        }}
+                                                    >
+                                                        <FontAwesomeIcon icon={faTrash} />
+                                                    </button>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    )}
+
+                                    <input 
+                                        type="file" 
+                                        ref={fileInputRef} 
+                                        onChange={handleImageChange} 
+                                        multiple 
+                                        accept="image/*" 
+                                        style={{ display: 'none' }} 
+                                    />
+
+                                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px' }}>
+                                        <button
+                                            type="button"
+                                            onClick={() => fileInputRef.current?.click()}
+                                            disabled={isSubmitting}
+                                            style={{
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                justifyContent: 'center',
+                                                gap: '10px',
+                                                padding: '0.8rem',
+                                                fontSize: '0.95rem',
+                                                fontWeight: 'bold',
+                                                cursor: isSubmitting ? 'default' : 'pointer',
+                                                background: 'linear-gradient(180deg, rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0.01))',
+                                                border: '1px solid rgba(233, 176, 255, 0.15)',
+                                                borderRadius: '12px',
+                                                color: '#fff',
+                                                transition: 'all 0.25s ease',
+                                                opacity: isSubmitting ? 0.6 : 1
+                                            }}
+                                        >
+                                            <FontAwesomeIcon icon={faPaperclip} />
+                                            {selectedImages.length > 0 ? `Adjuntadas (${selectedImages.length})` : 'Adjuntar Capturas'}
+                                        </button>
+
+                                        <button
+                                            type="submit"
+                                            disabled={isSubmitting}
+                                            className="btn primary"
+                                            style={{
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                justifyContent: 'center',
+                                                gap: '10px',
+                                                padding: '0.8rem',
+                                                fontSize: '1rem',
+                                                fontWeight: 'bold',
+                                                cursor: isSubmitting ? 'default' : 'pointer',
+                                                opacity: isSubmitting ? 0.6 : 1,
+                                                margin: 0
+                                            }}
+                                        >
+                                            <FontAwesomeIcon icon={faPaperPlane} />
+                                            {isSubmitting ? 'Enviando...' : 'Enviar Reporte'}
+                                        </button>
+                                    </div>
                                 </form>
                             ) : (
                                 <div style={{ 
