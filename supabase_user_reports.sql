@@ -11,6 +11,10 @@ CREATE TABLE IF NOT EXISTS public.user_reports (
     created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
+-- En caso de que la tabla 'user_reports' ya existiera previamente, aseguramos agregar la columna 'images'
+ALTER TABLE public.user_reports ADD COLUMN IF NOT EXISTS images JSONB DEFAULT '[]'::jsonb;
+
+
 -- 2. Habilitar RLS (Row Level Security)
 ALTER TABLE public.user_reports ENABLE ROW LEVEL SECURITY;
 
