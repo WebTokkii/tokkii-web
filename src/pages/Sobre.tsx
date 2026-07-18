@@ -131,17 +131,21 @@ const Sobre: React.FC = () => {
                                     
                                     <div style={{
                                         display: 'flex',
-                                        flexWrap: 'nowrap',
-                                        gap: '0.6rem',
+                                        flexWrap: 'wrap',
+                                        gap: '0.6rem 0.8rem',
                                         padding: '0.5rem 0',
                                         width: '100%',
-                                        justifyContent: 'space-between',
+                                        justifyContent: 'flex-start',
                                         alignItems: 'center',
                                         margin: '0.5rem 0',
                                         overflow: 'visible'
                                     }}>
                                         <span style={{ fontSize: 'clamp(0.7rem, 2vw, 0.95rem)', fontWeight: 'bold', color: '#ffb703', display: 'inline-flex', alignItems: 'center', gap: '6px', whiteSpace: 'nowrap', flexShrink: 0 }}>
                                             <FontAwesomeIcon icon={faCrown} /> REQUIEM373 (JEFE)
+                                        </span>
+                                        <span style={{ color: 'rgba(255, 255, 255, 0.2)', whiteSpace: 'nowrap', flexShrink: 0 }}>|</span>
+                                        <span style={{ fontSize: 'clamp(0.7rem, 2vw, 0.95rem)', color: '#fff', fontWeight: '600', display: 'inline-flex', alignItems: 'center', gap: '6px', whiteSpace: 'nowrap', flexShrink: 0 }}>
+                                            <img src="/Imagenes/Espada_Twitch_Verde.png" alt="Espada Mod" style={{ width: '1rem', height: '1rem', objectFit: 'contain' }} /> NPEZE
                                         </span>
                                         <span style={{ color: 'rgba(255, 255, 255, 0.2)', whiteSpace: 'nowrap', flexShrink: 0 }}>|</span>
                                         <span style={{ fontSize: 'clamp(0.7rem, 2vw, 0.95rem)', color: '#fff', fontWeight: '600', display: 'inline-flex', alignItems: 'center', gap: '6px', whiteSpace: 'nowrap', flexShrink: 0 }}>
