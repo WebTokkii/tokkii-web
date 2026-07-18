@@ -7,6 +7,7 @@ import { MUSIC_HITS_QUESTIONS } from '../data/MusicHitsQuestions';
 import { FLAG_QUESTIONS } from '../data/FlagQuestions';
 import { SCRAMBLE_WORDS } from '../data/ScrambleWords';
 import { DBD_PERKS } from '../data/DbdPerks';
+import { DISNEY_QUESTIONS } from '../data/DisneyQuestions';
 import { DOWNLOADED_PERKS } from '../data/DbdPerksDownloaded';
 import md5 from 'blueimp-md5';
 import './TierList.css'; // Reuse existing glass styles
@@ -45,13 +46,14 @@ interface QuizQuestion {
   scrambleHint?: string;
   scrambleJumbled?: string;
   dbdPerkImage?: string;
+  image?: string;
   options: string[];
   answerIndex: number;
 }
 
 export default function Minijuegos() {
   const [currentView, setCurrentView] = useState<'hub' | 'quiz'>('hub');
-  const [quizType, setQuizType] = useState<'overwatch' | 'games' | 'audio_music' | 'flags' | 'word_scramble' | 'dbd_perks'>('overwatch');
+  const [quizType, setQuizType] = useState<'overwatch' | 'games' | 'audio_music' | 'flags' | 'word_scramble' | 'dbd_perks' | 'disney'>('overwatch');
   
   // Quiz play states
   const [quizQuestions, setQuizQuestions] = useState<QuizQuestion[]>([]);
@@ -384,6 +386,7 @@ export default function Minijuegos() {
         options: [],
         answerIndex: 0
       }))) :
+      type === 'disney' ? (dbMinigames['disney'] || DISNEY_QUESTIONS) :
       (dbMinigames['music'] || MUSIC_HITS_QUESTIONS);
 
     const totalQuestions = sourceQuestions.length;
@@ -425,7 +428,7 @@ export default function Minijuegos() {
     return shuffled;
   };
 
-  const startQuiz = (type: 'overwatch' | 'games' | 'audio_music' | 'flags' | 'word_scramble' | 'dbd_perks') => {
+  const startQuiz = (type: 'overwatch' | 'games' | 'audio_music' | 'flags' | 'word_scramble' | 'dbd_perks' | 'disney') => {
     if (!userId) {
       alert("Inicia sesión con Twitch para realizar las trivias diarias.");
       return;
@@ -696,7 +699,8 @@ export default function Minijuegos() {
                 { id: 'games', name: 'Videojuegos Trivia', desc: 'Preguntas aleatorias de la cultura gamer desde los 90s hasta la actualidad.', color: '#33ecc0', bg: '/Imagenes/minijuego_games.png' },
                 { id: 'flags', name: 'Adivina la Bandera', desc: 'Trivia de geografía mundial para identificar las banderas de diferentes países.', color: '#ff4d4d', bg: '/Imagenes/minijuego_flags.png' },
                 { id: 'word_scramble', name: 'Word Scramble', desc: 'Adivina la palabra desordenada con la ayuda de una pista. 15 palabras diarias. +3 puntos por acierto.', color: '#d833ff', bg: '/Imagenes/minijuego_scramble.png' },
-                { id: 'dbd_perks', name: 'Perks de DBD', desc: 'Identifica la perk de Dead by Daylight a partir de su icono. 15 preguntas diarias. +3 puntos por acierto.', color: '#00d27f', bg: '/Imagenes/minijuego_dbd.png' }
+                { id: 'dbd_perks', name: 'Perks de DBD', desc: 'Identifica la perk de Dead by Daylight a partir de su icono. 15 preguntas diarias. +3 puntos por acierto.', color: '#00d27f', bg: '/Imagenes/minijuego_dbd.png' },
+                { id: 'disney', name: 'Personajes Disney', desc: 'Adivina qué personaje de Disney es a partir de su imagen. 15 preguntas diarias. +3 puntos por acierto.', color: '#ffdd00', bg: '/Imagenes/minijuego_disney.png' }
               ].map((g) => {
                   const isCompleted = completionsToday.includes(g.id);
                   const isLocked = !userId;
@@ -1132,6 +1136,29 @@ export default function Minijuegos() {
                                 />
                               </div>
                               <h2 style={{ marginTop: '1.5rem', fontSize: '1.4rem', fontWeight: 800 }}>¿Cómo se llama esta habilidad (Perk)?</h2>
+                            </div>
+                          ) : quizType === 'disney' ? (
+                            <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
+                              <div style={{
+                                display: 'inline-block',
+                                padding: '12px',
+                                background: 'rgba(255, 255, 255, 0.02)',
+                                borderRadius: '24px',
+                                border: '1px solid rgba(255, 255, 255, 0.08)',
+                                boxShadow: 'var(--shadow)',
+                                backdropFilter: 'blur(10px)'
+                              }}>
+                                <img 
+                                  src={quizQuestions[currentQuestionIdx].image || ''} 
+                                  alt="Disney Character" 
+                                  style={{
+                                    height: '140px',
+                                    display: 'block',
+                                    borderRadius: '16px'
+                                  }} 
+                                />
+                              </div>
+                              <h2 style={{ marginTop: '1.5rem', fontSize: '1.4rem', fontWeight: 800 }}>{quizQuestions[currentQuestionIdx].text}</h2>
                             </div>
                           ) : (
                             <h2 style={{ fontSize: '1.4rem', fontWeight: 800, marginBottom: '1.5rem' }}>{quizQuestions[currentQuestionIdx].text}</h2>
