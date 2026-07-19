@@ -43,6 +43,7 @@ interface QuizQuestion {
   text?: string;
   flagCode?: string;
   youtubeId?: string;
+  audioUrl?: string;
   scrambleWord?: string;
   scrambleHint?: string;
   scrambleJumbled?: string;
@@ -71,6 +72,7 @@ export default function Minijuegos() {
   const [ytPlayer, setYtPlayer] = useState<any>(null);
   const [isAudioPlaying, setIsAudioPlaying] = useState<boolean>(false);
   const playerRef = useRef<HTMLDivElement | null>(null);
+  const localAudioRef = useRef<HTMLAudioElement | null>(null);
 
   // User state
   const [userId, setUserId] = useState<string | null>(null);
@@ -254,7 +256,27 @@ export default function Minijuegos() {
 
   const playCurrentQuestionAudio = (index: number) => {
     const question = quizQuestions[index];
-    if (!question || !question.youtubeId) return;
+    if (!question) return;
+
+    // Si tiene audioUrl directa (iTunes), la reproducimos usando HTML5 Audio
+    if (question.audioUrl) {
+      if (localAudioRef.current) {
+        localAudioRef.current.pause();
+      }
+      const audio = new Audio(question.audioUrl);
+      audio.play().then(() => {
+        setIsAudioPlaying(true);
+      }).catch((e) => console.error("Error playing audio stream:", e));
+      
+      audio.onended = () => {
+        setIsAudioPlaying(false);
+      };
+      localAudioRef.current = audio;
+      return;
+    }
+
+    // Fallback heredado a YouTube
+    if (!question.youtubeId) return;
 
     if (!ytPlayer) {
       initYoutubePlayer();
@@ -284,6 +306,12 @@ export default function Minijuegos() {
   };
 
   const stopCurrentQuestionAudio = () => {
+    if (localAudioRef.current) {
+      try {
+        localAudioRef.current.pause();
+        setIsAudioPlaying(false);
+      } catch (e) {}
+    }
     if (ytPlayer && typeof ytPlayer.stopVideo === 'function') {
       try {
         ytPlayer.stopVideo();
@@ -703,7 +731,8 @@ export default function Minijuegos() {
                 { id: 'word_scramble', name: 'Word Scramble', desc: 'Adivina la palabra desordenada con la ayuda de una pista. 15 palabras diarias. +3 puntos por acierto.', color: '#d833ff', bg: '/Imagenes/minijuego_scramble.png' },
                 { id: 'dbd_perks', name: 'Perks de DBD', desc: 'Identifica la perk de Dead by Daylight a partir de su icono. 15 preguntas diarias. +3 puntos por acierto.', color: '#00d27f', bg: '/Imagenes/minijuego_dbd.png' },
                 { id: 'disney', name: 'Personajes Disney', desc: 'Adivina qué personaje de Disney es a partir de su imagen. 15 preguntas diarias. +3 puntos por acierto.', color: '#ffdd00', bg: '/Imagenes/minijuego_disney.png' },
-                { id: 'covers', name: 'Carátulas de Juegos', desc: 'Adivina el videojuego a partir de su carátula o box art limpio y sin logos. 15 preguntas diarias. +3 puntos por acierto.', color: '#a855f7', bg: '/Imagenes/minijuego_covers.png' }
+                { id: 'covers', name: 'Carátulas de Juegos', desc: 'Adivina el videojuego a partir de su carátula o box art limpio y sin logos. 15 preguntas diarias. +3 puntos por acierto.', color: '#a855f7', bg: '/Imagenes/minijuego_covers.png' },
+                { id: 'audio_music', name: 'Adivina la Canción', desc: 'Escucha el fragmento de audio y adivina a qué éxito musical pertenece. 15 canciones diarias. +3 puntos por acierto.', color: '#e233ff', bg: '/Imagenes/minijuego_music.png' }
               ].map((g) => {
                   const isCompleted = completionsToday.includes(g.id);
                   const isLocked = !userId;
