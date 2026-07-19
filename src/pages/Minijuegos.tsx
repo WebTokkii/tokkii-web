@@ -725,14 +725,14 @@ export default function Minijuegos() {
 
           <div className="game-tabs-grid">
               {[
-                { id: 'overwatch', name: 'Overwatch Quiz', desc: '15 Preguntas Diarias sobre Lore y mecánicas de Overwatch. Tienes 15 segundos por pregunta. +3 puntos por acierto.', color: '#f08226', bg: '/Imagenes/minijuego_overwatch.png' },
-                { id: 'games', name: 'Videojuegos Trivia', desc: 'Preguntas aleatorias de la cultura gamer desde los 90s hasta la actualidad.', color: '#33ecc0', bg: '/Imagenes/minijuego_games.png' },
-                { id: 'flags', name: 'Adivina la Bandera', desc: 'Trivia de geografía mundial para identificar las banderas de diferentes países.', color: '#ff4d4d', bg: '/Imagenes/minijuego_flags.png' },
-                { id: 'word_scramble', name: 'Word Scramble', desc: 'Adivina la palabra desordenada con la ayuda de una pista. 15 palabras diarias. +3 puntos por acierto.', color: '#d833ff', bg: '/Imagenes/minijuego_scramble.png' },
-                { id: 'dbd_perks', name: 'Perks de DBD', desc: 'Identifica la perk de Dead by Daylight a partir de su icono. 15 preguntas diarias. +3 puntos por acierto.', color: '#00d27f', bg: '/Imagenes/minijuego_dbd.png' },
-                { id: 'disney', name: 'Personajes Disney', desc: 'Adivina qué personaje de Disney es a partir de su imagen. 15 preguntas diarias. +3 puntos por acierto.', color: '#ffdd00', bg: '/Imagenes/minijuego_disney.png' },
-                { id: 'covers', name: 'Carátulas de Juegos', desc: 'Adivina el videojuego a partir de su carátula o box art limpio y sin logos. 15 preguntas diarias. +3 puntos por acierto.', color: '#a855f7', bg: '/Imagenes/minijuego_covers.png' },
-                { id: 'audio_music', name: 'Adivina la Canción', desc: 'Escucha el fragmento de audio y adivina a qué éxito musical pertenece. 15 canciones diarias. +3 puntos por acierto.', color: '#e233ff', bg: '/Imagenes/minijuego_music.png' }
+                { id: 'overwatch', name: 'Overwatch Quiz', desc: '15 Preguntas Diarias sobre Lore y mecánicas de Overwatch. Tienes 15 segundos por pregunta. +3 puntos por acierto.', color: '#f08226', bg: '/Imagenes/minijuego_overwatch.png?v=2' },
+                { id: 'games', name: 'Videojuegos Trivia', desc: 'Preguntas aleatorias de la cultura gamer desde los 90s hasta la actualidad.', color: '#33ecc0', bg: '/Imagenes/minijuego_games.png?v=2' },
+                { id: 'flags', name: 'Adivina la Bandera', desc: 'Trivia de geografía mundial para identificar las banderas de diferentes países.', color: '#ff4d4d', bg: '/Imagenes/minijuego_flags.png?v=2' },
+                { id: 'word_scramble', name: 'Word Scramble', desc: 'Adivina la palabra desordenada con la ayuda de una pista. 15 palabras diarias. +3 puntos por acierto.', color: '#d833ff', bg: '/Imagenes/minijuego_scramble.png?v=2' },
+                { id: 'dbd_perks', name: 'Perks de DBD', desc: 'Identifica la perk de Dead by Daylight a partir de su icono. 15 preguntas diarias. +3 puntos por acierto.', color: '#00d27f', bg: '/Imagenes/minijuego_dbd.png?v=2' },
+                { id: 'disney', name: 'Personajes Disney', desc: 'Adivina qué personaje de Disney es a partir de su imagen. 15 preguntas diarias. +3 puntos por acierto.', color: '#ffdd00', bg: '/Imagenes/minijuego_disney.png?v=2' },
+                { id: 'covers', name: 'Carátulas de Juegos', desc: 'Adivina el videojuego a partir de su carátula o box art limpio y sin logos. 15 preguntas diarias. +3 puntos por acierto.', color: '#a855f7', bg: '/Imagenes/minijuego_covers.png?v=2' },
+                { id: 'audio_music', name: 'Adivina la Canción', desc: 'Escucha el fragmento de audio y adivina a qué éxito musical pertenece. 15 canciones diarias. +3 puntos por acierto.', color: '#e233ff', bg: '/Imagenes/minijuego_music.png?v=2' }
               ].map((g) => {
                   const isCompleted = completionsToday.includes(g.id);
                   const isLocked = !userId;
