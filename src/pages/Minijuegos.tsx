@@ -78,6 +78,17 @@ export default function Minijuegos() {
   const [userId, setUserId] = useState<string | null>(null);
   const [completionsToday, setCompletionsToday] = useState<string[]>([]);
   const [streakAwardInfo, setStreakAwardInfo] = useState<{ show: boolean; days: number; points: number } | null>(null);
+  const [showExitConfirm, setShowExitConfirm] = useState<boolean>(false);
+  const [abandonedQuizInfo, setAbandonedQuizInfo] = useState<string | null>(null);
+  const isExitingRef = useRef<boolean>(false);
+
+  useEffect(() => {
+    const abandoned = localStorage.getItem('active_quiz_abandoned');
+    if (abandoned) {
+      setAbandonedQuizInfo(abandoned);
+      localStorage.removeItem('active_quiz_abandoned');
+    }
+  }, []);
 
   // Database custom minigames config
   const [dbMinigames, setDbMinigames] = useState<Record<string, any>>({});
@@ -501,10 +512,31 @@ export default function Minijuegos() {
     setCurrentView('quiz');
   };
 
-  const beginQuiz = () => {
+  const beginQuiz = async () => {
     setQuizStarted(true);
     if (quizType === 'audio_music') {
       playCurrentQuestionAudio(0);
+    }
+
+    // Intercept navigation by pushing a dummy state in browser history
+    window.history.pushState({ inQuiz: true }, '');
+
+    // Set flag in localStorage to detect refresh/abandonment
+    localStorage.setItem('active_quiz_abandoned', quizType);
+
+    if (userId) {
+      // Add immediately to local completed list so UI locks it
+      setCompletionsToday(prev => prev.includes(quizType) ? prev : [...prev, quizType]);
+
+      const todayStr = new Date().toISOString().split('T')[0];
+      await supabase
+        .from('user_quiz_completions')
+        .upsert({
+          user_id: userId,
+          quiz_type: quizType,
+          score: 0,
+          completed_date: todayStr
+        }, { onConflict: 'user_id,quiz_type,completed_date' });
     }
   };
 
@@ -622,18 +654,28 @@ export default function Minijuegos() {
     } else {
       setQuizFinished(true);
       stopCurrentQuestionAudio();
+
+      // Clean up browser history state
+      isExitingRef.current = true;
+      if (window.history.state && window.history.state.inQuiz) {
+        window.history.back();
+      }
+      localStorage.removeItem('active_quiz_abandoned');
+
       if (userId) {
+        const todayStr = new Date().toISOString().split('T')[0];
         supabase
           .from('user_quiz_completions')
-          .insert({
+          .upsert({
             user_id: userId,
             quiz_type: quizType,
-            score: userScore
-          })
+            score: userScore,
+            completed_date: todayStr
+          }, { onConflict: 'user_id,quiz_type,completed_date' })
           .then(({ error }) => {
             if (!error) {
               setCompletionsToday(prev => {
-                const nextCompletions = [...prev, quizType];
+                const nextCompletions = prev.includes(quizType) ? prev : [...prev, quizType];
                 const required = ['overwatch', 'games', 'flags', 'word_scramble', 'dbd_perks'];
                 const completedAll = required.every(req => nextCompletions.includes(req));
                 if (completedAll) {
@@ -645,6 +687,34 @@ export default function Minijuegos() {
           });
       }
     }
+  };
+
+  const confirmExitQuiz = async () => {
+    setShowExitConfirm(false);
+    stopCurrentQuestionAudio();
+
+    // Clean up browser history state
+    isExitingRef.current = true;
+    if (window.history.state && window.history.state.inQuiz) {
+      window.history.back();
+    }
+    localStorage.removeItem('active_quiz_abandoned');
+
+    if (userId) {
+      const todayStr = new Date().toISOString().split('T')[0];
+      await supabase
+        .from('user_quiz_completions')
+        .upsert({
+          user_id: userId,
+          quiz_type: quizType,
+          score: userScore,
+          completed_date: todayStr
+        }, { onConflict: 'user_id,quiz_type,completed_date' });
+    }
+
+    setQuizStarted(false);
+    setQuizFinished(false);
+    setCurrentView('hub');
   };
 
   useEffect(() => {
@@ -677,10 +747,43 @@ export default function Minijuegos() {
       if (ytPlayer && typeof ytPlayer.stopVideo === 'function') {
         try {
           ytPlayer.stopVideo();
-} catch (e) {}
+        } catch (e) {}
       }
     };
   }, [ytPlayer]);
+
+  useEffect(() => {
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      if (quizStarted && !quizFinished) {
+        e.preventDefault();
+        e.returnValue = 'Si sales o recargas perderás la oportunidad de realizar el minijuego y se registrará con la puntuación actual.';
+        return e.returnValue;
+      }
+    };
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    return () => {
+      window.removeEventListener('beforeunload', handleBeforeUnload);
+    };
+  }, [quizStarted, quizFinished]);
+
+  useEffect(() => {
+    const handlePopState = () => {
+      if (isExitingRef.current) {
+        isExitingRef.current = false;
+        return;
+      }
+      if (quizStarted && !quizFinished) {
+        // Push the state again to block the navigation and show the modal
+        window.history.pushState({ inQuiz: true }, '');
+        setShowExitConfirm(true);
+      }
+    };
+
+    window.addEventListener('popstate', handlePopState);
+    return () => {
+      window.removeEventListener('popstate', handlePopState);
+    };
+  }, [quizStarted, quizFinished]);
 
   return (
     <div className="app-container" style={{ minHeight: '80vh', padding: '2rem 1rem' }}>
@@ -1002,11 +1105,33 @@ export default function Minijuegos() {
                   maxHeight: '95vh',
                   overflowY: 'auto'
                 }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%', borderBottom: '1px solid rgba(255,255,255,0.06)', paddingBottom: '0.75rem' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%', borderBottom: '1px solid rgba(255,255,255,0.06)', paddingBottom: '0.75rem' }}>
                     <span style={{ fontWeight: 600 }}>Pregunta {currentQuestionIdx + 1} de {quizQuestions.length}</span>
-                    <span style={{ color: quizTimeLeft <= 5 ? '#ff4d4d' : '#fff', fontWeight: 'bold' }}>
-                      Tiempo: {quizTimeLeft}s
-                    </span>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem' }}>
+                      <span style={{ color: quizTimeLeft <= 5 ? '#ff4d4d' : '#fff', fontWeight: 'bold' }}>
+                        Tiempo: {quizTimeLeft}s
+                      </span>
+                      <button
+                        onClick={() => setShowExitConfirm(true)}
+                        style={{
+                          background: 'none',
+                          border: 'none',
+                          color: 'var(--text-muted)',
+                          cursor: 'pointer',
+                          fontSize: '1.2rem',
+                          padding: '0.2rem',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          transition: 'color 0.2s ease',
+                        }}
+                        onMouseEnter={(e) => e.currentTarget.style.color = '#ff4d4d'}
+                        onMouseLeave={(e) => e.currentTarget.style.color = 'var(--text-muted)'}
+                        title="Salir del minijuego"
+                      >
+                        ✕
+                      </button>
+                    </div>
                   </div>
 
                   {quizQuestions[currentQuestionIdx] && (
@@ -1496,6 +1621,159 @@ export default function Minijuegos() {
               }}
             >
               Reclamar y Continuar
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Exit Confirmation Modal */}
+      {showExitConfirm && (
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          background: 'rgba(0, 0, 0, 0.85)',
+          backdropFilter: 'blur(8px)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          zIndex: 999999,
+          padding: '1.5rem'
+        }}>
+          <div className="glass" style={{
+            maxWidth: '450px',
+            width: '100%',
+            background: 'rgba(20, 10, 30, 0.98)',
+            border: '2px solid #ff4d4d',
+            borderRadius: '28px',
+            padding: '2.5rem 2rem',
+            textAlign: 'center',
+            boxShadow: '0 0 50px rgba(255, 77, 77, 0.25)',
+            animation: 'scaleIn 0.2s ease-out'
+          }}>
+            <div style={{ fontSize: '4.5rem', marginBottom: '1rem' }}>⚠️</div>
+            <h2 style={{
+              color: '#ff4d4d',
+              fontSize: '1.8rem',
+              fontWeight: 900,
+              margin: '0 0 0.75rem 0',
+              textTransform: 'uppercase',
+              letterSpacing: '1px'
+            }}>
+              ¿Salir del Desafío?
+            </h2>
+            <p style={{ color: 'var(--text-muted)', fontSize: '1rem', lineHeight: 1.5, margin: '0 0 2rem 0' }}>
+              Si decides salir o abandonar el desafío actual, <strong>perderás la oportunidad de volver a realizarlo hoy</strong> y se registrará como completado con tu puntuación actual de <strong>{userScore} Pts</strong>.
+            </p>
+
+            <div style={{ display: 'flex', gap: '1rem' }}>
+              <button
+                onClick={() => setShowExitConfirm(false)}
+                className="btn btn-secondary"
+                style={{
+                  flex: 1,
+                  padding: '0.9rem',
+                  fontSize: '1rem',
+                  fontWeight: 'bold',
+                  borderRadius: '16px',
+                  border: '1px solid rgba(255, 255, 255, 0.1)',
+                  background: 'rgba(255, 255, 255, 0.03)',
+                  color: '#fff',
+                  cursor: 'pointer'
+                }}
+              >
+                Cancelar
+              </button>
+              <button
+                onClick={confirmExitQuiz}
+                className="btn btn-primary"
+                style={{
+                  flex: 1,
+                  padding: '0.9rem',
+                  fontSize: '1rem',
+                  fontWeight: 'bold',
+                  borderRadius: '16px',
+                  background: 'linear-gradient(135deg, #ff4d4d 0%, #ff1a1a 100%)',
+                  border: 'none',
+                  color: '#fff',
+                  cursor: 'pointer'
+                }}
+              >
+                Sí, abandonar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Abandoned Quiz Alert Modal */}
+      {abandonedQuizInfo && (
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          background: 'rgba(0, 0, 0, 0.85)',
+          backdropFilter: 'blur(8px)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          zIndex: 999999,
+          padding: '1.5rem'
+        }}>
+          <div className="glass" style={{
+            maxWidth: '450px',
+            width: '100%',
+            background: 'rgba(20, 10, 30, 0.98)',
+            border: '2px solid #ff4d4d',
+            borderRadius: '28px',
+            padding: '2.5rem 2rem',
+            textAlign: 'center',
+            boxShadow: '0 0 50px rgba(255, 77, 77, 0.25)',
+            animation: 'scaleIn 0.2s ease-out'
+          }}>
+            <div style={{ fontSize: '4.5rem', marginBottom: '1rem' }}>⚠️</div>
+            <h2 style={{
+              color: '#ff4d4d',
+              fontSize: '1.8rem',
+              fontWeight: 900,
+              margin: '0 0 0.75rem 0',
+              textTransform: 'uppercase',
+              letterSpacing: '1px'
+            }}>
+              Desafío Cancelado
+            </h2>
+            <p style={{ color: 'var(--text-muted)', fontSize: '1rem', lineHeight: 1.5, margin: '0 0 2rem 0' }}>
+              Se detectó que recargaste o cerraste el minijuego <strong>{
+                abandonedQuizInfo === 'overwatch' ? 'Overwatch Quiz' :
+                abandonedQuizInfo === 'games' ? 'Videojuegos Trivia' :
+                abandonedQuizInfo === 'flags' ? 'Adivina la Bandera' :
+                abandonedQuizInfo === 'word_scramble' ? 'Word Scramble' :
+                abandonedQuizInfo === 'dbd_perks' ? 'Perks de DBD' :
+                abandonedQuizInfo === 'disney' ? 'Personajes Disney' :
+                abandonedQuizInfo === 'covers' ? 'Carátulas de Juegos' :
+                'Adivina la Canción'
+              }</strong>. El desafío ha sido marcado como completado para el día de hoy.
+            </p>
+            <button
+              onClick={() => setAbandonedQuizInfo(null)}
+              className="btn btn-primary"
+              style={{
+                width: '100%',
+                padding: '0.9rem',
+                fontSize: '1.1rem',
+                fontWeight: 'bold',
+                borderRadius: '16px',
+                background: 'linear-gradient(135deg, #ff4d4d 0%, #ff1a1a 100%)',
+                border: 'none',
+                color: '#fff',
+                cursor: 'pointer'
+              }}
+            >
+              Entendido
             </button>
           </div>
         </div>
