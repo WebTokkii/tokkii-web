@@ -69,6 +69,27 @@ const renderBadge = (role?: string) => {
       }} title="Webmaster">WEB</span>
     );
   }
+  if (role === 'streamer') {
+    return (
+      <span style={{
+        display: 'inline-flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: '2px 6px',
+        borderRadius: '6px',
+        backgroundColor: 'rgba(168, 85, 247, 0.15)',
+        border: '1px solid rgba(168, 85, 247, 0.4)',
+        color: '#C084FC',
+        fontSize: '0.65rem',
+        fontWeight: 'bold',
+        textTransform: 'uppercase',
+        letterSpacing: '0.5px',
+        boxShadow: '0 0 10px rgba(168, 85, 247, 0.3)',
+        marginLeft: '6px',
+        lineHeight: 1
+      }} title="Streamer">STREAMER</span>
+    );
+  }
   return null;
 };
 
