@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { Sparkles } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { OVERWATCH_QUESTIONS } from '../data/OverwatchQuestions';
@@ -54,7 +54,7 @@ interface QuizQuestion {
 }
 
 export default function Minijuegos() {
-  const [currentView, setCurrentView] = useState<'hub' | 'quiz'>('hub');
+  const [currentView, setCurrentView] = useState<'hub' | 'quiz' | 'ruleta'>('hub');
   const [quizType, setQuizType] = useState<'overwatch' | 'games' | 'audio_music' | 'flags' | 'word_scramble' | 'dbd_perks' | 'disney' | 'covers'>('overwatch');
   
   // Quiz play states
@@ -81,6 +81,32 @@ export default function Minijuegos() {
   const [showExitConfirm, setShowExitConfirm] = useState<boolean>(false);
   const [abandonedQuizInfo, setAbandonedQuizInfo] = useState<string | null>(null);
   const isExitingRef = useRef<boolean>(false);
+  const svgRef = useRef<SVGSVGElement | null>(null);
+
+  // Roulette states & variables
+  const [betAmount, setBetAmount] = useState<10 | 50 | 100 | 500>(10);
+  const [ruletaRotation, setRuletaRotation] = useState<number>(0);
+  const [isRuletaSpinning, setIsRuletaSpinning] = useState<boolean>(false);
+  const [ruletaResult, setRuletaResult] = useState<{ type: string; label: string; change: number } | null>(null);
+  const [userPoints, setUserPoints] = useState<number>(0);
+
+  const fetchUserPoints = useCallback(async () => {
+    if (!userId) return;
+    const { data } = await supabase
+      .from('profiles')
+      .select('points')
+      .eq('id', userId)
+      .single();
+    if (data) {
+      setUserPoints(data.points || 0);
+    }
+  }, [userId]);
+
+  useEffect(() => {
+    fetchUserPoints();
+    window.addEventListener('points-updated', fetchUserPoints);
+    return () => window.removeEventListener('points-updated', fetchUserPoints);
+  }, [fetchUserPoints]);
 
   useEffect(() => {
     const abandoned = localStorage.getItem('active_quiz_abandoned');
@@ -717,6 +743,185 @@ export default function Minijuegos() {
     setCurrentView('hub');
   };
 
+  // Roulette constant & handlers
+  const RULETA_SECTORS = [
+    { label: 'Pierde', type: 'pierde', factor: 0, color: '#1a102f', textColor: '#a0aec0' },
+    { label: 'x1', type: 'x1', factor: 1, color: '#7c3aed', textColor: '#fff' },
+    { label: 'x2', type: 'x2', factor: 2, color: '#ec4899', textColor: '#fff' },
+    { label: 'Pierde', type: 'pierde', factor: 0, color: '#1a102f', textColor: '#a0aec0' },
+    { label: '+100 Pts', type: 'flat', add: 100, color: '#3b82f6', textColor: '#fff' },
+    { label: 'x1', type: 'x1', factor: 1, color: '#7c3aed', textColor: '#fff' },
+    { label: 'Pierde', type: 'pierde', factor: 0, color: '#1a102f', textColor: '#a0aec0' },
+    { label: 'x5', type: 'x5', factor: 5, color: '#f59e0b', textColor: '#fff' },
+    { label: 'Pierde', type: 'pierde', factor: 0, color: '#1a102f', textColor: '#a0aec0' },
+    { label: '+300 Pts', type: 'flat', add: 300, color: '#10b981', textColor: '#fff' },
+    { label: 'x2', type: 'x2', factor: 2, color: '#ec4899', textColor: '#fff' },
+    { label: 'Pierde', type: 'pierde', factor: 0, color: '#1a102f', textColor: '#a0aec0' },
+    { label: '+500 Pts', type: 'flat', add: 500, color: '#8b5cf6', textColor: '#fff' },
+    { label: 'x1', type: 'x1', factor: 1, color: '#7c3aed', textColor: '#fff' },
+    { label: 'Pierde', type: 'pierde', factor: 0, color: '#1a102f', textColor: '#a0aec0' },
+    { label: '+1500 Pts', type: 'flat', add: 1500, color: '#e11d48', textColor: '#fff' }
+  ];
+
+  const audioContextRef = useRef<AudioContext | null>(null);
+
+  const getAudioContext = useCallback(() => {
+    if (!audioContextRef.current) {
+      audioContextRef.current = new (window.AudioContext || (window as any).webkitAudioContext)();
+    }
+    if (audioContextRef.current.state === 'suspended') {
+      audioContextRef.current.resume();
+    }
+    return audioContextRef.current;
+  }, []);
+
+  useEffect(() => {
+    return () => {
+      if (audioContextRef.current) {
+        audioContextRef.current.close();
+      }
+    };
+  }, []);
+
+  const playSynthWinSound = (isWin: boolean) => {
+    try {
+      const audioCtx = getAudioContext();
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+
+      const now = audioCtx.currentTime;
+
+      if (isWin) {
+        osc.type = 'sine';
+        // Happy fast arpeggio
+        osc.frequency.setValueAtTime(523.25, now); // C5
+        osc.frequency.setValueAtTime(659.25, now + 0.08); // E5
+        osc.frequency.setValueAtTime(783.99, now + 0.16); // G5
+        osc.frequency.setValueAtTime(1046.50, now + 0.24); // C6
+        osc.frequency.setValueAtTime(1318.51, now + 0.32); // E6
+
+        gain.gain.setValueAtTime(0.12, now);
+        gain.gain.exponentialRampToValueAtTime(0.12, now + 0.3);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.65);
+
+        osc.start();
+        osc.stop(now + 0.7);
+      } else {
+        osc.type = 'sawtooth';
+        // Buzz/disappointment pitch drop
+        osc.frequency.setValueAtTime(220, now); // A3
+        osc.frequency.linearRampToValueAtTime(147, now + 0.35); // D3
+
+        gain.gain.setValueAtTime(0.08, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.4);
+
+        osc.start();
+        osc.stop(now + 0.45);
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
+  const spinRuleta = async () => {
+    if (isRuletaSpinning || !userId || userPoints < betAmount) return;
+
+    setIsRuletaSpinning(true);
+    setRuletaResult(null);
+
+    // Deduct bet amount visually in real-time
+    setUserPoints(prev => Math.max(0, prev - betAmount));
+
+    const rand = Math.random() * 100;
+    let targetType = 'pierde';
+
+    if (rand < 0.5) {
+      targetType = 'flat_1500';
+    } else if (rand < 2.0) {
+      targetType = 'flat_500';
+    } else if (rand < 4.5) {
+      targetType = 'flat_300';
+    } else if (rand < 9.5) {
+      targetType = 'flat_100';
+    } else if (rand < 14.0) {
+      targetType = 'x5';
+    } else if (rand < 30.0) {
+      targetType = 'x2';
+    } else if (rand < 50.0) {
+      targetType = 'x1';
+    } else {
+      targetType = 'pierde';
+    }
+
+    let matchingSectors: number[] = [];
+    RULETA_SECTORS.forEach((sec, idx) => {
+      if (targetType === 'flat_1500' && sec.type === 'flat' && sec.add === 1500) matchingSectors.push(idx);
+      else if (targetType === 'flat_500' && sec.type === 'flat' && sec.add === 500) matchingSectors.push(idx);
+      else if (targetType === 'flat_300' && sec.type === 'flat' && sec.add === 300) matchingSectors.push(idx);
+      else if (targetType === 'flat_100' && sec.type === 'flat' && sec.add === 100) matchingSectors.push(idx);
+      else if (targetType === 'x5' && sec.type === 'x5') matchingSectors.push(idx);
+      else if (targetType === 'x2' && sec.type === 'x2') matchingSectors.push(idx);
+      else if (targetType === 'x1' && sec.type === 'x1') matchingSectors.push(idx);
+      else if (targetType === 'pierde' && sec.type === 'pierde') matchingSectors.push(idx);
+    });
+
+    const chosenSectorIdx = matchingSectors[Math.floor(Math.random() * matchingSectors.length)];
+    const sector = RULETA_SECTORS[chosenSectorIdx];
+
+    let finalWinAmount = 0;
+    if (sector.type === 'x1') finalWinAmount = betAmount;
+    else if (sector.type === 'x2') finalWinAmount = betAmount * 2;
+    else if (sector.type === 'x5') finalWinAmount = betAmount * 5;
+    else if (sector.type === 'flat') finalWinAmount = sector.add || 0;
+    else finalWinAmount = 0;
+
+    const netChange = finalWinAmount - betAmount;
+
+    // Run database transaction in the background without blocking the UI
+    const dbUpdatePromise = (async () => {
+      const { error } = await supabase
+        .rpc('increment_points', { user_id: userId, amount: netChange });
+
+      if (error) {
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('points')
+          .eq('id', userId)
+          .single();
+        if (profile) {
+          const newPoints = Math.max(0, (profile.points || 0) + netChange);
+          await supabase
+            .from('profiles')
+            .update({ points: newPoints })
+            .eq('id', userId);
+        }
+      }
+    })();
+
+    const targetAngle = (270 - (chosenSectorIdx * 22.5 + 11.25) + 360) % 360;
+    const currentSpins = Math.floor(ruletaRotation / 360);
+    const newRotation = (currentSpins + 8) * 360 + targetAngle;
+    setRuletaRotation(newRotation);
+
+    setTimeout(async () => {
+      // Ensure DB update is completed before finishing spin
+      await dbUpdatePromise;
+
+      setIsRuletaSpinning(false);
+      setRuletaResult({
+        type: sector.type,
+        label: sector.label,
+        change: netChange
+      });
+
+      // Update points globally (Navbar and display) in sync with animation end
+      window.dispatchEvent(new Event('points-updated'));
+      playSynthWinSound(netChange > 0);
+    }, 5000);
+  };
+
   useEffect(() => {
     if (currentView !== 'quiz' || !quizStarted || quizFinished) return;
 
@@ -785,6 +990,60 @@ export default function Minijuegos() {
     };
   }, [quizStarted, quizFinished]);
 
+  // RequestAnimationFrame tick-sound synchronization based on physical SVG rotation
+  useEffect(() => {
+    if (!isRuletaSpinning || !svgRef.current) return;
+
+    let lastSector = -1;
+    let animFrame: number;
+
+    const playTickSound = () => {
+      try {
+        const audioCtx = getAudioContext();
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        
+        osc.type = 'triangle';
+        // Rapid pitch drop to simulate a mechanical click peg
+        osc.frequency.setValueAtTime(150, audioCtx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(10, audioCtx.currentTime + 0.015);
+        
+        gain.gain.setValueAtTime(0.08, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.015);
+        
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + 0.02);
+      } catch (e) {}
+    };
+
+    const checkTick = () => {
+      if (!svgRef.current) return;
+      const style = window.getComputedStyle(svgRef.current);
+      const transform = style.transform;
+      if (transform && transform !== 'none') {
+        const values = transform.split('(')[1].split(')')[0].split(',');
+        const a = parseFloat(values[0]);
+        const b = parseFloat(values[1]);
+        let angle = Math.round(Math.atan2(b, a) * (180 / Math.PI));
+        if (angle < 0) angle += 360;
+
+        const currentSector = Math.floor(((270 - angle + 360) % 360) / 22.5);
+        if (currentSector !== lastSector) {
+          playTickSound();
+          lastSector = currentSector;
+        }
+      }
+      animFrame = requestAnimationFrame(checkTick);
+    };
+
+    animFrame = requestAnimationFrame(checkTick);
+    return () => {
+      cancelAnimationFrame(animFrame);
+    };
+  }, [isRuletaSpinning]);
+
   return (
     <div className="app-container" style={{ minHeight: '80vh', padding: '2rem 1rem' }}>
       {currentView === 'hub' ? (
@@ -835,19 +1094,21 @@ export default function Minijuegos() {
                 { id: 'dbd_perks', name: 'Perks de DBD', desc: 'Identifica la perk de Dead by Daylight a partir de su icono. 15 preguntas diarias. +3 puntos por acierto.', color: '#00d27f', bg: '/Imagenes/minijuego_dbd.png?v=2' },
                 { id: 'disney', name: 'Personajes Disney', desc: 'Adivina qué personaje de Disney es a partir de su imagen. 15 preguntas diarias. +3 puntos por acierto.', color: '#ffdd00', bg: '/Imagenes/minijuego_disney.png?v=2' },
                 { id: 'covers', name: 'Carátulas de Juegos', desc: 'Adivina el videojuego a partir de su carátula o box art limpio y sin logos. 15 preguntas diarias. +3 puntos por acierto.', color: '#a855f7', bg: '/Imagenes/minijuego_covers.png?v=2' },
-                { id: 'audio_music', name: 'Adivina la Canción', desc: 'Escucha el fragmento de audio y adivina a qué éxito musical pertenece. 15 canciones diarias. +3 puntos por acierto.', color: '#e233ff', bg: '/Imagenes/minijuego_music.png?v=2' }
+                { id: 'audio_music', name: 'Adivina la Canción', desc: 'Escucha el fragmento de audio y adivina a qué éxito musical pertenece. 15 canciones diarias. +3 puntos por acierto.', color: '#e233ff', bg: '/Imagenes/minijuego_music.png?v=2' },
+                { id: 'ruleta', name: 'Ruleta de la Suerte', desc: '¡Apuesta tus puntos y prueba tu suerte! Multiplica tu apuesta hasta x5 o gana premios planos de hasta 1500 puntos.', color: '#ffaa00', bg: '/Imagenes/minijuego_ruleta.png?v=2' }
               ].map((g) => {
                   const isCompleted = completionsToday.includes(g.id);
                   const isLocked = !userId;
+                  const canClick = isLocked ? false : (g.id === 'ruleta' ? true : !isCompleted);
                   return (
                       <div
                           key={g.id}
-                          onClick={isLocked || isCompleted ? undefined : () => startQuiz(g.id as any)}
+                          onClick={canClick ? (g.id === 'ruleta' ? () => setCurrentView('ruleta') : () => startQuiz(g.id as any)) : undefined}
                           className="glass"
                           style={{
                               position: 'relative',
                               overflow: 'hidden',
-                              cursor: isLocked ? 'not-allowed' : isCompleted ? 'default' : 'pointer',
+                              cursor: !canClick ? 'not-allowed' : 'pointer',
                               padding: '2rem 1.5rem',
                               borderRadius: '24px',
                               boxShadow: 'var(--shadow)',
@@ -986,6 +1247,226 @@ export default function Minijuegos() {
                       </div>
                   );
               })}
+          </div>
+        </div>
+      ) : currentView === 'ruleta' ? (
+        <div className="ruleta-view-container" style={{ maxWidth: '900px', margin: '0 auto' }}>
+          <div style={{ marginBottom: '1.5rem', display: 'flex', justifyContent: 'flex-start' }}>
+            <button 
+              onClick={() => {
+                if (isRuletaSpinning) {
+                  alert("Espera a que la ruleta termine de girar.");
+                  return;
+                }
+                setCurrentView('hub');
+              }}
+              className="btn btn-secondary"
+              style={{
+                background: 'rgba(255,255,255,0.03)',
+                borderColor: 'rgba(255,255,255,0.08)',
+                padding: '0.5rem 1.25rem',
+                borderRadius: '999px',
+                fontSize: '0.9rem',
+                fontWeight: 600,
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '8px'
+              }}
+            >
+              &larr; Volver a Minijuegos
+            </button>
+          </div>
+
+          <div className="glass" style={{ display: 'grid', gridTemplateColumns: '1fr 1.2fr', gap: '2.5rem', padding: '3rem', borderRadius: '24px', overflow: 'hidden', alignItems: 'center' }}>
+            {/* Left Column: Betting Panel */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
+              <div>
+                <h1 style={{ fontSize: '2.2rem', fontWeight: 900, marginBottom: '0.5rem', background: 'linear-gradient(135deg, #ffaa00 0%, #ff5500 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
+                  Ruleta de la Suerte
+                </h1>
+                <p style={{ color: 'var(--text-muted)', fontSize: '0.95rem', lineHeight: 1.5 }}>
+                  Prueba tu suerte apostando tus puntos. ¡Puedes multiplicar tu saldo o ganar premios instantáneos de hasta 1500 puntos!
+                </p>
+              </div>
+
+              {/* User Balance card */}
+              <div style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.06)', padding: '1.25rem', borderRadius: '16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <span style={{ color: 'var(--text-muted)', fontSize: '0.9rem', fontWeight: 600 }}>Tus Puntos:</span>
+                <span style={{ fontSize: '1.4rem', fontWeight: 900, color: 'var(--highlight)' }}>
+                  {userPoints} Pts
+                </span>
+              </div>
+
+              {/* Bet Amount Selector */}
+              <div>
+                <span style={{ display: 'block', color: 'var(--text-muted)', fontSize: '0.85rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '0.75rem' }}>
+                  Cantidad a Apostar
+                </span>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '0.5rem' }}>
+                  {([10, 50, 100, 500] as const).map((amount) => (
+                    <button
+                      key={amount}
+                      disabled={isRuletaSpinning}
+                      onClick={() => setBetAmount(amount)}
+                      style={{
+                        padding: '0.75rem 0',
+                        borderRadius: '12px',
+                        fontSize: '1rem',
+                        fontWeight: 'bold',
+                        cursor: isRuletaSpinning ? 'default' : 'pointer',
+                        border: betAmount === amount ? '2px solid #ffaa00' : '1px solid rgba(255,255,255,0.06)',
+                        background: betAmount === amount ? 'rgba(255, 170, 0, 0.1)' : 'rgba(255,255,255,0.02)',
+                        color: betAmount === amount ? '#ffaa00' : '#fff',
+                        transition: 'all 0.2s ease',
+                      }}
+                    >
+                      {amount}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Spin Button */}
+              <button
+                disabled={isRuletaSpinning || userPoints < betAmount}
+                onClick={spinRuleta}
+                className="btn btn-primary"
+                style={{
+                  width: '100%',
+                  padding: '1.1rem',
+                  fontSize: '1.2rem',
+                  fontWeight: 900,
+                  borderRadius: '18px',
+                  background: userPoints < betAmount 
+                    ? 'rgba(255,255,255,0.05)'
+                    : 'linear-gradient(135deg, #ffaa00 0%, #ff5500 100%)',
+                  border: 'none',
+                  cursor: isRuletaSpinning || userPoints < betAmount ? 'not-allowed' : 'pointer',
+                  color: userPoints < betAmount ? 'rgba(255,255,255,0.3)' : '#fff',
+                  boxShadow: userPoints < betAmount ? 'none' : '0 10px 25px rgba(255, 85, 0, 0.25)',
+                  transition: 'all 0.3s ease'
+                }}
+              >
+                {isRuletaSpinning 
+                  ? 'Girando...' 
+                  : userPoints < betAmount 
+                  ? 'Puntos Insuficientes' 
+                  : '¡GIRAR RULETA!'}
+              </button>
+
+              {/* Spin Result Feedback */}
+              {ruletaResult && (
+                <div style={{
+                  background: ruletaResult.change > 0 ? 'rgba(0, 210, 127, 0.08)' : ruletaResult.change < 0 ? 'rgba(255, 77, 77, 0.08)' : 'rgba(255,255,255,0.04)',
+                  border: ruletaResult.change > 0 ? '1px solid #00d27f' : ruletaResult.change < 0 ? '1px solid #ff4d4d' : '1px solid rgba(255,255,255,0.1)',
+                  padding: '1.25rem',
+                  borderRadius: '16px',
+                  textAlign: 'center',
+                  animation: 'scaleIn 0.3s ease-out'
+                }}>
+                  <h3 style={{ fontSize: '1.1rem', fontWeight: 800, marginBottom: '0.25rem', color: ruletaResult.change > 0 ? '#00d27f' : ruletaResult.change < 0 ? '#ff4d4d' : '#fff' }}>
+                    {ruletaResult.change > 0 ? '¡Felicidades!' : ruletaResult.change < 0 ? '¡Suerte para la próxima!' : 'Empate'}
+                  </h3>
+                  <p style={{ margin: 0, fontSize: '0.95rem', color: 'var(--text-muted)' }}>
+                    {ruletaResult.change > 0 
+                      ? `Ganaste ${ruletaResult.label} (+${ruletaResult.change} Pts)` 
+                      : ruletaResult.change < 0 
+                      ? `Perdiste tu apuesta (${ruletaResult.change} Pts)` 
+                      : 'Conservas tu apuesta (+0 Pts)'}
+                  </p>
+                </div>
+              )}
+            </div>
+
+            {/* Right Column: Interactive Wheel Graphic */}
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', position: 'relative' }}>
+              {/* Outer Glow Circle Ring decoration */}
+              <div style={{
+                position: 'relative',
+                width: '380px',
+                height: '380px',
+                borderRadius: '50%',
+                boxShadow: isRuletaSpinning ? '0 0 60px rgba(255, 170, 0, 0.25)' : '0 0 30px rgba(255, 255, 255, 0.05)',
+                border: '4px solid rgba(255, 255, 255, 0.08)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                background: 'rgba(10, 5, 20, 0.6)',
+                transition: 'all 0.5s ease',
+              }}>
+                {/* Pointer Arrow Pin */}
+                <div style={{
+                  position: 'absolute',
+                  top: '-14px',
+                  left: '50%',
+                  transform: 'translateX(-50%)',
+                  width: '0',
+                  height: '0',
+                  borderLeft: '16px solid transparent',
+                  borderRight: '16px solid transparent',
+                  borderTop: '28px solid #ff4d4d',
+                  filter: 'drop-shadow(0 4px 6px rgba(0,0,0,0.4))',
+                  zIndex: 10,
+                }} />
+
+                {/* Rotating Wheel Canvas/SVG */}
+                <svg
+                  ref={svgRef}
+                  viewBox="0 0 400 400"
+                  style={{
+                    width: '356px',
+                    height: '356px',
+                    transform: `rotate(${ruletaRotation}deg)`,
+                    transition: 'transform 5s cubic-bezier(0.1, 0.8, 0.1, 1)',
+                    display: 'block',
+                    transformOrigin: '50% 50%'
+                  }}
+                >
+                  {/* Wheel Sectors */}
+                  {RULETA_SECTORS.map((sec, i) => {
+                    const angleStart = i * 22.5;
+                    const angleEnd = (i + 1) * 22.5;
+                    
+                    const radStart = (angleStart * Math.PI) / 180;
+                    const radEnd = (angleEnd * Math.PI) / 180;
+                    
+                    const x1 = 200 + 180 * Math.cos(radStart);
+                    const y1 = 200 + 180 * Math.sin(radStart);
+                    const x2 = 200 + 180 * Math.cos(radEnd);
+                    const y2 = 200 + 180 * Math.sin(radEnd);
+                    
+                    const d = `M 200 200 L ${x1} ${y1} A 180 180 0 0 1 ${x2} ${y2} Z`;
+                    
+                    const textAngle = angleStart + 11.25;
+                    const textRad = (textAngle * Math.PI) / 180;
+                    const textX = 200 + 135 * Math.cos(textRad);
+                    const textY = 200 + 135 * Math.sin(textRad);
+                    
+                    return (
+                      <g key={i}>
+                        <path d={d} fill={sec.color} stroke="rgba(255,255,255,0.08)" strokeWidth="1.5" />
+                        <text
+                          x={textX}
+                          y={textY}
+                          fill={sec.textColor}
+                          fontSize="11"
+                          fontWeight="bold"
+                          textAnchor="middle"
+                          alignmentBaseline="middle"
+                          style={{ textShadow: '0 1px 3px rgba(0,0,0,0.8)', fontFamily: 'sans-serif' }}
+                        >
+                          {sec.label}
+                        </text>
+                      </g>
+                    );
+                  })}
+
+                  {/* Inner Decorative Circle */}
+                  <circle cx="200" cy="200" r="28" fill="#fff" stroke="#ffaa00" strokeWidth="4" />
+                  <circle cx="200" cy="200" r="12" fill="#1a102f" />
+                </svg>
+              </div>
+            </div>
           </div>
         </div>
       ) : (
