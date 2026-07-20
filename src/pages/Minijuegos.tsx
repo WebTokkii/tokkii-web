@@ -1966,9 +1966,9 @@ export default function Minijuegos() {
                                <div style={{
                                  display: 'inline-block',
                                  padding: '24px',
-                                 background: 'rgba(255, 255, 255, 0.02)',
+                                 background: 'rgba(255, 228, 230, 0.95)',
                                  borderRadius: '24px',
-                                 border: '1px solid rgba(255, 255, 255, 0.08)',
+                                 border: '1px solid rgba(244, 63, 94, 0.2)',
                                  boxShadow: 'var(--shadow)',
                                  backdropFilter: 'blur(10px)'
                                }}>
