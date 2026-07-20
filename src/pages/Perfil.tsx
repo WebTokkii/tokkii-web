@@ -26,7 +26,33 @@ export default function Perfil() {
         .single();
 
       if (profileData) {
-        setProfile(profileData);
+        let currentProfile = profileData;
+        const authUser = session.user;
+        const metaAvatar = authUser.user_metadata?.avatar_url;
+        const metaUsername = authUser.user_metadata?.preferred_username || authUser.user_metadata?.name || authUser.user_metadata?.full_name;
+
+        const needsUpdate = 
+          (metaAvatar && profileData.avatar_url !== metaAvatar) || 
+          (metaUsername && profileData.username !== metaUsername);
+
+        if (needsUpdate) {
+          const updates: any = {};
+          if (metaAvatar) updates.avatar_url = metaAvatar;
+          if (metaUsername) updates.username = metaUsername;
+
+          const { data: updatedData } = await supabase
+            .from('profiles')
+            .update(updates)
+            .eq('id', session.user.id)
+            .select()
+            .single();
+
+          if (updatedData) {
+            currentProfile = updatedData;
+            window.dispatchEvent(new Event('points-updated'));
+          }
+        }
+        setProfile(currentProfile);
       }
 
       // Fetch completions for today

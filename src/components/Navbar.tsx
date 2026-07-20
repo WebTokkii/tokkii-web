@@ -18,12 +18,11 @@ const Navbar: React.FC = () => {
             }
         });
 
-        // Listen for auth changes
         const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
             const currentUser = session?.user ?? null;
             setUser(currentUser);
             if (currentUser) {
-                fetchProfile(currentUser.id);
+                fetchProfile(currentUser.id, currentUser);
             } else {
                 setProfile(null);
             }
@@ -33,7 +32,7 @@ const Navbar: React.FC = () => {
         const handlePointsUpdate = () => {
             supabase.auth.getSession().then(({ data: { session } }) => {
                 if (session?.user) {
-                    fetchProfile(session.user.id);
+                    fetchProfile(session.user.id, session.user);
                 }
             });
         };
@@ -45,7 +44,7 @@ const Navbar: React.FC = () => {
         };
     }, []);
 
-    const fetchProfile = async (userId: string) => {
+    const fetchProfile = async (userId: string, authUser?: any) => {
         const { data, error } = await supabase
             .from('profiles')
             .select('*')
@@ -53,7 +52,33 @@ const Navbar: React.FC = () => {
             .single();
 
         if (!error && data) {
-            setProfile(data);
+            let currentProfile = data;
+            if (authUser) {
+                const metaAvatar = authUser.user_metadata?.avatar_url;
+                const metaUsername = authUser.user_metadata?.preferred_username || authUser.user_metadata?.name || authUser.user_metadata?.full_name;
+
+                const needsUpdate = 
+                    (metaAvatar && data.avatar_url !== metaAvatar) || 
+                    (metaUsername && data.username !== metaUsername);
+
+                if (needsUpdate) {
+                    const updates: any = {};
+                    if (metaAvatar) updates.avatar_url = metaAvatar;
+                    if (metaUsername) updates.username = metaUsername;
+
+                    const { data: updatedData } = await supabase
+                        .from('profiles')
+                        .update(updates)
+                        .eq('id', userId)
+                        .select()
+                        .single();
+
+                    if (updatedData) {
+                        currentProfile = updatedData;
+                    }
+                }
+            }
+            setProfile(currentProfile);
         }
     };
 
