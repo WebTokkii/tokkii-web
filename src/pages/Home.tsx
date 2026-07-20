@@ -131,72 +131,49 @@ const Home: React.FC = () => {
     }, []);
 
     return (
-        <div className="home-container">
-            {/* 1. Sección Héroe Principal */}
-            <div className="hero-section">
-                {/* Fondo Animado con Grid */}
-                <div className="hero-bg-grid"></div>
-                
-                <div className="wrap flex flex-col md:flex-row items-center justify-between" style={{ minHeight: '650px', padding: '100px 0 60px' }}>
-                    {/* Columna Izquierda: Información de Stream */}
-                    <div className="hero-left-content animate-fade-in" style={{ flex: 1, paddingRight: '20px' }}>
-                        <div className="stream-badge mb-4">
-                            <span className="dot animate-pulse"></span>
-                            STREAM ONLINE
+        <div className="home-wrapper">
+            {/* 1. Sección Hero (Bienvenida) */}
+            <section className="section">
+                <div className="wrap" style={{ maxWidth: '900px' }}>
+                    <article className="hero-main glass" style={{ margin: '0 auto', textAlign: 'center' }}>
+                        <div className="eyebrow" style={{ display: 'inline-flex', margin: '0 auto 18px' }}>
+                            <span className="dot"></span>Streaming, eventos y comunidad
                         </div>
-                        <h1 className="hero-title mb-6">
-                            ¡Bienvenido al canal oficial de <span className="text-highlight">EvilTokkii</span>!
-                        </h1>
-                        <p className="hero-desc mb-8">
-                            Acompáñame en mis transmisiones en vivo jugando a Overwatch 2, Dead by Daylight y reaccionando a lo mejor de la cultura pop, anime y manga.
-                        </p>
-                        
-                        <div className="flex gap-4 items-center">
-                            <a href="https://twitch.tv/eviltokkii" target="_blank" rel="noopener noreferrer" className="btn btn-primary" style={{ padding: '0.8rem 1.6rem', fontSize: '1rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                <FontAwesomeIcon icon={faTwitch} /> Seguir en Twitch
+                        <h1 style={{ margin: '0 auto 16px', maxWidth: 'none' }}>Bienvenido a <span className="grad">EvilTokkii</span></h1>
+                        <p style={{ margin: '0 auto 24px', maxWidth: 'none' }}>Descubre una experiencia única llena de eventos y sorpresas con la mejor compañía.</p>
+                        <div className="actions" style={{ justifyContent: 'center' }}>
+                            <a className="btn primary" href="https://www.twitch.tv/eviltokkii" target="_blank" rel="noopener noreferrer">
+                                <FontAwesomeIcon icon={faTwitch} /> Ver Twitch
                             </a>
+                            <Link className="btn secondary" to="/dinamicas">Explorar noticias</Link>
                         </div>
-                    </div>
-
-                    {/* Columna Derecha: Reproductor en Vivo */}
-                    <div className="hero-right-content animate-slide-up" style={{ flex: 1, width: '100%', maxWidth: '600px', display: 'flex', justifyContent: 'center' }}>
-                        <div className="glass" style={{ width: '100%', padding: '15px', borderRadius: '24px', boxShadow: 'var(--shadow)' }}>
-                            <TwitchPlayer />
+                        <div className="stats">
+                            <div className="stat">
+                                <strong>Streamer Chilena</strong>
+                                <span>Me gusta jugar, conversar y pasarla bien.</span>
+                            </div>
+                            <div className="stat">
+                                <strong>Mi canal, tu Hogar</strong>
+                                <span>Este espacio es seguro y lleno de buena energía.</span>
+                            </div>
+                            <div className="stat">
+                                <strong>Crecemos juntos</strong>
+                                <span>Comparte y sé parte de esta linda comunidad.</span>
+                            </div>
                         </div>
-                    </div>
+                    </article>
                 </div>
-            </div>
+            </section>
 
-            {/* 2. Sección Principal de Contenidos */}
-            <section className="section bg-dark-secondary">
+            {/* 2. Sección Twitch (Reproductor en Vivo) */}
+            <section className="section">
                 <div className="wrap">
-                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                        {/* Columna 1 y 2: Noticias e Información */}
-                        <div className="lg:col-span-2 flex flex-col gap-8">
-                            <div className="section-head">
-                                <div>
-                                    <div className="kicker">Mundo Geek & Gaming</div>
-                                    <h3 className="title">Últimas Noticias</h3>
-                                </div>
-                            </div>
-                            
-                            {/* Widget de Noticias */}
-                            <NewsWidget onActiveNewsChange={(bg) => setActiveNewsBg(bg)} />
-                        </div>
-
-                        {/* Columna 3: Más Vistos y Socials */}
-                        <div className="flex flex-col gap-8">
-                            <div className="section-head">
-                                <div>
-                                    <div className="kicker">Tendencias</div>
-                                    <h3 className="title">Lo más visto</h3>
-                                </div>
-                            </div>
-                            
-                            {/* Widget de Más Vistos */}
-                            <MostStreamed />
+                    <div className="section-head">
+                        <div>
+                            <div className="kicker">Estado actual en Twitch</div>
                         </div>
                     </div>
+                    <TwitchPlayer />
                 </div>
             </section>
 
