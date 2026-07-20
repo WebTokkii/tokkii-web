@@ -2,6 +2,68 @@ import React, { useState, useEffect } from 'react';
 import { NavLink, Link } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 
+const renderBadge = (role?: string) => {
+  if (!role) return null;
+  if (role === 'usuario') {
+    return (
+      <span style={{
+        display: 'inline-flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        width: '9px',
+        height: '9px',
+        borderRadius: '50%',
+        backgroundColor: '#94A3B8',
+        boxShadow: '0 0 8px rgba(148, 163, 184, 0.7)',
+        marginLeft: '6px'
+      }} title="Usuario"></span>
+    );
+  }
+  if (role === 'vip') {
+    return (
+      <span style={{
+        display: 'inline-flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: '2px 6px',
+        borderRadius: '6px',
+        backgroundColor: 'rgba(255, 0, 115, 0.15)',
+        border: '1px solid rgba(255, 0, 115, 0.4)',
+        color: '#FF0073',
+        fontSize: '0.65rem',
+        fontWeight: 'bold',
+        textTransform: 'uppercase',
+        letterSpacing: '0.5px',
+        boxShadow: '0 0 10px rgba(255, 0, 115, 0.3)',
+        marginLeft: '6px',
+        lineHeight: 1
+      }} title="VIP">VIP</span>
+    );
+  }
+  if (role === 'webmaster') {
+    return (
+      <span style={{
+        display: 'inline-flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: '2px 6px',
+        borderRadius: '6px',
+        backgroundColor: 'rgba(34, 197, 94, 0.15)',
+        border: '1px solid rgba(34, 197, 94, 0.4)',
+        color: '#4ADE80',
+        fontSize: '0.65rem',
+        fontWeight: 'bold',
+        textTransform: 'uppercase',
+        letterSpacing: '0.5px',
+        boxShadow: '0 0 10px rgba(34, 197, 94, 0.3)',
+        marginLeft: '6px',
+        lineHeight: 1
+      }} title="Webmaster">WEB</span>
+    );
+  }
+  return null;
+};
+
 const Navbar: React.FC = () => {
     const [user, setUser] = useState<any>(null);
     const [profile, setProfile] = useState<any>(null);
@@ -9,7 +71,6 @@ const Navbar: React.FC = () => {
     const [showUserMenu, setShowUserMenu] = useState(false);
 
     useEffect(() => {
-        // Check current session
         supabase.auth.getSession().then(({ data: { session } }) => {
             const currentUser = session?.user ?? null;
             setUser(currentUser);
@@ -28,7 +89,6 @@ const Navbar: React.FC = () => {
             }
         });
 
-        // Custom listener to update points in real time
         const handlePointsUpdate = () => {
             supabase.auth.getSession().then(({ data: { session } }) => {
                 if (session?.user) {
@@ -113,7 +173,6 @@ const Navbar: React.FC = () => {
                         <li><NavLink to="/tierlists" className={({ isActive }) => (isActive ? 'active' : '')}>Tierlists</NavLink></li>
                         <li><NavLink to="/ayuda" className={({ isActive }) => (isActive ? 'active' : '')}>Ayuda</NavLink></li>
                     </ul>
-                    {/* Auth Section */}
                     <div className="auth-nav-section"
                          style={{ 
                              borderLeft: '1px solid rgba(255,255,255,0.1)', 
@@ -130,8 +189,9 @@ const Navbar: React.FC = () => {
                         {user ? (
                             <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                    <span style={{ fontWeight: 'bold', fontSize: '0.9rem', color: '#fff', whiteSpace: 'nowrap' }}>
+                                    <span style={{ fontWeight: 'bold', fontSize: '0.9rem', color: '#fff', whiteSpace: 'nowrap', display: 'inline-flex', alignItems: 'center' }}>
                                         {profile?.username || user.user_metadata?.preferred_username || user.user_metadata?.name}
+                                        {renderBadge(profile?.role)}
                                     </span>
                                     <span style={{ color: 'rgba(255,255,255,0.3)', fontSize: '0.8rem' }}>&bull;</span>
                                     <span style={{ fontSize: '0.85rem', color: 'var(--highlight)', fontWeight: 'bold', whiteSpace: 'nowrap' }}>
