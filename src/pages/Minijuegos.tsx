@@ -84,7 +84,7 @@ export default function Minijuegos() {
   const svgRef = useRef<SVGSVGElement | null>(null);
 
   // Volume states for music quiz
-  const [audioVolume, setAudioVolume] = useState<number>(0.5);
+  const [audioVolume, setAudioVolume] = useState<number>(0.2);
   const [showVolumeSlider, setShowVolumeSlider] = useState<boolean>(false);
 
   // Roulette states & variables
