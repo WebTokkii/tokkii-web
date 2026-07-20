@@ -9,6 +9,7 @@ import { SCRAMBLE_WORDS } from '../data/ScrambleWords';
 import { DBD_PERKS } from '../data/DbdPerks';
 import { DISNEY_QUESTIONS } from '../data/DisneyQuestions';
 import { COVERS_QUESTIONS } from '../data/CoversQuestions';
+import { POKEMON_QUESTIONS } from '../data/PokemonQuestions';
 import { DOWNLOADED_PERKS } from '../data/DbdPerksDownloaded';
 import md5 from 'blueimp-md5';
 import './TierList.css'; // Reuse existing glass styles
@@ -49,13 +50,14 @@ interface QuizQuestion {
   scrambleJumbled?: string;
   dbdPerkImage?: string;
   image?: string;
+  pokemonImage?: string;
   options: string[];
   answerIndex: number;
 }
 
 export default function Minijuegos() {
   const [currentView, setCurrentView] = useState<'hub' | 'quiz' | 'ruleta'>('hub');
-  const [quizType, setQuizType] = useState<'overwatch' | 'games' | 'audio_music' | 'flags' | 'word_scramble' | 'dbd_perks' | 'disney' | 'covers'>('overwatch');
+  const [quizType, setQuizType] = useState<'overwatch' | 'games' | 'audio_music' | 'flags' | 'word_scramble' | 'dbd_perks' | 'disney' | 'covers' | 'pokemon'>('overwatch');
   
   // Quiz play states
   const [quizQuestions, setQuizQuestions] = useState<QuizQuestion[]>([]);
@@ -361,7 +363,7 @@ export default function Minijuegos() {
     }
   };
 
-  const getDailyQuestions = (type: 'overwatch' | 'games' | 'audio_music' | 'flags' | 'word_scramble' | 'dbd_perks' | 'disney' | 'covers') => {
+  const getDailyQuestions = (type: 'overwatch' | 'games' | 'audio_music' | 'flags' | 'word_scramble' | 'dbd_perks' | 'disney' | 'covers' | 'pokemon') => {
     const today = new Date();
     const dateStr = `${today.getFullYear()}-${today.getMonth() + 1}-${today.getDate()}`;
     
@@ -459,6 +461,7 @@ export default function Minijuegos() {
       }))) :
       type === 'disney' ? (dbMinigames['disney'] || DISNEY_QUESTIONS) :
       type === 'covers' ? (dbMinigames['covers'] || COVERS_QUESTIONS) :
+      type === 'pokemon' ? (dbMinigames['pokemon'] || POKEMON_QUESTIONS) :
       (dbMinigames['music'] || MUSIC_HITS_QUESTIONS);
 
     const totalQuestions = sourceQuestions.length;
@@ -500,7 +503,7 @@ export default function Minijuegos() {
     return shuffled;
   };
 
-  const startQuiz = (type: 'overwatch' | 'games' | 'audio_music' | 'flags' | 'word_scramble' | 'dbd_perks' | 'disney' | 'covers') => {
+  const startQuiz = (type: 'overwatch' | 'games' | 'audio_music' | 'flags' | 'word_scramble' | 'dbd_perks' | 'disney' | 'covers' | 'pokemon') => {
     if (!userId) {
       alert("Inicia sesión con Twitch para realizar las trivias diarias.");
       return;
@@ -1112,6 +1115,7 @@ export default function Minijuegos() {
                 { id: 'disney', name: 'Personajes Disney', desc: 'Adivina qué personaje de Disney es a partir de su imagen. 15 preguntas diarias. +3 puntos por acierto.', color: '#ffdd00', bg: '/Imagenes/minijuego_disney.png?v=2' },
                 { id: 'covers', name: 'Carátulas de Juegos', desc: 'Adivina el videojuego a partir de su carátula o box art limpio y sin logos. 15 preguntas diarias. +3 puntos por acierto.', color: '#a855f7', bg: '/Imagenes/minijuego_covers.png?v=2' },
                 { id: 'audio_music', name: 'Adivina la Canción', desc: 'Escucha el fragmento de audio y adivina a qué éxito musical pertenece. 15 canciones diarias. +3 puntos por acierto.', color: '#e233ff', bg: '/Imagenes/minijuego_music.png?v=2' },
+                { id: 'pokemon', name: 'Adivina el Pokémon', desc: 'Identifica el Pokémon de la silueta. 15 preguntas diarias. +3 puntos por acierto.', color: '#3b82f6', bg: '/Imagenes/minijuego_pokemon.png' },
                 { id: 'ruleta', name: 'Ruleta de la Suerte', desc: '¡Apuesta tus puntos y prueba tu suerte! Multiplica tu apuesta hasta x5 o gana premios planos de hasta 1500 puntos.', color: '#ffaa00', bg: '/Imagenes/minijuego_ruleta.png?v=2' }
               ].map((g) => {
                   const isCompleted = completionsToday.includes(g.id);
@@ -1532,6 +1536,8 @@ export default function Minijuegos() {
                     ? 'Adivina la Bandera Daily Quiz' 
                     : quizType === 'audio_music'
                     ? 'Música Daily Quiz'
+                    : quizType === 'pokemon'
+                    ? 'Adivina el Pokémon Daily Quiz'
                     : 'Word Scramble Daily Quiz'}
                 </div>
                 <h1 style={{ margin: '0 auto 16px', maxWidth: 'none', fontSize: '3rem', fontWeight: 900 }}>Desafío Diario</h1>
@@ -1542,7 +1548,9 @@ export default function Minijuegos() {
                     ? 'Demuestra cuánto sabes sobre los videojuegos más populares desde los 90s en adelante.'
                     : quizType === 'flags'
                     ? 'Adivina a qué país corresponde la bandera mostrada antes de que se agote el tiempo.'
-                    : 'Adivina la palabra desordenada con la ayuda de la pista antes de que se agote el tiempo.'}
+                    : quizType === 'pokemon'
+                    ? 'Adivina qué Pokémon se esconde detrás de la silueta antes de que se agote el tiempo.'
+                    : 'Demuestra cuánto sabes sobre los videojuegos más populares desde los 90s en adelante.'}
                 </p>
               </div>
 
@@ -1554,6 +1562,8 @@ export default function Minijuegos() {
                     ? 'Se reproducirán clips musicales de 6 segundos. Escucha con atención y adivina el hit. 15 segundos límite por pregunta.' 
                     : quizType === 'flags'
                     ? 'Se te mostrarán 15 banderas de países. Adivina a qué país pertenecen. Tienes exactamente 15 segundos por pregunta. Cada acierto suma 3 puntos.'
+                    : quizType === 'pokemon'
+                    ? 'Se te mostrarán 15 siluetas de Pokémon. Adivina el Pokémon correcto de las opciones. Tienes exactamente 15 segundos por pregunta. Cada acierto suma 3 puntos.'
                     : 'Se generarán 15 preguntas de opción múltiple. Dispones de exactamente 15 segundos por pregunta. Cada acierto suma 3 puntos.'}
                 </p>
                 <button 
@@ -1928,29 +1938,55 @@ export default function Minijuegos() {
                               <h2 style={{ marginTop: '1.5rem', fontSize: '1.4rem', fontWeight: 800 }}>¿Cómo se llama esta habilidad (Perk)?</h2>
                             </div>
                           ) : quizType === 'disney' ? (
-                            <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
-                              <div style={{
-                                display: 'inline-block',
-                                padding: '12px',
-                                background: 'rgba(255, 255, 255, 0.02)',
-                                borderRadius: '24px',
-                                border: '1px solid rgba(255, 255, 255, 0.08)',
-                                boxShadow: 'var(--shadow)',
-                                backdropFilter: 'blur(10px)'
-                              }}>
-                                <img 
-                                  src={quizQuestions[currentQuestionIdx].image || ''} 
-                                  alt="Quiz Illustration" 
-                                  style={{
-                                    height: '180px',
-                                    display: 'block',
-                                    borderRadius: '16px',
-                                    objectFit: 'contain'
-                                  }} 
-                                />
-                              </div>
-                              <h2 style={{ marginTop: '1.5rem', fontSize: '1.4rem', fontWeight: 800 }}>{quizQuestions[currentQuestionIdx].text}</h2>
-                            </div>
+                             <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
+                               <div style={{
+                                 display: 'inline-block',
+                                 padding: '12px',
+                                 background: 'rgba(255, 255, 255, 0.02)',
+                                 borderRadius: '24px',
+                                 border: '1px solid rgba(255, 255, 255, 0.08)',
+                                 boxShadow: 'var(--shadow)',
+                                 backdropFilter: 'blur(10px)'
+                               }}>
+                                 <img 
+                                   src={quizQuestions[currentQuestionIdx].image || ''} 
+                                   alt="Quiz Illustration" 
+                                   style={{
+                                     height: '180px',
+                                     display: 'block',
+                                     borderRadius: '16px',
+                                     objectFit: 'contain'
+                                   }} 
+                                 />
+                               </div>
+                               <h2 style={{ marginTop: '1.5rem', fontSize: '1.4rem', fontWeight: 800 }}>{quizQuestions[currentQuestionIdx].text}</h2>
+                             </div>
+                           ) : quizType === 'pokemon' ? (
+                             <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
+                               <div style={{
+                                 display: 'inline-block',
+                                 padding: '24px',
+                                 background: 'rgba(255, 255, 255, 0.02)',
+                                 borderRadius: '24px',
+                                 border: '1px solid rgba(255, 255, 255, 0.08)',
+                                 boxShadow: 'var(--shadow)',
+                                 backdropFilter: 'blur(10px)'
+                               }}>
+                                 <img 
+                                   src={quizQuestions[currentQuestionIdx].pokemonImage || ''} 
+                                   alt="Pokemon Silhouette" 
+                                   style={{
+                                     height: '180px',
+                                     display: 'block',
+                                     borderRadius: '16px',
+                                     objectFit: 'contain',
+                                     filter: isAnswerRevealed ? 'none' : 'brightness(0) invert(0)',
+                                     transition: 'filter 0.4s ease'
+                                   }} 
+                                 />
+                               </div>
+                               <h2 style={{ marginTop: '1.5rem', fontSize: '1.4rem', fontWeight: 800 }}>¿Quién es este Pokémon?</h2>
+                             </div>
                           ) : (
                             <h2 style={{ fontSize: '1.4rem', fontWeight: 800, marginBottom: '1.5rem' }}>{quizQuestions[currentQuestionIdx].text}</h2>
                           )}
@@ -2298,6 +2334,7 @@ export default function Minijuegos() {
                 abandonedQuizInfo === 'dbd_perks' ? 'Perks de DBD' :
                 abandonedQuizInfo === 'disney' ? 'Personajes Disney' :
                 abandonedQuizInfo === 'covers' ? 'Carátulas de Juegos' :
+                abandonedQuizInfo === 'pokemon' ? 'Adivina el Pokémon' :
                 'Adivina la Canción'
               }</strong>. El desafío ha sido marcado como completado para el día de hoy.
             </p>
