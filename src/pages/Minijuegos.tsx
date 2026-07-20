@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { Sparkles } from 'lucide-react';
+import { Sparkles, Volume2, VolumeX } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { OVERWATCH_QUESTIONS } from '../data/OverwatchQuestions';
 import { GAMES_QUESTIONS } from '../data/GamesQuestions';
@@ -82,6 +82,10 @@ export default function Minijuegos() {
   const [abandonedQuizInfo, setAbandonedQuizInfo] = useState<string | null>(null);
   const isExitingRef = useRef<boolean>(false);
   const svgRef = useRef<SVGSVGElement | null>(null);
+
+  // Volume states for music quiz
+  const [audioVolume, setAudioVolume] = useState<number>(0.5);
+  const [showVolumeSlider, setShowVolumeSlider] = useState<boolean>(false);
 
   // Roulette states & variables
   const [betAmount, setBetAmount] = useState<10 | 50 | 100 | 500>(10);
@@ -301,6 +305,7 @@ export default function Minijuegos() {
         localAudioRef.current.pause();
       }
       const audio = new Audio(question.audioUrl);
+      audio.volume = audioVolume;
       audio.play().then(() => {
         setIsAudioPlaying(true);
       }).catch((e) => console.error("Error playing audio stream:", e));
@@ -989,6 +994,18 @@ export default function Minijuegos() {
       window.removeEventListener('popstate', handlePopState);
     };
   }, [quizStarted, quizFinished]);
+
+  // Synchronize volume adjustments to active players
+  useEffect(() => {
+    if (localAudioRef.current) {
+      localAudioRef.current.volume = audioVolume;
+    }
+    if (ytPlayer && typeof ytPlayer.setVolume === 'function') {
+      try {
+        ytPlayer.setVolume(audioVolume * 100);
+      } catch (e) {}
+    }
+  }, [audioVolume, ytPlayer]);
 
   // RequestAnimationFrame tick-sound synchronization based on physical SVG rotation
   useEffect(() => {
@@ -1810,17 +1827,62 @@ export default function Minijuegos() {
                       ) : (
                         <>
                           {quizType === 'audio_music' ? (
-                            <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
-                              <div className={`audio-visualizer-bars ${isAudioPlaying ? 'animating' : ''}`} style={{ display: 'inline-flex', gap: '4px', height: '30px', alignItems: 'center' }}>
-                                <span style={{ display: 'inline-block', width: '4px', height: '100%', background: '#fff', animation: isAudioPlaying ? 'bounce 0.6s infinite alternate' : 'none' }}></span>
-                                <span style={{ display: 'inline-block', width: '4px', height: '80%', background: '#fff', animation: isAudioPlaying ? 'bounce 0.6s infinite alternate 0.15s' : 'none' }}></span>
-                                <span style={{ display: 'inline-block', width: '4px', height: '100%', background: '#fff', animation: isAudioPlaying ? 'bounce 0.6s infinite alternate 0.3s' : 'none' }}></span>
-                                <span style={{ display: 'inline-block', width: '4px', height: '60%', background: '#fff', animation: isAudioPlaying ? 'bounce 0.6s infinite alternate 0.1s' : 'none' }}></span>
-                              </div>
-                              <p style={{ marginTop: '1rem', fontWeight: 600, color: 'var(--text-muted)' }}>
-                                {isAudioPlaying ? 'Reproduciendo audio...' : 'Audio detenido'}
-                              </p>
-                            </div>
+                             <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
+                               <div className={`audio-visualizer-bars ${isAudioPlaying ? 'animating' : ''}`} style={{ display: 'inline-flex', gap: '4px', height: '30px', alignItems: 'center' }}>
+                                 <span style={{ display: 'inline-block', width: '4px', height: '100%', background: '#fff', animation: isAudioPlaying ? 'bounce 0.6s infinite alternate' : 'none' }}></span>
+                                 <span style={{ display: 'inline-block', width: '4px', height: '80%', background: '#fff', animation: isAudioPlaying ? 'bounce 0.6s infinite alternate 0.15s' : 'none' }}></span>
+                                 <span style={{ display: 'inline-block', width: '4px', height: '100%', background: '#fff', animation: isAudioPlaying ? 'bounce 0.6s infinite alternate 0.3s' : 'none' }}></span>
+                                 <span style={{ display: 'inline-block', width: '4px', height: '60%', background: '#fff', animation: isAudioPlaying ? 'bounce 0.6s infinite alternate 0.1s' : 'none' }}></span>
+                               </div>
+                               <p style={{ marginTop: '0.75rem', fontWeight: 600, color: 'var(--text-muted)', marginBottom: '0.75rem' }}>
+                                 {isAudioPlaying ? 'Reproduciendo audio...' : 'Audio detenido'}
+                               </p>
+
+                               {/* Speaker and Volume Controller UI */}
+                               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px' }}>
+                                 <button
+                                   onClick={() => setShowVolumeSlider(!showVolumeSlider)}
+                                   style={{
+                                     background: 'none',
+                                     color: 'var(--highlight)',
+                                     cursor: 'pointer',
+                                     display: 'flex',
+                                     alignItems: 'center',
+                                     justifyContent: 'center',
+                                     padding: '8px',
+                                     borderRadius: '50%',
+                                     backgroundColor: 'rgba(255,255,255,0.03)',
+                                     border: '1px solid rgba(255,255,255,0.08)',
+                                     transition: 'all 0.2s'
+                                   }}
+                                   title="Ajustar Volumen"
+                                 >
+                                   {audioVolume === 0 ? <VolumeX size={18} /> : <Volume2 size={18} />}
+                                 </button>
+                                 
+                                 {showVolumeSlider && (
+                                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px', background: 'rgba(0,0,0,0.4)', padding: '6px 12px', borderRadius: '20px', border: '1px solid rgba(255,255,255,0.08)', animation: 'fadeIn 0.2s ease' }}>
+                                     <input 
+                                       type="range" 
+                                       min="0" 
+                                       max="1" 
+                                       step="0.05" 
+                                       value={audioVolume} 
+                                       onChange={(e) => setAudioVolume(parseFloat(e.target.value))}
+                                       style={{
+                                         width: '80px',
+                                         height: '4px',
+                                         accentColor: 'var(--highlight)',
+                                         cursor: 'pointer'
+                                       }}
+                                     />
+                                     <span style={{ fontSize: '0.75rem', color: '#fff', minWidth: '28px', textAlign: 'right' }}>
+                                       {Math.round(audioVolume * 100)}%
+                                     </span>
+                                   </div>
+                                 )}
+                               </div>
+                             </div>
                           ) : quizType === 'flags' ? (
                             <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
                               <div style={{
