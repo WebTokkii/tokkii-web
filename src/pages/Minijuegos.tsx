@@ -59,6 +59,89 @@ interface QuizQuestion {
   answerIndex: number;
 }
 
+const renderBadge = (role?: string) => {
+  if (!role) return null;
+  if (role === 'usuario') {
+    return (
+      <span style={{
+        display: 'inline-flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        width: '9px',
+        height: '9px',
+        borderRadius: '50%',
+        backgroundColor: '#94A3B8',
+        boxShadow: '0 0 8px rgba(148, 163, 184, 0.7)',
+        marginLeft: '6px'
+      }} title="Usuario"></span>
+    );
+  }
+  if (role === 'vip') {
+    return (
+      <span style={{
+        display: 'inline-flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: '2px 6px',
+        borderRadius: '6px',
+        backgroundColor: 'rgba(255, 0, 115, 0.15)',
+        border: '1px solid rgba(255, 0, 115, 0.4)',
+        color: '#FF0073',
+        fontSize: '0.65rem',
+        fontWeight: 'bold',
+        textTransform: 'uppercase',
+        letterSpacing: '0.5px',
+        boxShadow: '0 0 10px rgba(255, 0, 115, 0.3)',
+        marginLeft: '6px',
+        lineHeight: 1
+      }} title="VIP">VIP</span>
+    );
+  }
+  if (role === 'webmaster') {
+    return (
+      <span style={{
+        display: 'inline-flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: '2px 6px',
+        borderRadius: '6px',
+        backgroundColor: 'rgba(34, 197, 94, 0.15)',
+        border: '1px solid rgba(34, 197, 94, 0.4)',
+        color: '#4ADE80',
+        fontSize: '0.65rem',
+        fontWeight: 'bold',
+        textTransform: 'uppercase',
+        letterSpacing: '0.5px',
+        boxShadow: '0 0 10px rgba(34, 197, 94, 0.3)',
+        marginLeft: '6px',
+        lineHeight: 1
+      }} title="Webmaster">WEB</span>
+    );
+  }
+  if (role === 'streamer') {
+    return (
+      <span style={{
+        display: 'inline-flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: '2px 6px',
+        borderRadius: '6px',
+        backgroundColor: 'rgba(168, 85, 247, 0.15)',
+        border: '1px solid rgba(168, 85, 247, 0.4)',
+        color: '#C084FC',
+        fontSize: '0.65rem',
+        fontWeight: 'bold',
+        textTransform: 'uppercase',
+        letterSpacing: '0.5px',
+        boxShadow: '0 0 10px rgba(168, 85, 247, 0.3)',
+        marginLeft: '6px',
+        lineHeight: 1
+      }} title="Streamer">STREAMER</span>
+    );
+  }
+  return null;
+};
+
 export default function Minijuegos() {
   const [currentView, setCurrentView] = useState<'hub' | 'quiz' | 'ruleta'>('hub');
   const [quizType, setQuizType] = useState<'overwatch' | 'games' | 'audio_music' | 'flags' | 'word_scramble' | 'dbd_perks' | 'disney' | 'covers' | 'pokemon' | 'brands'>('overwatch');
@@ -90,6 +173,9 @@ export default function Minijuegos() {
   const isExitingRef = useRef<boolean>(false);
   const svgRef = useRef<SVGSVGElement | null>(null);
 
+  // Database custom minigames config
+  const [dbMinigames, setDbMinigames] = useState<Record<string, any>>({});
+
   // Volume states for music quiz
   const [audioVolume, setAudioVolume] = useState<number>(0.2);
   const [showVolumeSlider, setShowVolumeSlider] = useState<boolean>(false);
@@ -113,25 +199,108 @@ export default function Minijuegos() {
     }
   }, [userId]);
 
-  useEffect(() => {
-    fetchUserPoints();
-    window.addEventListener('points-updated', fetchUserPoints);
-    return () => window.removeEventListener('points-updated', fetchUserPoints);
-  }, [fetchUserPoints]);
+  // Scoreboard & Daily Stats States
+  const [scoreboard, setScoreboard] = useState<any[]>([]);
+  const [dailyStats, setDailyStats] = useState<{
+    pointsToday: number;
+    minigamesCompletedToday: number;
+    popularGameName: string;
+    popularGameCount: number;
+  }>({
+    pointsToday: 0,
+    minigamesCompletedToday: 0,
+    popularGameName: 'Cargando...',
+    popularGameCount: 0
+  });
 
-  useEffect(() => {
-    const isTester = (username || '').toLowerCase().includes('pamache');
-    const abandoned = localStorage.getItem('active_quiz_abandoned');
-    if (abandoned && !isTester) {
-      setAbandonedQuizInfo(abandoned);
-      localStorage.removeItem('active_quiz_abandoned');
-    } else if (abandoned && isTester) {
-      localStorage.removeItem('active_quiz_abandoned');
+  const fetchScoreboardAndStats = useCallback(async () => {
+    // 1. Fetch general leaderboard (all profiles ordered by points)
+    const { data: boardData } = await supabase
+      .from('profiles')
+      .select('id, username, avatar_url, points, role')
+      .order('points', { ascending: false });
+
+    if (boardData) {
+      setScoreboard(boardData);
     }
-  }, [username]);
 
-  // Database custom minigames config
-  const [dbMinigames, setDbMinigames] = useState<Record<string, any>>({});
+    // 2. Fetch daily statistics (user_quiz_completions for today)
+    const todayStr = new Date().toISOString().split('T')[0];
+    const { data: completionsTodayData } = await supabase
+      .from('user_quiz_completions')
+      .select('quiz_type, score')
+      .eq('completed_date', todayStr);
+
+    if (completionsTodayData) {
+      const minigamesCompletedToday = completionsTodayData.length;
+      const pointsToday = completionsTodayData.reduce((acc, curr) => acc + (curr.score || 0), 0);
+
+      // Calculate most popular minigame today
+      const gameCounts: Record<string, number> = {};
+      completionsTodayData.forEach((c) => {
+        gameCounts[c.quiz_type] = (gameCounts[c.quiz_type] || 0) + 1;
+      });
+
+      const gameNamesMap: Record<string, string> = {
+        overwatch: 'Overwatch Quiz',
+        games: 'Videojuegos Trivia',
+        flags: 'Adivina la Bandera',
+        word_scramble: 'Word Scramble',
+        dbd_perks: 'Perks de DBD',
+        disney: 'Personajes Disney',
+        covers: 'Carátulas de Juegos',
+        audio_music: 'Adivina la Canción',
+        pokemon: 'Adivina el Pokémon',
+        brands: 'Adivina la Marca',
+        ruleta: 'Ruleta de la Suerte'
+      };
+
+      let mostPopularKey = '';
+      let maxCount = 0;
+      Object.entries(gameCounts).forEach(([gKey, count]) => {
+        if (count > maxCount) {
+          maxCount = count;
+          mostPopularKey = gKey;
+        }
+      });
+
+      const popularGameName = mostPopularKey ? (gameNamesMap[mostPopularKey] || mostPopularKey) : 'Sin registros hoy';
+
+      setDailyStats({
+        pointsToday,
+        minigamesCompletedToday,
+        popularGameName,
+        popularGameCount: maxCount
+      });
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchScoreboardAndStats();
+
+    // Realtime channel for profiles and quiz completions updates
+    const profilesChannel = supabase
+      .channel('minijuegos-realtime-scoreboard')
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'profiles' },
+        () => {
+          fetchScoreboardAndStats();
+        }
+      )
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'user_quiz_completions' },
+        () => {
+          fetchScoreboardAndStats();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(profilesChannel);
+    };
+  }, [fetchScoreboardAndStats]);
 
   useEffect(() => {
     supabase
@@ -1339,6 +1508,176 @@ export default function Minijuegos() {
                       </div>
                   );
               })}
+          </div>
+
+          {/* Sección de Marcador General de Puntuación (Estilo Home) */}
+          <div style={{ marginTop: '4rem', marginBottom: '2.5rem' }}>
+            <div style={{ textAlign: 'center', marginBottom: '20px' }}>
+              <div className="eyebrow" style={{ display: 'inline-flex', margin: '0 auto 10px' }}>
+                <span className="dot"></span>Tabla General de Participantes
+              </div>
+              <h2 style={{ fontSize: '2.2rem', fontWeight: 900, margin: 0 }}>Marcador General de Puntos</h2>
+            </div>
+            
+            <div className="glass" style={{
+              maxWidth: '900px',
+              margin: '0 auto',
+              padding: '1.5rem',
+              borderRadius: '24px',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '10px',
+              boxShadow: 'var(--shadow)'
+            }}>
+              {scoreboard.length > 0 ? (
+                scoreboard.map((userScore, index) => (
+                  <div 
+                    key={userScore.id || index}
+                    style={{
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      alignItems: 'center',
+                      padding: '0.75rem 1.2rem',
+                      borderRadius: '14px',
+                      background: index === 0 ? 'rgba(255, 0, 115, 0.08)' : index === 1 ? 'rgba(168, 85, 247, 0.06)' : index === 2 ? 'rgba(240, 130, 38, 0.06)' : 'rgba(255,255,255,0.015)',
+                      border: index === 0 ? '1px solid rgba(255, 0, 115, 0.25)' : '1px solid rgba(255, 255, 255, 0.04)',
+                      transition: 'all 0.2s ease'
+                    }}
+                  >
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+                      <span style={{ 
+                        fontWeight: 900, 
+                        color: index === 0 ? '#FF0073' : index === 1 ? '#C084FC' : index === 2 ? '#f08226' : 'rgba(255,255,255,0.4)',
+                        fontSize: '1.1rem',
+                        width: '32px',
+                        textAlign: 'center'
+                      }}>
+                        #{index + 1}
+                      </span>
+                      {userScore.avatar_url ? (
+                        <img 
+                          src={userScore.avatar_url} 
+                          alt={userScore.username}
+                          style={{ width: '36px', height: '36px', borderRadius: '50%', border: '1px solid rgba(255,255,255,0.1)' }}
+                        />
+                      ) : (
+                        <div style={{
+                          width: '36px',
+                          height: '36px',
+                          borderRadius: '50%',
+                          background: 'rgba(255,255,255,0.05)',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          fontWeight: 'bold',
+                          color: '#fff'
+                        }}>
+                          {(userScore.username || '?').charAt(0).toUpperCase()}
+                        </div>
+                      )}
+                      <span style={{ fontWeight: 700, color: index === 0 ? '#fff' : 'rgba(255,255,255,0.9)', fontSize: '1rem', display: 'inline-flex', alignItems: 'center' }}>
+                        {userScore.username}
+                        {renderBadge(userScore.role)}
+                      </span>
+                    </div>
+                    <span style={{ fontWeight: 900, color: 'var(--highlight)', fontSize: '1.05rem' }}>
+                      {userScore.points} Pts
+                    </span>
+                  </div>
+                ))
+              ) : (
+                <div style={{ padding: '2rem', textAlign: 'center', color: 'var(--text-muted)' }}>
+                  Cargando tabla general de participantes...
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Sección de Estadísticas Generales del Día (En Tiempo Real) */}
+          <div style={{ marginTop: '2.5rem', marginBottom: '4rem' }}>
+            <div style={{ textAlign: 'center', marginBottom: '20px' }}>
+              <div className="eyebrow" style={{ display: 'inline-flex', margin: '0 auto 10px', background: 'rgba(56, 189, 248, 0.1)', border: '1px solid rgba(56, 189, 248, 0.3)', color: '#38BDF8' }}>
+                <span className="dot" style={{ background: '#38BDF8', boxShadow: '0 0 10px #38BDF8' }}></span>Actualización en Tiempo Real
+              </div>
+              <h2 style={{ fontSize: '2rem', fontWeight: 900, margin: 0 }}>Estadísticas del Día</h2>
+              <p style={{ color: 'var(--text-muted)', fontSize: '0.95rem', marginTop: '6px' }}>
+                Revisa la actividad de la comunidad hoy e ¡incentívate a conseguir más puntos!
+              </p>
+            </div>
+
+            <div style={{
+              maxWidth: '900px',
+              margin: '0 auto',
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))',
+              gap: '1.25rem'
+            }}>
+              {/* Stat Card 1: Puntos ganados hoy */}
+              <div className="glass" style={{
+                padding: '1.5rem',
+                borderRadius: '20px',
+                border: '1px solid rgba(255, 0, 115, 0.2)',
+                background: 'linear-gradient(135deg, rgba(255, 0, 115, 0.08) 0%, rgba(8, 4, 13, 0.4) 100%)',
+                textAlign: 'center',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '8px'
+              }}>
+                <span style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '1px' }}>
+                  Puntos Ganados Hoy
+                </span>
+                <span style={{ fontSize: '2.4rem', fontWeight: 900, color: '#FF0073', textShadow: '0 0 15px rgba(255, 0, 115, 0.4)' }}>
+                  +{dailyStats.pointsToday} Pts
+                </span>
+                <span style={{ fontSize: '0.8rem', color: 'rgba(255,255,255,0.5)' }}>
+                  Puntos otorgados a los jugadores hoy
+                </span>
+              </div>
+
+              {/* Stat Card 2: Minijuegos realizados hoy */}
+              <div className="glass" style={{
+                padding: '1.5rem',
+                borderRadius: '20px',
+                border: '1px solid rgba(56, 189, 248, 0.2)',
+                background: 'linear-gradient(135deg, rgba(56, 189, 248, 0.08) 0%, rgba(8, 4, 13, 0.4) 100%)',
+                textAlign: 'center',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '8px'
+              }}>
+                <span style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '1px' }}>
+                  Minijuegos Jugados Hoy
+                </span>
+                <span style={{ fontSize: '2.4rem', fontWeight: 900, color: '#38BDF8', textShadow: '0 0 15px rgba(56, 189, 248, 0.4)' }}>
+                  {dailyStats.minigamesCompletedToday}
+                </span>
+                <span style={{ fontSize: '0.8rem', color: 'rgba(255,255,255,0.5)' }}>
+                  Partidas completadas hoy por la comunidad
+                </span>
+              </div>
+
+              {/* Stat Card 3: Minijuego más popular hoy */}
+              <div className="glass" style={{
+                padding: '1.5rem',
+                borderRadius: '20px',
+                border: '1px solid rgba(240, 130, 38, 0.2)',
+                background: 'linear-gradient(135deg, rgba(240, 130, 38, 0.08) 0%, rgba(8, 4, 13, 0.4) 100%)',
+                textAlign: 'center',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '8px'
+              }}>
+                <span style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '1px' }}>
+                  🔥 Minijuego Más Popular Hoy
+                </span>
+                <span style={{ fontSize: '1.35rem', fontWeight: 900, color: '#f08226', textShadow: '0 0 15px rgba(240, 130, 38, 0.4)', minHeight: '44px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  {dailyStats.popularGameName}
+                </span>
+                <span style={{ fontSize: '0.8rem', color: 'rgba(255,255,255,0.5)' }}>
+                  {dailyStats.popularGameCount > 0 ? `${dailyStats.popularGameCount} partidas jugadas hoy` : '¡Sé el primero en jugar!'}
+                </span>
+              </div>
+            </div>
           </div>
         </div>
       ) : currentView === 'ruleta' ? (
