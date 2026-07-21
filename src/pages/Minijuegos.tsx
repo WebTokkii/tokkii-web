@@ -1162,7 +1162,7 @@ export default function Minijuegos() {
                 { id: 'covers', name: 'Carátulas de Juegos', desc: 'Adivina el videojuego a partir de su carátula o box art limpio y sin logos. 15 preguntas diarias. +3 puntos por acierto.', color: '#a855f7', bg: '/Imagenes/minijuego_covers.png?v=2' },
                 { id: 'audio_music', name: 'Adivina la Canción', desc: 'Escucha el fragmento de audio y adivina a qué éxito musical pertenece. 15 canciones diarias. +3 puntos por acierto.', color: '#e233ff', bg: '/Imagenes/minijuego_music.png?v=2' },
                 { id: 'pokemon', name: 'Adivina el Pokémon', desc: 'Identifica el Pokémon de la silueta. 15 preguntas diarias. +3 puntos por acierto.', color: '#3b82f6', bg: '/Imagenes/minijuego_pokemon.png' },
-                { id: 'brands', name: 'Adivina la Marca', desc: 'Identifica los logos de marcas reconocidas del mercado (Nike, Coca-Cola, etc.). 15 preguntas diarias. +3 puntos por acierto.', color: '#ff4081', bg: '/Imagenes/minijuego_flags.png?v=2' },
+                { id: 'brands', name: 'Adivina la Marca', desc: 'Identifica los logos de marcas reconocidas del mercado (Nike, Coca-Cola, etc.). 15 preguntas diarias. +3 puntos por acierto.', color: '#ff4081', bg: '/Imagenes/minijuego_marcas.png' },
                 { id: 'ruleta', name: 'Ruleta de la Suerte', desc: '¡Apuesta tus puntos y prueba tu suerte! Multiplica tu apuesta hasta x5 o gana premios planos de hasta 1500 puntos.', color: '#ffaa00', bg: '/Imagenes/minijuego_ruleta.png?v=2' }
               ].map((g) => {
                   const isCompleted = completionsToday.includes(g.id);
