@@ -1643,7 +1643,7 @@ export default function Minijuegos() {
                     : quizType === 'pokemon'
                     ? 'Se te mostrarán 15 siluetas de Pokémon. Adivina el Pokémon correcto de las opciones. Tienes exactamente 15 segundos por pregunta. Cada acierto suma 3 puntos.'
                     : quizType === 'brands'
-                    ? 'Se te mostrarán 15 logos de marcas famosas. Adivina la marca correcta de las opciones. Tienes exactamente 15 segundos por pregunta. Cada acierto suma 3 puntos.'
+                    ? 'Se te mostrarán 15 logos de marcas famosas. Escribe el nombre correcto de la marca usando la pista de longitud de letras. Tienes 30 segundos por pregunta. Cada acierto suma 3 puntos.'
                     : 'Se generarán 15 preguntas de opción múltiple. Dispones de exactamente 15 segundos por pregunta. Cada acierto suma 3 puntos.'}
                 </p>
                 <button 
