@@ -118,12 +118,15 @@ export default function Minijuegos() {
   }, [fetchUserPoints]);
 
   useEffect(() => {
+    const isTester = (username || '').toLowerCase().includes('pamache');
     const abandoned = localStorage.getItem('active_quiz_abandoned');
-    if (abandoned) {
+    if (abandoned && !isTester) {
       setAbandonedQuizInfo(abandoned);
       localStorage.removeItem('active_quiz_abandoned');
+    } else if (abandoned && isTester) {
+      localStorage.removeItem('active_quiz_abandoned');
     }
-  }, []);
+  }, [username]);
 
   // Database custom minigames config
   const [dbMinigames, setDbMinigames] = useState<Record<string, any>>({});
@@ -199,13 +202,30 @@ export default function Minijuegos() {
     });
   };
 
+  // User state
+  const [userId, setUserId] = useState<string | null>(null);
+  const [username, setUsername] = useState<string | null>(null);
+  const [completionsToday, setCompletionsToday] = useState<string[]>([]);
+
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       setUserId(session?.user?.id ?? null);
+      if (session?.user) {
+        const name = session.user.user_metadata?.preferred_username || session.user.user_metadata?.name || session.user.user_metadata?.full_name || '';
+        setUsername(name);
+      } else {
+        setUsername(null);
+      }
     });
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setUserId(session?.user?.id ?? null);
+      if (session?.user) {
+        const name = session.user.user_metadata?.preferred_username || session.user.user_metadata?.name || session.user.user_metadata?.full_name || '';
+        setUsername(name);
+      } else {
+        setUsername(null);
+      }
     });
 
     return () => subscription.unsubscribe();
@@ -213,6 +233,11 @@ export default function Minijuegos() {
 
   useEffect(() => {
     if (!userId) {
+      setCompletionsToday([]);
+      return;
+    }
+    const isTester = (username || '').toLowerCase().includes('pamache');
+    if (isTester) {
       setCompletionsToday([]);
       return;
     }
@@ -227,7 +252,7 @@ export default function Minijuegos() {
           setCompletionsToday(data.map(d => d.quiz_type));
         }
       });
-  }, [userId]);
+  }, [userId, username]);
 
   // Load YouTube Iframe API Script
   useEffect(() => {
@@ -562,7 +587,9 @@ export default function Minijuegos() {
     // Set flag in localStorage to detect refresh/abandonment
     localStorage.setItem('active_quiz_abandoned', quizType);
 
-    if (userId) {
+    const isTester = (username || '').toLowerCase().includes('pamache');
+
+    if (userId && !isTester) {
       // Add immediately to local completed list so UI locks it
       setCompletionsToday(prev => prev.includes(quizType) ? prev : [...prev, quizType]);
 
