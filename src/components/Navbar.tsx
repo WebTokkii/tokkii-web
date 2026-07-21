@@ -91,7 +91,65 @@ const Navbar: React.FC = () => {
     const [showLoginModal, setShowLoginModal] = useState(false);
     const [showUserMenu, setShowUserMenu] = useState(false);
 
+    const [unreadSections, setUnreadSections] = useState<Record<string, boolean>>({
+        noticias: false,
+        dinamicas: false,
+        minijuegos: false
+    });
+
+    // Check last visited vs latest content timestamps
+    const checkUnreadStatus = async () => {
+        try {
+            const [
+                { data: newsData },
+                { data: dinamicasData },
+                { data: minigamesData }
+            ] = await Promise.all([
+                supabase.from('news_articles').select('created_at').order('created_at', { ascending: false }).limit(1),
+                supabase.from('content_items').select('created_at').order('created_at', { ascending: false }).limit(1),
+                supabase.from('minigames_content').select('updated_at').order('updated_at', { ascending: false }).limit(1)
+            ]);
+
+            const lastNewsTime = newsData && newsData[0] ? new Date(newsData[0].created_at).getTime() : 0;
+            const lastDinamicasTime = dinamicasData && dinamicasData[0] ? new Date(dinamicasData[0].created_at).getTime() : 0;
+            const lastMinigamesTime = minigamesData && minigamesData[0] ? new Date(minigamesData[0].updated_at).getTime() : 0;
+
+            const readNewsTime = parseInt(localStorage.getItem('last_read_noticias') || '0', 10);
+            const readDinamicasTime = parseInt(localStorage.getItem('last_read_dinamicas') || '0', 10);
+            const readMinigamesTime = parseInt(localStorage.getItem('last_read_minijuegos') || '0', 10);
+
+            setUnreadSections({
+                noticias: lastNewsTime > readNewsTime,
+                dinamicas: lastDinamicasTime > readDinamicasTime,
+                minijuegos: lastMinigamesTime > readMinigamesTime
+            });
+        } catch (err) {
+            console.error("Error checking unread status:", err);
+        }
+    };
+
+    const handleSectionClick = (section: string) => {
+        localStorage.setItem(`last_read_${section}`, Date.now().toString());
+        setUnreadSections(prev => ({ ...prev, [section]: false }));
+    };
+
     useEffect(() => {
+        checkUnreadStatus();
+
+        // Realtime channels to light up glowing dots instantly when new content is added from Builder
+        const contentChannel = supabase
+            .channel('navbar-unread-tracker')
+            .on('postgres_changes', { event: '*', schema: 'public', table: 'news_articles' }, () => {
+                checkUnreadStatus();
+            })
+            .on('postgres_changes', { event: '*', schema: 'public', table: 'content_items' }, () => {
+                checkUnreadStatus();
+            })
+            .on('postgres_changes', { event: '*', schema: 'public', table: 'minigames_content' }, () => {
+                checkUnreadStatus();
+            })
+            .subscribe();
+
         supabase.auth.getSession().then(({ data: { session } }) => {
             const currentUser = session?.user ?? null;
             setUser(currentUser);
@@ -121,6 +179,7 @@ const Navbar: React.FC = () => {
 
         return () => {
             subscription.unsubscribe();
+            supabase.removeChannel(contentChannel);
             window.removeEventListener('points-updated', handlePointsUpdate);
         };
     }, []);
@@ -186,13 +245,48 @@ const Navbar: React.FC = () => {
                 </Link>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
                     <ul className="nav-links">
-                        <li><NavLink to="/" className={({ isActive }) => (isActive ? 'active' : '')} end>Home</NavLink></li>
-                        <li><NavLink to="/noticias" className={({ isActive }) => (isActive ? 'active' : '')}>Noticias</NavLink></li>
-                        <li><NavLink to="/dinamicas" className={({ isActive }) => (isActive ? 'active' : '')}>Dinámicas</NavLink></li>
-                        <li><NavLink to="/sobre" className={({ isActive }) => (isActive ? 'active' : '')}>Sobre EvilTokkii</NavLink></li>
-                        <li><NavLink to="/minijuegos" className={({ isActive }) => (isActive ? 'active' : '')}>Minijuegos</NavLink></li>
-                        <li><NavLink to="/tierlists" className={({ isActive }) => (isActive ? 'active' : '')}>Tierlists</NavLink></li>
-                        <li><NavLink to="/ayuda" className={({ isActive }) => (isActive ? 'active' : '')}>Ayuda</NavLink></li>
+                        <li>
+                            <NavLink to="/" className={({ isActive }) => (isActive ? 'active' : '')} end>Home</NavLink>
+                        </li>
+                        <li style={{ position: 'relative' }}>
+                            <NavLink 
+                                to="/noticias" 
+                                className={({ isActive }) => (isActive ? 'active' : '')}
+                                onClick={() => handleSectionClick('noticias')}
+                            >
+                                Noticias
+                            </NavLink>
+                            {unreadSections.noticias && <span className="nav-badge-dot" title="¡Nuevas noticias!" />}
+                        </li>
+                        <li style={{ position: 'relative' }}>
+                            <NavLink 
+                                to="/dinamicas" 
+                                className={({ isActive }) => (isActive ? 'active' : '')}
+                                onClick={() => handleSectionClick('dinamicas')}
+                            >
+                                Dinámicas
+                            </NavLink>
+                            {unreadSections.dinamicas && <span className="nav-badge-dot" title="¡Nuevas dinámicas!" />}
+                        </li>
+                        <li>
+                            <NavLink to="/sobre" className={({ isActive }) => (isActive ? 'active' : '')}>Sobre EvilTokkii</NavLink>
+                        </li>
+                        <li style={{ position: 'relative' }}>
+                            <NavLink 
+                                to="/minijuegos" 
+                                className={({ isActive }) => (isActive ? 'active' : '')}
+                                onClick={() => handleSectionClick('minijuegos')}
+                            >
+                                Minijuegos
+                            </NavLink>
+                            {unreadSections.minijuegos && <span className="nav-badge-dot" title="¡Nuevos minijuegos!" />}
+                        </li>
+                        <li>
+                            <NavLink to="/tierlists" className={({ isActive }) => (isActive ? 'active' : '')}>Tierlists</NavLink>
+                        </li>
+                        <li>
+                            <NavLink to="/ayuda" className={({ isActive }) => (isActive ? 'active' : '')}>Ayuda</NavLink>
+                        </li>
                     </ul>
                     <div className="auth-nav-section"
                          style={{ 
