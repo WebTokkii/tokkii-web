@@ -53,6 +53,7 @@ interface QuizQuestion {
   image?: string;
   pokemonImage?: string;
   brandLogo?: string;
+  brandName?: string;
   logoUrl?: string;
   options: string[];
   answerIndex: number;
@@ -81,6 +82,7 @@ export default function Minijuegos() {
 
   // User state
   const [userId, setUserId] = useState<string | null>(null);
+  const [username, setUsername] = useState<string | null>(null);
   const [completionsToday, setCompletionsToday] = useState<string[]>([]);
   const [streakAwardInfo, setStreakAwardInfo] = useState<{ show: boolean; days: number; points: number } | null>(null);
   const [showExitConfirm, setShowExitConfirm] = useState<boolean>(false);
@@ -201,11 +203,6 @@ export default function Minijuegos() {
       points: streakReward
     });
   };
-
-  // User state
-  const [userId, setUserId] = useState<string | null>(null);
-  const [username, setUsername] = useState<string | null>(null);
-  const [completionsToday, setCompletionsToday] = useState<string[]>([]);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -2162,31 +2159,7 @@ export default function Minijuegos() {
                                </div>
                                <h2 style={{ marginTop: '1.5rem', fontSize: '1.4rem', fontWeight: 800 }}>¿Quién es este Pokémon?</h2>
                              </div>
-                          ) : quizType === 'brands' ? (
-                             <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
-                               <div style={{
-                                 display: 'inline-block',
-                                 padding: '24px',
-                                 background: 'rgba(255, 255, 255, 0.95)',
-                                 borderRadius: '24px',
-                                 border: '1px solid rgba(255, 64, 129, 0.3)',
-                                 boxShadow: '0 10px 30px rgba(0,0,0,0.5)',
-                                 backdropFilter: 'blur(10px)'
-                               }}>
-                                 <img 
-                                   src={quizQuestions[currentQuestionIdx].logoUrl || ''} 
-                                   alt="Brand Logo" 
-                                   style={{
-                                     height: '140px',
-                                     maxWidth: '240px',
-                                     display: 'block',
-                                     objectFit: 'contain'
-                                   }} 
-                                 />
-                               </div>
-                               <h2 style={{ marginTop: '1.5rem', fontSize: '1.4rem', fontWeight: 800 }}>¿A qué marca pertenece este logo?</h2>
-                             </div>
-                           ) : (
+                          ) : (
                             <h2 style={{ fontSize: '1.4rem', fontWeight: 800, marginBottom: '1.5rem' }}>{quizQuestions[currentQuestionIdx].text}</h2>
                           )}
 
