@@ -10,6 +10,7 @@ import { DBD_PERKS } from '../data/DbdPerks';
 import { DISNEY_QUESTIONS } from '../data/DisneyQuestions';
 import { COVERS_QUESTIONS } from '../data/CoversQuestions';
 import { POKEMON_QUESTIONS } from '../data/PokemonQuestions';
+import { BRAND_QUESTIONS } from '../data/BrandQuestions';
 import { DOWNLOADED_PERKS } from '../data/DbdPerksDownloaded';
 import md5 from 'blueimp-md5';
 import './TierList.css'; // Reuse existing glass styles
@@ -51,13 +52,15 @@ interface QuizQuestion {
   dbdPerkImage?: string;
   image?: string;
   pokemonImage?: string;
+  brandLogo?: string;
+  logoUrl?: string;
   options: string[];
   answerIndex: number;
 }
 
 export default function Minijuegos() {
   const [currentView, setCurrentView] = useState<'hub' | 'quiz' | 'ruleta'>('hub');
-  const [quizType, setQuizType] = useState<'overwatch' | 'games' | 'audio_music' | 'flags' | 'word_scramble' | 'dbd_perks' | 'disney' | 'covers' | 'pokemon'>('overwatch');
+  const [quizType, setQuizType] = useState<'overwatch' | 'games' | 'audio_music' | 'flags' | 'word_scramble' | 'dbd_perks' | 'disney' | 'covers' | 'pokemon' | 'brands'>('overwatch');
   
   // Quiz play states
   const [quizQuestions, setQuizQuestions] = useState<QuizQuestion[]>([]);
@@ -363,7 +366,7 @@ export default function Minijuegos() {
     }
   };
 
-  const getDailyQuestions = (type: 'overwatch' | 'games' | 'audio_music' | 'flags' | 'word_scramble' | 'dbd_perks' | 'disney' | 'covers' | 'pokemon') => {
+  const getDailyQuestions = (type: 'overwatch' | 'games' | 'audio_music' | 'flags' | 'word_scramble' | 'dbd_perks' | 'disney' | 'covers' | 'pokemon' | 'brands') => {
     const today = new Date();
     const dateStr = `${today.getFullYear()}-${today.getMonth() + 1}-${today.getDate()}`;
     
@@ -462,6 +465,7 @@ export default function Minijuegos() {
       type === 'disney' ? (dbMinigames['disney'] || DISNEY_QUESTIONS) :
       type === 'covers' ? (dbMinigames['covers'] || COVERS_QUESTIONS) :
       type === 'pokemon' ? (dbMinigames['pokemon'] || POKEMON_QUESTIONS) :
+      type === 'brands' ? (dbMinigames['brands'] || BRAND_QUESTIONS) :
       (dbMinigames['music'] || MUSIC_HITS_QUESTIONS);
 
     const totalQuestions = sourceQuestions.length;
@@ -503,7 +507,7 @@ export default function Minijuegos() {
     return shuffled;
   };
 
-  const startQuiz = (type: 'overwatch' | 'games' | 'audio_music' | 'flags' | 'word_scramble' | 'dbd_perks' | 'disney' | 'covers' | 'pokemon') => {
+  const startQuiz = (type: 'overwatch' | 'games' | 'audio_music' | 'flags' | 'word_scramble' | 'dbd_perks' | 'disney' | 'covers' | 'pokemon' | 'brands') => {
     if (!userId) {
       alert("Inicia sesión con Twitch para realizar las trivias diarias.");
       return;
@@ -539,7 +543,7 @@ export default function Minijuegos() {
     setCurrentQuestionIdx(0);
     setUserScore(0);
     setSelectedOptionIdx(null);
-    setQuizTimeLeft(type === 'word_scramble' ? 30 : 15);
+    setQuizTimeLeft(type === 'word_scramble' || type === 'brands' ? 30 : 15);
     setQuizFinished(false);
     setIsAnswerRevealed(false);
     setQuizStarted(false);
@@ -571,6 +575,48 @@ export default function Minijuegos() {
           score: 0,
           completed_date: todayStr
         }, { onConflict: 'user_id,quiz_type,completed_date' });
+    }
+  };
+
+  const handleCheckBrand = () => {
+    if (isAnswerRevealed) return;
+    setIsAnswerRevealed(true);
+
+    const question = quizQuestions[currentQuestionIdx];
+    const userAns = scrambleGuess.trim().toLowerCase();
+    const correctAns = (question.brandName || '').trim().toLowerCase();
+
+    // Normalise strings (remove special characters like apostrophes, hyphens or spaces for user leniency if needed)
+    const normalize = (str: string) => str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]/g, "");
+
+    if (normalize(userAns) === normalize(correctAns) && userAns.length > 0) {
+      setUserScore(prev => prev + 3);
+      if (userId) {
+        supabase
+          .rpc('increment_points', { user_id: userId, amount: 3 })
+          .then(({ error }) => {
+            if (error) {
+              supabase
+                .from('profiles')
+                .select('points')
+                .eq('id', userId)
+                .single()
+                .then(({ data }) => {
+                  if (data) {
+                    supabase
+                      .from('profiles')
+                      .update({ points: (data.points || 0) + 3 })
+                      .eq('id', userId)
+                      .then(() => {
+                        window.dispatchEvent(new Event('points-updated'));
+                      });
+                  }
+                });
+            } else {
+              window.dispatchEvent(new Event('points-updated'));
+            }
+          });
+      }
     }
   };
 
@@ -680,7 +726,7 @@ export default function Minijuegos() {
       setCurrentQuestionIdx(nextIdx);
       setSelectedOptionIdx(null);
       setScrambleGuess('');
-      setQuizTimeLeft(quizType === 'word_scramble' ? 30 : 15);
+      setQuizTimeLeft(quizType === 'word_scramble' || quizType === 'brands' ? 30 : 15);
       setIsAnswerRevealed(false);
       if (quizType === 'audio_music') {
         playCurrentQuestionAudio(nextIdx);
@@ -1116,6 +1162,7 @@ export default function Minijuegos() {
                 { id: 'covers', name: 'Carátulas de Juegos', desc: 'Adivina el videojuego a partir de su carátula o box art limpio y sin logos. 15 preguntas diarias. +3 puntos por acierto.', color: '#a855f7', bg: '/Imagenes/minijuego_covers.png?v=2' },
                 { id: 'audio_music', name: 'Adivina la Canción', desc: 'Escucha el fragmento de audio y adivina a qué éxito musical pertenece. 15 canciones diarias. +3 puntos por acierto.', color: '#e233ff', bg: '/Imagenes/minijuego_music.png?v=2' },
                 { id: 'pokemon', name: 'Adivina el Pokémon', desc: 'Identifica el Pokémon de la silueta. 15 preguntas diarias. +3 puntos por acierto.', color: '#3b82f6', bg: '/Imagenes/minijuego_pokemon.png' },
+                { id: 'brands', name: 'Adivina la Marca', desc: 'Identifica los logos de marcas reconocidas del mercado (Nike, Coca-Cola, etc.). 15 preguntas diarias. +3 puntos por acierto.', color: '#ff4081', bg: '/Imagenes/minijuego_flags.png?v=2' },
                 { id: 'ruleta', name: 'Ruleta de la Suerte', desc: '¡Apuesta tus puntos y prueba tu suerte! Multiplica tu apuesta hasta x5 o gana premios planos de hasta 1500 puntos.', color: '#ffaa00', bg: '/Imagenes/minijuego_ruleta.png?v=2' }
               ].map((g) => {
                   const isCompleted = completionsToday.includes(g.id);
@@ -1538,6 +1585,8 @@ export default function Minijuegos() {
                     ? 'Música Daily Quiz'
                     : quizType === 'pokemon'
                     ? 'Adivina el Pokémon Daily Quiz'
+                    : quizType === 'brands'
+                    ? 'Adivina la Marca Daily Quiz'
                     : 'Word Scramble Daily Quiz'}
                 </div>
                 <h1 style={{ margin: '0 auto 16px', maxWidth: 'none', fontSize: '3rem', fontWeight: 900 }}>Desafío Diario</h1>
@@ -1550,6 +1599,8 @@ export default function Minijuegos() {
                     ? 'Adivina a qué país corresponde la bandera mostrada antes de que se agote el tiempo.'
                     : quizType === 'pokemon'
                     ? 'Adivina qué Pokémon se esconde detrás de la silueta antes de que se agote el tiempo.'
+                    : quizType === 'brands'
+                    ? 'Identifica a qué marca o empresa pertenece el logo mostrado antes de que se agote el tiempo.'
                     : 'Demuestra cuánto sabes sobre los videojuegos más populares desde los 90s en adelante.'}
                 </p>
               </div>
@@ -1564,6 +1615,8 @@ export default function Minijuegos() {
                     ? 'Se te mostrarán 15 banderas de países. Adivina a qué país pertenecen. Tienes exactamente 15 segundos por pregunta. Cada acierto suma 3 puntos.'
                     : quizType === 'pokemon'
                     ? 'Se te mostrarán 15 siluetas de Pokémon. Adivina el Pokémon correcto de las opciones. Tienes exactamente 15 segundos por pregunta. Cada acierto suma 3 puntos.'
+                    : quizType === 'brands'
+                    ? 'Se te mostrarán 15 logos de marcas famosas. Adivina la marca correcta de las opciones. Tienes exactamente 15 segundos por pregunta. Cada acierto suma 3 puntos.'
                     : 'Se generarán 15 preguntas de opción múltiple. Dispones de exactamente 15 segundos por pregunta. Cada acierto suma 3 puntos.'}
                 </p>
                 <button 
@@ -1742,6 +1795,101 @@ export default function Minijuegos() {
                                 Comprobar Palabra
                               </button>
                             </div>
+                          )}
+                        </div>
+                      ) : quizType === 'brands' ? (
+                        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1.5rem', width: '100%', padding: '0.5rem 0' }}>
+                          <div style={{
+                            display: 'inline-block',
+                            padding: '24px',
+                            background: 'rgba(255, 255, 255, 0.95)',
+                            borderRadius: '24px',
+                            border: '1px solid rgba(255, 64, 129, 0.3)',
+                            boxShadow: '0 10px 30px rgba(0,0,0,0.5)',
+                            backdropFilter: 'blur(10px)',
+                            textAlign: 'center'
+                          }}>
+                            <img 
+                              src={quizQuestions[currentQuestionIdx].logoUrl || ''} 
+                              alt="Brand Logo" 
+                              style={{
+                                height: '140px',
+                                maxWidth: '260px',
+                                display: 'block',
+                                objectFit: 'contain'
+                              }} 
+                            />
+                          </div>
+
+                          {/* Underscore hints for brand name letters */}
+                          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.5rem', width: '100%' }}>
+                            <span style={{ fontSize: '0.85rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '1px', fontWeight: 700 }}>
+                              Longitud de la Marca:
+                            </span>
+                            <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: '1rem' }}>
+                              {(quizQuestions[currentQuestionIdx].brandName || '').split(' ').map((word: string, wIdx: number) => (
+                                <div key={wIdx} style={{ display: 'flex', gap: '5px' }}>
+                                  {word.split('').map((char: string, cIdx: number) => {
+                                    const isSpecial = /[^a-zA-Z0-9]/.test(char);
+                                    return (
+                                      <span
+                                        key={cIdx}
+                                        style={{
+                                          fontSize: '1.4rem',
+                                          fontWeight: 900,
+                                          color: isSpecial ? '#ff4081' : '#fff',
+                                          fontFamily: 'monospace',
+                                          borderBottom: isSpecial ? 'none' : '3px solid #ff4081',
+                                          minWidth: '20px',
+                                          textAlign: 'center',
+                                          paddingBottom: '2px'
+                                        }}
+                                      >
+                                        {isSpecial ? char : ''}
+                                      </span>
+                                    );
+                                  })}
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+
+                          <input 
+                            type="text" 
+                            value={scrambleGuess}
+                            disabled={isAnswerRevealed}
+                            onChange={(e) => setScrambleGuess(e.target.value)}
+                            onKeyDown={(e) => {
+                              if (e.key === 'Enter') handleCheckBrand();
+                            }}
+                            placeholder={isAnswerRevealed ? 'TIEMPO TERMINADO' : 'Escribe el nombre de la marca...'}
+                            style={{
+                              width: '100%',
+                              background: 'rgba(0,0,0,0.25)',
+                              border: isAnswerRevealed 
+                                ? '1px solid rgba(255,255,255,0.05)' 
+                                : '1px solid rgba(255, 64, 129, 0.4)',
+                              padding: '1.1rem 1.25rem',
+                              borderRadius: '16px',
+                              color: '#fff',
+                              fontSize: '1.2rem',
+                              textAlign: 'center',
+                              outline: 'none',
+                              transition: 'all 0.3s ease',
+                              letterSpacing: '2px',
+                              textTransform: 'uppercase',
+                              boxShadow: 'var(--shadow)'
+                            }}
+                          />
+
+                          {!isAnswerRevealed && (
+                            <button 
+                              onClick={handleCheckBrand} 
+                              className="btn btn-primary"
+                              style={{ width: '100%', padding: '0.9rem', borderRadius: '16px', fontWeight: 800, fontSize: '1.1rem', background: 'linear-gradient(135deg, #ff4081 0%, #d81b60 100%)' }}
+                            >
+                              Enviar Respuesta
+                            </button>
                           )}
                         </div>
                       ) : quizType === 'covers' ? (
@@ -1987,7 +2135,31 @@ export default function Minijuegos() {
                                </div>
                                <h2 style={{ marginTop: '1.5rem', fontSize: '1.4rem', fontWeight: 800 }}>¿Quién es este Pokémon?</h2>
                              </div>
-                          ) : (
+                          ) : quizType === 'brands' ? (
+                             <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
+                               <div style={{
+                                 display: 'inline-block',
+                                 padding: '24px',
+                                 background: 'rgba(255, 255, 255, 0.95)',
+                                 borderRadius: '24px',
+                                 border: '1px solid rgba(255, 64, 129, 0.3)',
+                                 boxShadow: '0 10px 30px rgba(0,0,0,0.5)',
+                                 backdropFilter: 'blur(10px)'
+                               }}>
+                                 <img 
+                                   src={quizQuestions[currentQuestionIdx].logoUrl || ''} 
+                                   alt="Brand Logo" 
+                                   style={{
+                                     height: '140px',
+                                     maxWidth: '240px',
+                                     display: 'block',
+                                     objectFit: 'contain'
+                                   }} 
+                                 />
+                               </div>
+                               <h2 style={{ marginTop: '1.5rem', fontSize: '1.4rem', fontWeight: 800 }}>¿A qué marca pertenece este logo?</h2>
+                             </div>
+                           ) : (
                             <h2 style={{ fontSize: '1.4rem', fontWeight: 800, marginBottom: '1.5rem' }}>{quizQuestions[currentQuestionIdx].text}</h2>
                           )}
 
@@ -2059,6 +2231,19 @@ export default function Minijuegos() {
                           ) : (
                             <p style={{ color: '#ff4d4d', fontWeight: 600, margin: '0 0 1rem 0', fontSize: '1.1rem' }}>
                               {scrambleGuess.trim() === '' ? '¡Se acabó el tiempo!' : 'Incorrecto.'} La respuesta correcta era: <strong style={{ color: '#00d27f', fontSize: '1.2rem', marginLeft: '6px' }}>{correctWord}</strong>
+                            </p>
+                          );
+                        })()
+                      ) : quizType === 'brands' ? (
+                        (() => {
+                          const correctBrand = quizQuestions[currentQuestionIdx].brandName || '';
+                          const normalize = (str: string) => str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]/g, "");
+                          const isCorrect = normalize(scrambleGuess.trim().toLowerCase()) === normalize(correctBrand.toLowerCase()) && scrambleGuess.trim().length > 0;
+                          return isCorrect ? (
+                            <p style={{ color: '#00d27f', fontWeight: 600, margin: '0 0 1rem 0', fontSize: '1.1rem' }}>¡Correcto! La marca es {correctBrand}. +3 puntos.</p>
+                          ) : (
+                            <p style={{ color: '#ff4d4d', fontWeight: 600, margin: '0 0 1rem 0', fontSize: '1.1rem' }}>
+                              {scrambleGuess.trim() === '' ? '¡Se acabó el tiempo!' : 'Incorrecto.'} La marca correcta es: <strong style={{ color: '#00d27f', fontSize: '1.2rem', marginLeft: '6px' }}>{correctBrand}</strong>
                             </p>
                           );
                         })()

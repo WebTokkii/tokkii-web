@@ -56,5 +56,11 @@ CREATE TABLE news_articles (
     content_blocks JSONB,           -- Array dinámico de bloques de texto/imagen del builder
     author VARCHAR,
     published_at TIMESTAMP WITH TIME ZONE,
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+-- TABLA: minigames_content (Para personalizar minijuegos como 'brands', 'overwatch', 'pokemon', etc. desde el Builder)
+CREATE TABLE minigames_content (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    game_type VARCHAR UNIQUE NOT NULL, -- 'brands', 'overwatch', 'games', 'flags', 'scramble', 'disney', 'covers', 'pokemon', 'music'
+    data JSONB NOT NULL,               -- Array de preguntas. Para 'brands': [{"id": 1, "brandName": "Nike", "logoUrl": "...", "options": ["Nike", "Adidas", "Puma", "Reebok"], "answerIndex": 0}]
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
+
