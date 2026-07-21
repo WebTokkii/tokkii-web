@@ -2,8 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTriangleExclamation, faArrowRight, faChevronLeft, faChevronRight } from '@fortawesome/free-solid-svg-icons';
-import Ruleta from '../components/Ruleta';
-import TwitchGiveaway from '../components/TwitchGiveaway';
 import '../components/NewsWidget.css';
 import './Home.css';
 import { supabase } from '../lib/supabase';
@@ -320,40 +318,8 @@ const DinamicasCarousel: React.FC<{ items: any[], hoverColor?: string }> = ({ it
 };
 
 const Dinamicas: React.FC = () => {
-    const [showRuleta, setShowRuleta] = useState(localStorage.getItem("tokki_admin") === "true");
     const [items, setItems] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
-
-    useEffect(() => {
-        let inputKeys = "";
-        const secretKeyword = "emilia";
-
-        const handleKeyDown = (e: KeyboardEvent) => {
-            if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) {
-                return;
-            }
-
-            inputKeys += e.key.toLowerCase();
-            inputKeys = inputKeys.slice(-secretKeyword.length);
-
-            if (inputKeys === secretKeyword) {
-                setShowRuleta(prev => {
-                    const nextVal = !prev;
-                    if (nextVal) {
-                        localStorage.setItem("tokki_admin", "true");
-                        console.log("Acceso de administradora activado.");
-                    } else {
-                        localStorage.removeItem("tokki_admin");
-                        console.log("Acceso de administradora desactivado.");
-                    }
-                    return nextVal;
-                });
-            }
-        };
-
-        window.addEventListener('keydown', handleKeyDown);
-        return () => window.removeEventListener('keydown', handleKeyDown);
-    }, []);
 
     useEffect(() => {
         const fetchItems = async () => {
@@ -480,15 +446,7 @@ const Dinamicas: React.FC = () => {
                     </div>
                 </div>
 
-                {/* Admin Ruleta Section */}
-                {showRuleta && (
-                    <>
-                        <Ruleta />
-                        <div style={{ margin: '4rem 0' }}></div>
-                        <TwitchGiveaway />
-                        <div style={{ margin: '4rem 0' }}></div>
-                    </>
-                )}
+
             </div>
 
             {/* 1. Sección Eventos Activos (con estructura de Juegos) */}
