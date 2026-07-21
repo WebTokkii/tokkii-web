@@ -79,12 +79,24 @@ const Noticias = () => {
             const animeKeywords = ['anime', 'manga', 'otaku', 'crunchyroll', 'demon slayer', 'shingeki', 'dragon ball', 'jujutsu', 'goku', 'naruto', 'boruto', 'one piece'];
             return animeKeywords.some(kw => post.title.toLowerCase().includes(kw) || (post.subtitle && post.subtitle.toLowerCase().includes(kw)));
         };
+
+        // Helper to cap articles at max 3 per day
+        const filterMaxThreePerDay = (articles: any[]) => {
+            const dateCounts: Record<string, number> = {};
+            return articles.filter(post => {
+                const dateKey = (post.published_at || post.created_at || '').substring(0, 10);
+                if (!dateKey) return true;
+                dateCounts[dateKey] = (dateCounts[dateKey] || 0) + 1;
+                return dateCounts[dateKey] <= 3;
+            });
+        };
         
         if (activeCategory === 'videojuegos') {
-            return posts.filter(p => !isAnimePost(p));
+            const rawGames = posts.filter(p => !isAnimePost(p));
+            return filterMaxThreePerDay(rawGames);
         } else {
             const dbAnime = posts.filter(p => isAnimePost(p));
-            if (dbAnime.length > 0) return dbAnime;
+            if (dbAnime.length > 0) return filterMaxThreePerDay(dbAnime);
             
             // Premium placeholders if no anime is synced yet
             return [
