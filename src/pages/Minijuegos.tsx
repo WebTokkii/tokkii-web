@@ -1376,7 +1376,7 @@ export default function Minijuegos() {
                 { id: 'pokemon', name: 'Adivina el Pokémon', desc: 'Identifica el Pokémon de la silueta. 15 preguntas diarias. +3 puntos por acierto.', color: '#3b82f6', bg: '/Imagenes/minijuego_pokemon.png' },
                 { id: 'brands', name: 'Adivina la Marca', desc: 'Identifica los logos de marcas reconocidas del mercado (Nike, Coca-Cola, etc.). 15 preguntas diarias. +3 puntos por acierto.', color: '#ff4081', bg: '/Imagenes/minijuego_marcas.png' },
                 { id: 'history', name: 'Eventos Mundiales', desc: 'Preguntas de historia universal, guerras mundiales e hitos históricos. 15 preguntas diarias. +3 puntos por acierto.', color: '#ef4444', bg: '/Imagenes/minijuego_historia.png' },
-                { id: 'mayor_menor', name: 'Mayor o Menor', desc: 'Apuesta tus puntos adivinando si el número final (1-100) será Mayor (>50) o Menor (≤50). Multiplica tu apuesta x2.', color: '#00e5ff', bg: '/Imagenes/minijuego_games.png?v=2' },
+                { id: 'mayor_menor', name: 'Mayor o Menor', desc: 'Apuesta tus puntos adivinando si el número final (1-100) será Mayor (>50) o Menor (≤50). Multiplica tu apuesta x2.', color: '#00e5ff', bg: '/Imagenes/minijuego_mayormenor.png?v=1' },
                 { id: 'ruleta', name: 'Ruleta de la Suerte', desc: '¡Apuesta tus puntos y prueba tu suerte! Multiplica tu apuesta hasta x5 o gana premios planos de hasta 1500 puntos.', color: '#ffaa00', bg: '/Imagenes/minijuego_ruleta.png?v=2' }
               ].map((g) => {
                   const isCompleted = completionsToday.includes(g.id);
