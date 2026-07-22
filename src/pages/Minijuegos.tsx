@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { Sparkles, Volume2, VolumeX } from 'lucide-react';
+import { Sparkles, Volume2, VolumeX, ChevronLeft } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { OVERWATCH_QUESTIONS } from '../data/OverwatchQuestions';
 import { GAMES_QUESTIONS } from '../data/GamesQuestions';
@@ -144,8 +144,15 @@ const renderBadge = (role?: string) => {
 };
 
 export default function Minijuegos() {
-  const [currentView, setCurrentView] = useState<'hub' | 'quiz' | 'ruleta'>('hub');
+  const [currentView, setCurrentView] = useState<'hub' | 'quiz' | 'ruleta' | 'mayor_menor'>('hub');
   const [quizType, setQuizType] = useState<'overwatch' | 'games' | 'audio_music' | 'flags' | 'word_scramble' | 'dbd_perks' | 'disney' | 'covers' | 'pokemon' | 'brands' | 'history'>('overwatch');
+
+  // Mayor o Menor States
+  const [mmChoice, setMmChoice] = useState<'mayor' | 'menor'>('mayor');
+  const [mmBetAmount, setMmBetAmount] = useState<number>(10);
+  const [mmIsPlaying, setMmIsPlaying] = useState<boolean>(false);
+  const [mmCurrentNumber, setMmCurrentNumber] = useState<number>(50);
+  const [mmResult, setMmResult] = useState<{ win: boolean; winAmount: number; finalNum: number } | null>(null);
   
   // Quiz play states
   const [quizQuestions, setQuizQuestions] = useState<QuizQuestion[]>([]);
@@ -189,14 +196,17 @@ export default function Minijuegos() {
   const [userPoints, setUserPoints] = useState<number>(0);
 
   const fetchUserPoints = useCallback(async () => {
-    if (!userId) return;
+    if (!userId) {
+      setUserPoints(1000); // Puntos de prueba locales si no hay sesión iniciada
+      return;
+    }
     const { data } = await supabase
       .from('profiles')
       .select('points')
       .eq('id', userId)
       .single();
     if (data) {
-      setUserPoints(data.points || 0);
+      setUserPoints(data.points ?? 1000);
     }
   }, [userId]);
 
@@ -254,7 +264,8 @@ export default function Minijuegos() {
         pokemon: 'Adivina el Pokémon',
         brands: 'Adivina la Marca',
         history: 'Eventos Mundiales',
-        ruleta: 'Ruleta de la Suerte'
+        ruleta: 'Ruleta de la Suerte',
+        mayor_menor: 'Mayor o Menor'
       };
 
       let mostPopularKey = '';
@@ -421,6 +432,11 @@ export default function Minijuegos() {
         }
       });
   }, [userId, username]);
+
+  useEffect(() => {
+    fetchUserPoints();
+  }, [userId, fetchUserPoints]);
+
 
   // Load YouTube Iframe API Script
   useEffect(() => {
@@ -1360,15 +1376,16 @@ export default function Minijuegos() {
                 { id: 'pokemon', name: 'Adivina el Pokémon', desc: 'Identifica el Pokémon de la silueta. 15 preguntas diarias. +3 puntos por acierto.', color: '#3b82f6', bg: '/Imagenes/minijuego_pokemon.png' },
                 { id: 'brands', name: 'Adivina la Marca', desc: 'Identifica los logos de marcas reconocidas del mercado (Nike, Coca-Cola, etc.). 15 preguntas diarias. +3 puntos por acierto.', color: '#ff4081', bg: '/Imagenes/minijuego_marcas.png' },
                 { id: 'history', name: 'Eventos Mundiales', desc: 'Preguntas de historia universal, guerras mundiales e hitos históricos. 15 preguntas diarias. +3 puntos por acierto.', color: '#ef4444', bg: '/Imagenes/minijuego_historia.png' },
+                { id: 'mayor_menor', name: 'Mayor o Menor', desc: 'Apuesta tus puntos adivinando si el número final (1-100) será Mayor (>50) o Menor (≤50). Multiplica tu apuesta x2.', color: '#00e5ff', bg: '/Imagenes/minijuego_games.png?v=2' },
                 { id: 'ruleta', name: 'Ruleta de la Suerte', desc: '¡Apuesta tus puntos y prueba tu suerte! Multiplica tu apuesta hasta x5 o gana premios planos de hasta 1500 puntos.', color: '#ffaa00', bg: '/Imagenes/minijuego_ruleta.png?v=2' }
               ].map((g) => {
                   const isCompleted = completionsToday.includes(g.id);
                   const isLocked = !userId;
-                  const canClick = isLocked ? false : (g.id === 'ruleta' ? true : !isCompleted);
+                  const canClick = (g.id === 'ruleta' || g.id === 'mayor_menor') ? true : isLocked ? false : !isCompleted;
                   return (
                       <div
                           key={g.id}
-                          onClick={canClick ? (g.id === 'ruleta' ? () => setCurrentView('ruleta') : () => startQuiz(g.id as any)) : undefined}
+                          onClick={canClick ? (g.id === 'ruleta' ? () => setCurrentView('ruleta') : g.id === 'mayor_menor' ? () => setCurrentView('mayor_menor') : () => startQuiz(g.id as any)) : undefined}
                           className="glass"
                           style={{
                               position: 'relative',
@@ -1381,7 +1398,7 @@ export default function Minijuegos() {
                               textAlign: 'left'
                           }}
                           onMouseEnter={(e) => {
-                              if (isLocked || isCompleted) return;
+                              if (g.id !== 'ruleta' && g.id !== 'mayor_menor' && (isLocked || isCompleted)) return;
                               e.currentTarget.style.borderColor = 'var(--accent)';
                               e.currentTarget.style.boxShadow = '0 0 30px rgba(255, 0, 115, 0.15)';
                               e.currentTarget.style.transform = 'translateY(-4px)';
@@ -1389,7 +1406,7 @@ export default function Minijuegos() {
                               if (bgImg) bgImg.style.transform = 'scale(1.08)';
                           }}
                           onMouseLeave={(e) => {
-                              if (isLocked || isCompleted) return;
+                              if (g.id !== 'ruleta' && g.id !== 'mayor_menor' && (isLocked || isCompleted)) return;
                               e.currentTarget.style.borderColor = 'rgba(233, 176, 255, .08)';
                               e.currentTarget.style.boxShadow = 'var(--shadow)';
                               e.currentTarget.style.transform = 'none';
@@ -1426,7 +1443,7 @@ export default function Minijuegos() {
                           )}
 
                           {/* Locked full color overlay */}
-                          {isLocked && (
+                          {isLocked && g.id !== 'ruleta' && g.id !== 'mayor_menor' && (
                               <div style={{
                                   position: 'absolute',
                                   top: 0,
@@ -1457,7 +1474,7 @@ export default function Minijuegos() {
                           )}
 
                           {/* Completed full color overlay */}
-                          {isCompleted && (
+                          {isCompleted && g.id !== 'ruleta' && g.id !== 'mayor_menor' && (
                               <div style={{
                                   position: 'absolute',
                                   top: 0,
@@ -1684,6 +1701,346 @@ export default function Minijuegos() {
             </div>
           </div>
         </div>
+      ) : currentView === 'mayor_menor' ? (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem', width: '100%', maxWidth: '1000px', margin: '0 auto' }}>
+          {/* Header Bar */}
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <button
+              type="button"
+              onClick={() => {
+                setCurrentView('hub');
+                setMmResult(null);
+              }}
+              disabled={mmIsPlaying}
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '8px',
+                padding: '10px 20px',
+                borderRadius: '12px',
+                background: 'rgba(255, 255, 255, 0.06)',
+                border: '1px solid rgba(255, 255, 255, 0.12)',
+                color: '#fff',
+                cursor: mmIsPlaying ? 'not-allowed' : 'pointer',
+                fontWeight: 700,
+                fontSize: '0.95rem'
+              }}
+            >
+              <ChevronLeft size={18} /> Volver a Minijuegos
+            </button>
+
+            <div style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '10px',
+              padding: '8px 18px',
+              borderRadius: '999px',
+              background: 'rgba(0, 229, 255, 0.12)',
+              border: '1px solid rgba(0, 229, 255, 0.35)',
+              color: '#00e5ff',
+              fontWeight: 800
+            }}>
+              🪙 Puntos Disponibles: <span style={{ color: '#fff', fontSize: '1.15rem' }}>{userPoints}</span>
+            </div>
+          </div>
+
+          {/* Grid Principal del Minijuego */}
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '2rem', alignItems: 'stretch' }}>
+            
+            {/* Casilla de Apuesta (Izquierda) */}
+            <div className="glass" style={{ padding: '2rem', borderRadius: '24px', display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+              <div style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.08)', paddingBottom: '1rem' }}>
+                <h2 style={{ fontSize: '1.8rem', fontWeight: 900, color: '#00e5ff', margin: 0 }}>
+                  🎲 Mayor o Menor
+                </h2>
+                <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', marginTop: '6px', margin: 0 }}>
+                  Elige tu pronóstico y apuesta tus puntos.
+                </p>
+              </div>
+
+              {/* Recuadrito de Alerta del Rango */}
+              <div style={{
+                background: 'rgba(0, 229, 255, 0.08)',
+                border: '1px solid rgba(0, 229, 255, 0.3)',
+                padding: '12px 16px',
+                borderRadius: '14px',
+                color: '#00e5ff',
+                fontSize: '0.85rem',
+                lineHeight: 1.5,
+                display: 'flex',
+                alignItems: 'flex-start',
+                gap: '10px'
+              }}>
+                <span style={{ fontSize: '1.3rem', lineHeight: 1 }}>💡</span>
+                <div>
+                  El número máximo será <strong>100</strong>.<br/>
+                  • <strong>MAYOR:</strong> número resultante &gt; 50<br/>
+                  • <strong>MENOR:</strong> número resultante ≤ 50
+                </div>
+              </div>
+
+              {/* 1. Selección Mayor o Menor */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                <label style={{ fontSize: '0.8rem', fontWeight: 800, color: 'var(--muted)', textTransform: 'uppercase', letterSpacing: '1px' }}>
+                  1. Pronóstico (Mayor o Menor)
+                </label>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+                  <button
+                    type="button"
+                    disabled={mmIsPlaying}
+                    onClick={() => setMmChoice('mayor')}
+                    style={{
+                      padding: '14px',
+                      borderRadius: '14px',
+                      border: mmChoice === 'mayor' ? '2px solid #00d27f' : '1px solid rgba(255, 255, 255, 0.1)',
+                      background: mmChoice === 'mayor' ? 'rgba(0, 210, 127, 0.2)' : 'rgba(255, 255, 255, 0.03)',
+                      color: mmChoice === 'mayor' ? '#00d27f' : 'var(--muted)',
+                      fontWeight: 900,
+                      fontSize: '1rem',
+                      cursor: mmIsPlaying ? 'not-allowed' : 'pointer',
+                      transition: 'all 0.2s ease',
+                      boxShadow: mmChoice === 'mayor' ? '0 0 15px rgba(0, 210, 127, 0.3)' : 'none'
+                    }}
+                  >
+                    📈 MAYOR (&gt;50)
+                  </button>
+                  <button
+                    type="button"
+                    disabled={mmIsPlaying}
+                    onClick={() => setMmChoice('menor')}
+                    style={{
+                      padding: '14px',
+                      borderRadius: '14px',
+                      border: mmChoice === 'menor' ? '2px solid #ff4d4d' : '1px solid rgba(255, 255, 255, 0.1)',
+                      background: mmChoice === 'menor' ? 'rgba(255, 77, 77, 0.2)' : 'rgba(255, 255, 255, 0.03)',
+                      color: mmChoice === 'menor' ? '#ff4d4d' : 'var(--muted)',
+                      fontWeight: 900,
+                      fontSize: '1rem',
+                      cursor: mmIsPlaying ? 'not-allowed' : 'pointer',
+                      transition: 'all 0.2s ease',
+                      boxShadow: mmChoice === 'menor' ? '0 0 15px rgba(255, 77, 77, 0.3)' : 'none'
+                    }}
+                  >
+                    📉 MENOR (≤50)
+                  </button>
+                </div>
+              </div>
+
+              {/* 2. Cantidad de puntos a apostar */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <label style={{ fontSize: '0.8rem', fontWeight: 800, color: 'var(--muted)', textTransform: 'uppercase', letterSpacing: '1px' }}>
+                    2. Puntos a Apostar
+                  </label>
+                  <button
+                    type="button"
+                    disabled={mmIsPlaying || userPoints <= 0}
+                    onClick={() => setMmBetAmount(userPoints)}
+                    style={{
+                      background: 'rgba(255, 170, 0, 0.15)',
+                      border: '1px solid rgba(255, 170, 0, 0.4)',
+                      color: '#ffaa00',
+                      padding: '3px 10px',
+                      borderRadius: '8px',
+                      fontSize: '0.75rem',
+                      fontWeight: 'bold',
+                      cursor: 'pointer'
+                    }}
+                  >
+                    🔥 Apostar Todo ({userPoints})
+                  </button>
+                </div>
+                <input
+                  type="number"
+                  min={1}
+                  disabled={mmIsPlaying}
+                  value={mmBetAmount}
+                  onChange={(e) => setMmBetAmount(Math.max(1, parseInt(e.target.value) || 0))}
+                  style={{
+                    width: '100%',
+                    padding: '14px',
+                    borderRadius: '14px',
+                    background: 'rgba(15, 23, 42, 0.7)',
+                    border: '1px solid rgba(255, 255, 255, 0.12)',
+                    color: '#fff',
+                    fontSize: '1.2rem',
+                    fontWeight: 800,
+                    outline: 'none'
+                  }}
+                />
+              </div>
+
+              {/* Botón de Comenzar */}
+              <button
+                type="button"
+                disabled={mmIsPlaying || mmBetAmount <= 0 || (userId ? userPoints < mmBetAmount : false)}
+                onClick={async () => {
+                  if (userId && userPoints < mmBetAmount) {
+                    alert('No tienes suficientes puntos para realizar esta apuesta.');
+                    return;
+                  }
+
+                  setMmIsPlaying(true);
+                  setMmResult(null);
+
+                  // Descontar puntos de la apuesta si el usuario está conectado
+                  if (userId) {
+                    const { error: deductErr } = await supabase
+                      .from('profiles')
+                      .update({ points: userPoints - mmBetAmount })
+                      .eq('id', userId);
+
+                    if (deductErr) {
+                      setMmIsPlaying(false);
+                      alert('Error al descontar puntos de apuesta.');
+                      return;
+                    }
+                    setUserPoints(prev => prev - mmBetAmount);
+                  }
+
+                  // Animación de cambio rápido de números
+                  let counter = 0;
+                  const interval = setInterval(() => {
+                    setMmCurrentNumber(Math.floor(Math.random() * 100) + 1);
+                    counter++;
+                  }, 60);
+
+                  // Mostrar número final a los 2.5 segundos
+                  setTimeout(async () => {
+                    clearInterval(interval);
+
+                    // Lógica de probabilidad (35% ganancia usuario / 65% casa)
+                    const userWins = Math.random() < 0.35;
+                    let finalNum = 50;
+
+                    if (userWins) {
+                      if (mmChoice === 'mayor') {
+                        finalNum = Math.floor(Math.random() * 50) + 51; // 51 a 100
+                      } else {
+                        finalNum = Math.floor(Math.random() * 50) + 1; // 1 a 50
+                      }
+                    } else {
+                      if (mmChoice === 'mayor') {
+                        finalNum = Math.floor(Math.random() * 50) + 1; // 1 a 50
+                      } else {
+                        finalNum = Math.floor(Math.random() * 50) + 51; // 51 a 100
+                      }
+                    }
+
+                    setMmCurrentNumber(finalNum);
+
+                    const winAmount = userWins ? mmBetAmount * 2 : 0;
+                    if (userWins && userId) {
+                      const { data: latestProfile } = await supabase
+                        .from('profiles')
+                        .select('points')
+                        .eq('id', userId)
+                        .single();
+
+                      const currentPts = latestProfile ? (latestProfile.points || 0) : userPoints;
+                      const newPts = currentPts + winAmount;
+
+                      await supabase
+                        .from('profiles')
+                        .update({ points: newPts })
+                        .eq('id', userId);
+
+                      setUserPoints(newPts);
+                    }
+
+                    if (userId) {
+                      const todayStr = new Date().toISOString().split('T')[0];
+                      await supabase
+                        .from('user_quiz_completions')
+                        .insert({
+                          user_id: userId,
+                          quiz_type: 'mayor_menor',
+                          score: winAmount,
+                          completed_date: todayStr
+                        });
+                    }
+
+                    setMmResult({ win: userWins, winAmount, finalNum });
+                    setMmIsPlaying(false);
+                    window.dispatchEvent(new Event('points-updated'));
+                  }, 2500);
+                }}
+                style={{
+                  width: '100%',
+                  padding: '16px',
+                  borderRadius: '16px',
+                  background: mmIsPlaying
+                    ? 'rgba(255, 255, 255, 0.1)'
+                    : (userId && userPoints < mmBetAmount)
+                    ? 'rgba(255, 77, 77, 0.2)'
+                    : 'linear-gradient(135deg, #00e5ff 0%, #0088ff 100%)',
+                  border: 'none',
+                  color: (userId && userPoints < mmBetAmount) ? '#ff4d4d' : '#fff',
+                  fontSize: '1.15rem',
+                  fontWeight: 900,
+                  cursor: (mmIsPlaying || (userId && userPoints < mmBetAmount)) ? 'not-allowed' : 'pointer',
+                  boxShadow: mmIsPlaying ? 'none' : '0 0 25px rgba(0, 229, 255, 0.4)',
+                  transition: 'all 0.3s ease',
+                  textTransform: 'uppercase',
+                  letterSpacing: '1px'
+                }}
+              >
+                {mmIsPlaying ? '🎲 Girando...' : (userId && userPoints < mmBetAmount) ? '❌ Puntos Insuficientes' : '🚀 Comenzar'}
+              </button>
+            </div>
+
+            {/* Contador de Número Aleatorio (Derecha) */}
+            <div className="glass" style={{
+              padding: '3rem 2rem',
+              borderRadius: '24px',
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              justifyContent: 'center',
+              textAlign: 'center',
+              minHeight: '380px',
+              position: 'relative'
+            }}>
+              <span style={{ fontSize: '0.85rem', fontWeight: 800, color: 'var(--muted)', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '1rem' }}>
+                Número Resultante (1 - 100)
+              </span>
+
+              {/* Número Animado Rápido */}
+              <div style={{
+                fontSize: '6.5rem',
+                fontWeight: 900,
+                color: mmIsPlaying ? '#00e5ff' : mmResult ? (mmResult.win ? '#00d27f' : '#ff4d4d') : '#fff',
+                textShadow: mmIsPlaying
+                  ? '0 0 30px rgba(0, 229, 255, 0.6)'
+                  : mmResult
+                  ? (mmResult.win ? '0 0 40px rgba(0, 210, 127, 0.7)' : '0 0 40px rgba(255, 77, 77, 0.7)')
+                  : '0 0 20px rgba(255, 255, 255, 0.2)',
+                transition: 'all 0.1s ease',
+                fontFamily: 'monospace',
+                lineHeight: 1
+              }}>
+                {mmCurrentNumber}
+              </div>
+
+              {/* Cartel de Resultado */}
+              {mmResult && !mmIsPlaying && (
+                <div style={{
+                  marginTop: '1.5rem',
+                  padding: '12px 24px',
+                  borderRadius: '16px',
+                  background: mmResult.win ? 'rgba(0, 210, 127, 0.15)' : 'rgba(255, 77, 77, 0.15)',
+                  border: mmResult.win ? '1px solid rgba(0, 210, 127, 0.4)' : '1px solid rgba(255, 77, 77, 0.4)',
+                  color: mmResult.win ? '#00d27f' : '#ff4d4d',
+                  fontWeight: 900,
+                  fontSize: '1.2rem'
+                }}>
+                  {mmResult.win ? `🎉 ¡Ganaste +${mmResult.winAmount} Puntos!` : `💥 ¡Gana la casa! Perdiste ${mmBetAmount} Puntos.`}
+                </div>
+              )}
+            </div>
+
+          </div>
+        </div>
       ) : currentView === 'ruleta' ? (
         <div className="ruleta-view-container" style={{ maxWidth: '900px', margin: '0 auto' }}>
           <div style={{ marginBottom: '1.5rem', display: 'flex', justifyContent: 'flex-start' }}>
@@ -1904,7 +2261,7 @@ export default function Minijuegos() {
             </div>
           </div>
         </div>
-      ) : (
+      ) : currentView === 'quiz' ? (
         <div className="quiz-view-container" style={{ maxWidth: '800px', margin: '0 auto' }}>
           {/* Hidden YouTube Player container */}
           <div style={{ position: 'absolute', opacity: 0, pointerEvents: 'none', width: '320px', height: '200px', top: '-10px', left: '-10px', overflow: 'hidden', zIndex: -9999 }}>
@@ -2652,7 +3009,7 @@ export default function Minijuegos() {
             </div>
           )}
         </div>
-      )}
+      ) : null}
 
       {/* Streak Completed celebration Modal */}
       {streakAwardInfo?.show && (
