@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
-import { Sparkles, Trophy, Calendar, CheckCircle } from 'lucide-react';
+import { Sparkles, Trophy, Calendar, CheckCircle, MessageSquare, Mail, CornerDownRight } from 'lucide-react';
 import './TierList.css';
 
 const renderBadge = (role?: string) => {
@@ -92,8 +92,11 @@ export default function Perfil() {
   const [loading, setLoading] = useState(true);
   const [leaderboards, setLeaderboards] = useState<any[]>([]);
   const [selectedMonth, setSelectedMonth] = useState<string>('');
+  const [userReports, setUserReports] = useState<any[]>([]);
 
   useEffect(() => {
+    let reportsSub: any = null;
+
     const fetchProfileAndStats = async () => {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session?.user) {
@@ -148,6 +151,29 @@ export default function Perfil() {
         setCompletions(completionsData);
       }
 
+      // Fetch user's reports
+      const fetchReports = async () => {
+        const { data: rData } = await supabase
+          .from('user_reports')
+          .select('*')
+          .eq('user_id', session.user.id)
+          .order('created_at', { ascending: false });
+
+        if (rData) {
+          setUserReports(rData);
+        }
+      };
+
+      fetchReports();
+
+      // Realtime listener for reports updates
+      reportsSub = supabase
+        .channel('my-reports-channel')
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'user_reports', filter: `user_id=eq.${session.user.id}` }, () => {
+          fetchReports();
+        })
+        .subscribe();
+
       try {
         const now = new Date();
         const prevMonthYear = now.getMonth() === 0 ? now.getFullYear() - 1 : now.getFullYear();
@@ -174,6 +200,12 @@ export default function Perfil() {
     };
 
     fetchProfileAndStats();
+
+    return () => {
+      if (reportsSub) {
+        supabase.removeChannel(reportsSub);
+      }
+    };
   }, []);
 
   if (loading) {
@@ -239,6 +271,160 @@ export default function Perfil() {
             <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '1px' }}>Completados Hoy</span>
             <strong style={{ fontSize: '1.6rem', color: '#fff' }}>{completions.length} Trivias</strong>
           </div>
+        </div>
+
+        {/* SECCIÓN: Buzón de Mensajes y Reportes del Usuario */}
+        <div className="glass" style={{ padding: '2rem', borderRadius: '24px', marginTop: '2rem' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '1.5rem' }}>
+            <div style={{
+              width: '42px',
+              height: '42px',
+              borderRadius: '12px',
+              background: 'rgba(255, 0, 115, 0.12)',
+              border: '1px solid rgba(255, 0, 115, 0.3)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              color: '#FF0073'
+            }}>
+              <Mail size={22} />
+            </div>
+            <div>
+              <h2 style={{ fontSize: '1.5rem', fontWeight: 800, margin: '0 0 2px 0', color: '#fff' }}>Buzón de Mensajes y Soporte</h2>
+              <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', margin: 0 }}>Historial de reportes enviados y respuestas del equipo.</p>
+            </div>
+          </div>
+
+          {userReports.length > 0 ? (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+              {userReports.map((report) => {
+                const reportTypeLabels: Record<string, string> = {
+                  bug: 'Bug / Error',
+                  sugerencia: 'Sugerencia',
+                  cambio: 'Cambio Propuesto'
+                };
+                const reportDate = new Date(report.created_at).toLocaleString('es-ES', {
+                  day: 'numeric',
+                  month: 'short',
+                  year: 'numeric',
+                  hour: '2-digit',
+                  minute: '2-digit'
+                });
+
+                return (
+                  <div 
+                    key={report.id}
+                    style={{
+                      background: 'rgba(255, 255, 255, 0.015)',
+                      border: '1px solid rgba(255, 255, 255, 0.06)',
+                      borderRadius: '16px',
+                      padding: '1.25rem',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      gap: '0.85rem'
+                    }}
+                  >
+                    {/* Header del reporte */}
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '8px' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        <span style={{
+                          padding: '3px 10px',
+                          borderRadius: '6px',
+                          fontSize: '0.75rem',
+                          fontWeight: 'bold',
+                          textTransform: 'uppercase',
+                          background: report.report_type === 'bug' ? 'rgba(255, 77, 77, 0.15)' : 'rgba(168, 85, 247, 0.15)',
+                          border: report.report_type === 'bug' ? '1px solid rgba(255, 77, 77, 0.3)' : '1px solid rgba(168, 85, 247, 0.3)',
+                          color: report.report_type === 'bug' ? '#ff4d4d' : '#C084FC'
+                        }}>
+                          {reportTypeLabels[report.report_type] || report.report_type}
+                        </span>
+                        <span style={{ fontSize: '0.8rem', color: 'rgba(255,255,255,0.4)' }}>
+                          {reportDate}
+                        </span>
+                      </div>
+
+                      <span style={{
+                        padding: '3px 10px',
+                        borderRadius: '6px',
+                        fontSize: '0.75rem',
+                        fontWeight: 'bold',
+                        background: report.admin_response ? 'rgba(0, 204, 136, 0.15)' : 'rgba(240, 130, 38, 0.15)',
+                        border: report.admin_response ? '1px solid rgba(0, 204, 136, 0.3)' : '1px solid rgba(240, 130, 38, 0.3)',
+                        color: report.admin_response ? '#00cc88' : '#f08226'
+                      }}>
+                        {report.admin_response ? 'Respondido' : 'En revisión'}
+                      </span>
+                    </div>
+
+                    {/* Contenido del mensaje del usuario */}
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.85rem', color: 'var(--text-muted)', fontWeight: 600 }}>
+                        <MessageSquare size={14} /> Tu mensaje:
+                      </div>
+                      <p style={{
+                        margin: 0,
+                        fontSize: '0.95rem',
+                        color: 'rgba(255,255,255,0.9)',
+                        lineHeight: 1.5,
+                        background: 'rgba(0,0,0,0.2)',
+                        padding: '0.75rem 1rem',
+                        borderRadius: '10px',
+                        border: '1px solid rgba(255,255,255,0.03)'
+                      }}>
+                        {report.description}
+                      </p>
+
+                      {/* Imágenes adjuntas si existen */}
+                      {report.images && report.images.length > 0 && (
+                        <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginTop: '6px' }}>
+                          {report.images.map((imgUrl: string, idx: number) => (
+                            <a key={idx} href={imgUrl} target="_blank" rel="noopener noreferrer">
+                              <img 
+                                src={imgUrl} 
+                                alt={`Adjunto ${idx + 1}`}
+                                style={{ width: '60px', height: '60px', borderRadius: '8px', objectFit: 'cover', border: '1px solid rgba(255,255,255,0.1)' }}
+                              />
+                            </a>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Respuesta de Soporte si existe */}
+                    {report.admin_response ? (
+                      <div style={{
+                        marginTop: '4px',
+                        padding: '0.85rem 1rem',
+                        borderRadius: '12px',
+                        background: 'linear-gradient(135deg, rgba(255, 0, 115, 0.08) 0%, rgba(18, 11, 29, 0.6) 100%)',
+                        border: '1px solid rgba(255, 0, 115, 0.25)',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        gap: '6px'
+                      }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.85rem', color: '#FF0073', fontWeight: 800 }}>
+                          <CornerDownRight size={16} /> Respuesta de Soporte EvilTokkii:
+                        </div>
+                        <p style={{ margin: 0, fontSize: '0.95rem', color: '#fff', lineHeight: 1.5 }}>
+                          {report.admin_response}
+                        </p>
+                      </div>
+                    ) : (
+                      <div style={{ fontSize: '0.8rem', color: 'rgba(255,255,255,0.4)', fontStyle: 'italic' }}>
+                        ⏳ Un agente de soporte está procesando tu reporte. Recibirás respuesta aquí pronto.
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          ) : (
+            <div style={{ textAlign: 'center', padding: '2.5rem 1rem', color: 'var(--text-muted)' }}>
+              <MessageSquare size={36} style={{ opacity: 0.2, marginBottom: '0.75rem' }} />
+              <p style={{ margin: 0, fontSize: '0.95rem' }}>Aún no has enviado ningún reporte o sugerencia.</p>
+            </div>
+          )}
         </div>
 
         {leaderboards.length > 0 && (

@@ -354,7 +354,7 @@ const Navbar: React.FC = () => {
                                             onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(255,255,255,0.08)'}
                                             onMouseLeave={(e) => e.currentTarget.style.background = 'rgba(255,255,255,0.02)'}
                                         >
-                                            📊 Estadísticas
+                                            👤 Mi perfil
                                         </Link>
                                         <button 
                                             onClick={handleLogout}

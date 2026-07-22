@@ -133,6 +133,8 @@ const Ayuda: React.FC = () => {
         });
     };
 
+    const [showSuccessModal, setShowSuccessModal] = useState<boolean>(false);
+
     const handleSubmitReport = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!user) return;
@@ -185,7 +187,8 @@ const Ayuda: React.FC = () => {
 
             if (error) throw error;
 
-            setSubmitStatus({ success: true, message: '¡Tu reporte ha sido enviado con éxito! Muchas gracias por ayudarnos a mejorar.' });
+            setShowSuccessModal(true);
+            setSubmitStatus({ success: true, message: '¡Tu reporte ha sido enviado con éxito!' });
             setDescription('');
             setSelectedImages([]);
             imagePreviews.forEach(url => URL.revokeObjectURL(url));
@@ -534,6 +537,81 @@ const Ayuda: React.FC = () => {
                     </div>
                 </div>
             </section>
+
+            {/* Modal Emergente de Agradecimiento por Reporte */}
+            {showSuccessModal && (
+                <div style={{
+                    position: 'fixed',
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    bottom: 0,
+                    background: 'rgba(8, 4, 13, 0.85)',
+                    backdropFilter: 'blur(16px)',
+                    WebkitBackdropFilter: 'blur(16px)',
+                    zIndex: 999999,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    padding: '1.5rem',
+                    animation: 'fadeIn 0.25s ease-out'
+                }}>
+                    <div className="glass" style={{
+                        maxWidth: '480px',
+                        width: '100%',
+                        borderRadius: '24px',
+                        padding: '2.25rem 2rem',
+                        textAlign: 'center',
+                        border: '1px solid rgba(255, 0, 115, 0.3)',
+                        background: 'linear-gradient(180deg, rgba(20, 12, 35, 0.98) 0%, rgba(10, 5, 18, 0.98) 100%)',
+                        boxShadow: '0 0 40px rgba(255, 0, 115, 0.25)',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        gap: '1rem'
+                    }}>
+                        <div style={{
+                            width: '64px',
+                            height: '64px',
+                            borderRadius: '50%',
+                            background: 'rgba(255, 0, 115, 0.15)',
+                            border: '1px solid rgba(255, 0, 115, 0.4)',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            fontSize: '1.8rem',
+                            color: '#FF0073',
+                            boxShadow: '0 0 20px rgba(255, 0, 115, 0.4)'
+                        }}>
+                            💌
+                        </div>
+
+                        <h3 style={{ fontSize: '1.6rem', fontWeight: 900, color: '#fff', margin: 0 }}>
+                            ¡Reporte Enviado con Éxito!
+                        </h3>
+
+                        <p style={{ color: 'rgba(255,255,255,0.85)', fontSize: '0.98rem', lineHeight: 1.6, margin: 0 }}>
+                            Muchas gracias por enviarnos tus comentarios y ayudarnos a mejorar <strong>EvilTokkii</strong>. Un miembro del equipo de soporte revisará tu mensaje y te brindará respuesta breve en tu buzón de mensajes personal.
+                        </p>
+
+                        <button
+                            onClick={() => setShowSuccessModal(false)}
+                            className="btn primary"
+                            style={{
+                                width: '100%',
+                                marginTop: '0.75rem',
+                                padding: '0.8rem',
+                                borderRadius: '12px',
+                                fontSize: '1rem',
+                                fontWeight: 800,
+                                cursor: 'pointer'
+                            }}
+                        >
+                            Entendido
+                        </button>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };
