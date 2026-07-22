@@ -28,10 +28,10 @@ const Noticias = () => {
                     .order('published_at', { ascending: false, nullsFirst: true })
                     .order('created_at', { ascending: false });
 
-                // Fetch Sorteos (2) & Eventos (2) from content_items
+                // Fetch Active Sorteos (2) & Eventos (2) from content_items (solo activos)
                 const [{ data: sorteosData }, { data: eventosData }] = await Promise.all([
-                    supabase.from('content_items').select('*').eq('tipo', 'sorteo').order('created_at', { ascending: false }).limit(2),
-                    supabase.from('content_items').select('*').eq('tipo', 'evento').order('created_at', { ascending: false }).limit(2)
+                    supabase.from('content_items').select('*').eq('tipo', 'sorteo').eq('estado', 'activo').order('created_at', { ascending: false }).limit(2),
+                    supabase.from('content_items').select('*').eq('tipo', 'evento').eq('estado', 'activo').order('created_at', { ascending: false }).limit(2)
                 ]);
 
                 if (newsData) setPosts(newsData);
