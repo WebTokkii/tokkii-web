@@ -11,6 +11,7 @@ import { DISNEY_QUESTIONS } from '../data/DisneyQuestions';
 import { COVERS_QUESTIONS } from '../data/CoversQuestions';
 import { POKEMON_QUESTIONS } from '../data/PokemonQuestions';
 import { BRAND_QUESTIONS } from '../data/BrandQuestions';
+import { HISTORY_QUESTIONS } from '../data/HistoryQuestions';
 import { DOWNLOADED_PERKS } from '../data/DbdPerksDownloaded';
 import md5 from 'blueimp-md5';
 import './TierList.css'; // Reuse existing glass styles
@@ -144,7 +145,7 @@ const renderBadge = (role?: string) => {
 
 export default function Minijuegos() {
   const [currentView, setCurrentView] = useState<'hub' | 'quiz' | 'ruleta'>('hub');
-  const [quizType, setQuizType] = useState<'overwatch' | 'games' | 'audio_music' | 'flags' | 'word_scramble' | 'dbd_perks' | 'disney' | 'covers' | 'pokemon' | 'brands'>('overwatch');
+  const [quizType, setQuizType] = useState<'overwatch' | 'games' | 'audio_music' | 'flags' | 'word_scramble' | 'dbd_perks' | 'disney' | 'covers' | 'pokemon' | 'brands' | 'history'>('overwatch');
   
   // Quiz play states
   const [quizQuestions, setQuizQuestions] = useState<QuizQuestion[]>([]);
@@ -252,6 +253,7 @@ export default function Minijuegos() {
         audio_music: 'Adivina la Canción',
         pokemon: 'Adivina el Pokémon',
         brands: 'Adivina la Marca',
+        history: 'Eventos Mundiales',
         ruleta: 'Ruleta de la Suerte'
       };
 
@@ -557,7 +559,7 @@ export default function Minijuegos() {
     }
   };
 
-  const getDailyQuestions = (type: 'overwatch' | 'games' | 'audio_music' | 'flags' | 'word_scramble' | 'dbd_perks' | 'disney' | 'covers' | 'pokemon' | 'brands') => {
+  const getDailyQuestions = (type: 'overwatch' | 'games' | 'audio_music' | 'flags' | 'word_scramble' | 'dbd_perks' | 'disney' | 'covers' | 'pokemon' | 'brands' | 'history') => {
     const today = new Date();
     const dateStr = `${today.getFullYear()}-${today.getMonth() + 1}-${today.getDate()}`;
     
@@ -647,6 +649,7 @@ export default function Minijuegos() {
       type === 'flags' ? (dbMinigames['flags'] || FLAG_QUESTIONS) :
       type === 'overwatch' ? (dbMinigames['overwatch'] || OVERWATCH_QUESTIONS) : 
       type === 'games' ? (dbMinigames['games'] || GAMES_QUESTIONS) : 
+      type === 'history' ? (dbMinigames['history'] || HISTORY_QUESTIONS) :
       type === 'word_scramble' ? (dbMinigames['scramble'] || SCRAMBLE_WORDS.map(w => ({
         scrambleWord: w.word,
         scrambleHint: w.hint,
@@ -698,7 +701,7 @@ export default function Minijuegos() {
     return shuffled;
   };
 
-  const startQuiz = (type: 'overwatch' | 'games' | 'audio_music' | 'flags' | 'word_scramble' | 'dbd_perks' | 'disney' | 'covers' | 'pokemon' | 'brands') => {
+  const startQuiz = (type: 'overwatch' | 'games' | 'audio_music' | 'flags' | 'word_scramble' | 'dbd_perks' | 'disney' | 'covers' | 'pokemon' | 'brands' | 'history') => {
     if (!userId) {
       alert("Inicia sesión con Twitch para realizar las trivias diarias.");
       return;
@@ -1356,6 +1359,7 @@ export default function Minijuegos() {
                 { id: 'audio_music', name: 'Adivina la Canción', desc: 'Escucha el fragmento de audio y adivina a qué éxito musical pertenece. 15 canciones diarias. +3 puntos por acierto.', color: '#e233ff', bg: '/Imagenes/minijuego_music.png?v=2' },
                 { id: 'pokemon', name: 'Adivina el Pokémon', desc: 'Identifica el Pokémon de la silueta. 15 preguntas diarias. +3 puntos por acierto.', color: '#3b82f6', bg: '/Imagenes/minijuego_pokemon.png' },
                 { id: 'brands', name: 'Adivina la Marca', desc: 'Identifica los logos de marcas reconocidas del mercado (Nike, Coca-Cola, etc.). 15 preguntas diarias. +3 puntos por acierto.', color: '#ff4081', bg: '/Imagenes/minijuego_marcas.png' },
+                { id: 'history', name: 'Eventos Mundiales', desc: 'Preguntas de historia universal, guerras mundiales e hitos históricos. 15 preguntas diarias. +3 puntos por acierto.', color: '#ef4444', bg: '/Imagenes/minijuego_games.png?v=2' },
                 { id: 'ruleta', name: 'Ruleta de la Suerte', desc: '¡Apuesta tus puntos y prueba tu suerte! Multiplica tu apuesta hasta x5 o gana premios planos de hasta 1500 puntos.', color: '#ffaa00', bg: '/Imagenes/minijuego_ruleta.png?v=2' }
               ].map((g) => {
                   const isCompleted = completionsToday.includes(g.id);

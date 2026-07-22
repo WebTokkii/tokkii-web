@@ -1,0 +1,1892 @@
+[
+  {
+    "question": "Which Las Vegas casino was originally constructed and operated by mobster Bugsy Siegel?",
+    "correct": "The Flamingo",
+    "incorrect": [
+      "The MGM Grand",
+      "The Sands",
+      "The Sahara"
+    ],
+    "category": "History"
+  },
+  {
+    "question": "In the Seven Wonders of the World, which wonder is the only that has survived to this day?",
+    "correct": "Great Pyramid of Giza",
+    "incorrect": [
+      "Colossus of Rhodes",
+      "Lighthouse of Alexandria",
+      "Statue of Zeus at Olympia"
+    ],
+    "category": "History"
+  },
+  {
+    "question": "In what year did Kentucky become the 15th state to join the union?",
+    "correct": "1792",
+    "incorrect": [
+      "1782",
+      "1798",
+      "1788"
+    ],
+    "category": "History"
+  },
+  {
+    "question": "In what dialogue did Socrates defend himself to the court of Athens? ",
+    "correct": "The Apology",
+    "incorrect": [
+      "The Euthyphro",
+      "The Laws",
+      "The Republic"
+    ],
+    "category": "History"
+  },
+  {
+    "question": "In what year did the First World War end?",
+    "correct": "1918",
+    "incorrect": [
+      "1914",
+      "1916",
+      "1912"
+    ],
+    "category": "History"
+  },
+  {
+    "question": "Which U.S. president was said to have been too honest to lie to his father about chopping down a cherry tree?",
+    "correct": "George Washington",
+    "incorrect": [
+      "Abraham Lincoln",
+      "Thomas Jefferson",
+      "James Monroe"
+    ],
+    "category": "History"
+  },
+  {
+    "question": "Which famous military commander marched an army, which included war elephants, over the Alps during the Second Punic War?",
+    "correct": "Hannibal",
+    "incorrect": [
+      "Garmanicus",
+      "Alexander the Great",
+      "Tiberius"
+    ],
+    "category": "History"
+  },
+  {
+    "question": "What year did World War I begin?",
+    "correct": "1914",
+    "incorrect": [
+      "1905",
+      "1919",
+      "1925"
+    ],
+    "category": "History"
+  },
+  {
+    "question": "In what year did the Wall Street Crash take place?",
+    "correct": "1929",
+    "incorrect": [
+      "1932",
+      "1930",
+      "1925"
+    ],
+    "category": "History"
+  },
+  {
+    "question": "What day did the Battle of Gettysburg begin?",
+    "correct": "July 1, 1863",
+    "incorrect": [
+      "September 17, 1862",
+      "July 21, 1861",
+      "Apr 30, 1863"
+    ],
+    "category": "History"
+  },
+  {
+    "question": "How was Socrates executed?",
+    "correct": "Poison",
+    "incorrect": [
+      "Decapitation",
+      "Firing squad",
+      "Crucifixion "
+    ],
+    "category": "History"
+  },
+  {
+    "question": "On what day did Germany invade Poland?",
+    "correct": "September 1, 1939",
+    "incorrect": [
+      "December 7, 1941",
+      "June 22, 1941",
+      "July 7, 1937"
+    ],
+    "category": "History"
+  },
+  {
+    "question": "What is the name of the famous Apache leader who died in 1909 at the age of 70?",
+    "correct": "Geronimo",
+    "incorrect": [
+      "Sitting Bull",
+      "Red Cloud",
+      "Crazy Horse"
+    ],
+    "category": "History"
+  },
+  {
+    "question": "Who was the first prime minister of Canada?",
+    "correct": "John Macdonald",
+    "incorrect": [
+      "John Abbott",
+      "Alexander Mackenzie",
+      "Robert Borden"
+    ],
+    "category": "History"
+  },
+  {
+    "question": "A collection of Sanskrit hymns and verses known as the Vedas are sacred texts in what religion?",
+    "correct": "Hinduism",
+    "incorrect": [
+      "Judaism",
+      "Islam",
+      "Buddhism"
+    ],
+    "category": "History"
+  },
+  {
+    "question": "In which war did the atomic bombings of Hiroshima and Nagasaki occur?",
+    "correct": "World War II",
+    "incorrect": [
+      "World War I",
+      "Russo-Japanese War",
+      "First Sino-Japanese War"
+    ],
+    "category": "History"
+  },
+  {
+    "question": "What was the name of the national hero of the Philippines who inspired and lead the Philippine Revolution against colonial Spain?",
+    "correct": "José Rizal",
+    "incorrect": [
+      "Simón Bolívar",
+      "Benito Juárez",
+      "José de San Martín"
+    ],
+    "category": "History"
+  },
+  {
+    "question": "Who led the Communist Revolution of Russia?",
+    "correct": "Vladimir Lenin",
+    "incorrect": [
+      "Joseph Stalin",
+      "Vladimir Putin",
+      "Mikhail Gorbachev"
+    ],
+    "category": "History"
+  },
+  {
+    "question": "Joseph Stalin had a criminal past doing what?",
+    "correct": "Robbing Trains",
+    "incorrect": [
+      "Murder for Hire",
+      "Tax Evasion",
+      "Identity Fraud"
+    ],
+    "category": "History"
+  },
+  {
+    "question": "When did construction of the Suez Canal finish?",
+    "correct": "1869",
+    "incorrect": [
+      "1859",
+      "1860",
+      "1850"
+    ],
+    "category": "History"
+  },
+  {
+    "question": "When was the People's Republic of China founded?",
+    "correct": "October 1, 1949",
+    "incorrect": [
+      "April 3, 1947",
+      "May 7, 1945",
+      "December 6, 1950"
+    ],
+    "category": "History"
+  },
+  {
+    "question": "When did the Battle of the Bulge end?",
+    "correct": "January 25, 1945",
+    "incorrect": [
+      "August 6, 1945",
+      "December 7, 1941",
+      "December 16, 1944"
+    ],
+    "category": "History"
+  },
+  {
+    "question": "The crown of the Empire State Building was originally built for what purpose?",
+    "correct": "Airship Dock",
+    "incorrect": [
+      "Lightning Rod",
+      "Antennae",
+      "Flag Pole"
+    ],
+    "category": "History"
+  },
+  {
+    "question": "How long did World War II last?",
+    "correct": "6 years",
+    "incorrect": [
+      "4 years",
+      "5 years",
+      "7 years"
+    ],
+    "category": "History"
+  },
+  {
+    "question": "When did Norway get its constitution?",
+    "correct": "1814",
+    "incorrect": [
+      "1932",
+      "1905",
+      "1854"
+    ],
+    "category": "History"
+  },
+  {
+    "question": "In what year did Neil Armstrong and Buzz Aldrin land on the moon?",
+    "correct": "1969",
+    "incorrect": [
+      "1965",
+      "1966",
+      "1973"
+    ],
+    "category": "History"
+  },
+  {
+    "question": "In addition to his career as an astrologer and \"prophet\", Nostradamus published a 1555 treatise that included a section on what?",
+    "correct": "Making jams and jellies",
+    "incorrect": [
+      "Teaching parrots to talk",
+      "Cheating at card games",
+      "Digging graves"
+    ],
+    "category": "History"
+  },
+  {
+    "question": "Which of the following is not in the Indo-European language family?",
+    "correct": "Finnish",
+    "incorrect": [
+      "English",
+      "Hindi",
+      "Russian"
+    ],
+    "category": "History"
+  },
+  {
+    "question": "What is the name of the ship which was only a few miles away from the RMS Titanic when it struck an iceberg on April 14, 1912?",
+    "correct": "Californian",
+    "incorrect": [
+      "Carpathia",
+      "Cristol",
+      "Commerce"
+    ],
+    "category": "History"
+  },
+  {
+    "question": "What was the code name for the German invasion of the Soviet Union in WW2?",
+    "correct": "Operation Barbarossa",
+    "incorrect": [
+      "Operation Kaiserschlact",
+      "Operation Unthinkable",
+      "Operation Molotov"
+    ],
+    "category": "History"
+  },
+  {
+    "question": "What year did the Battle of Agincourt take place?",
+    "correct": "1415",
+    "incorrect": [
+      "1463",
+      "1401",
+      "1422"
+    ],
+    "category": "History"
+  },
+  {
+    "question": "Who tutored Alexander the Great?",
+    "correct": "Aristotle",
+    "incorrect": [
+      "Socrates",
+      "Plato",
+      "King Philip"
+    ],
+    "category": "History"
+  },
+  {
+    "question": "What did the first vending machines in the early 1880's dispense?",
+    "correct": "Post cards",
+    "incorrect": [
+      "Alcohol",
+      "Cigarettes",
+      "Sodas "
+    ],
+    "category": "History"
+  },
+  {
+    "question": "What year did Australia become a federation?",
+    "correct": "1901",
+    "incorrect": [
+      "1910",
+      "1899",
+      "1911"
+    ],
+    "category": "History"
+  },
+  {
+    "question": "Which game was the Game of the Year in 2018?",
+    "correct": "God of War",
+    "incorrect": [
+      "Detroit: Become Human",
+      "Red Dead Redemption 2",
+      "A Way Out"
+    ],
+    "category": "History"
+  },
+  {
+    "question": "When was the Grand Patriotic War in the USSR concluded?",
+    "correct": "May 9th, 1945",
+    "incorrect": [
+      "September 2nd, 1945",
+      "August 9th, 1945",
+      "December 11th, 1945"
+    ],
+    "category": "History"
+  },
+  {
+    "question": "Which countries participated in the Lobster War?",
+    "correct": "France and Brazil",
+    "incorrect": [
+      "Canada and Norway",
+      "Australia and New Zealand",
+      "United States and England"
+    ],
+    "category": "History"
+  },
+  {
+    "question": "What happened on June 6, 1944?",
+    "correct": "D-Day",
+    "incorrect": [
+      "Atomic bombings of Hiroshima and Nagasaki",
+      "Attack on Pearl Harbor",
+      "The Liberation of Paris"
+    ],
+    "category": "History"
+  },
+  {
+    "question": "Who was the main developer of the Suez Canal?",
+    "correct": "Ferdinand de Lesseps",
+    "incorrect": [
+      "Louis-Eug&egrave;ne Cavaignac",
+      "John Milton",
+      "Johann Lukas von Hildebrandt"
+    ],
+    "category": "History"
+  },
+  {
+    "question": "When did the United States formally declare war on Japan, entering World War II?",
+    "correct": "December 8, 1941",
+    "incorrect": [
+      "June 6, 1944",
+      "June 22, 1941",
+      "September 1, 1939"
+    ],
+    "category": "History"
+  },
+  {
+    "question": "Which of the following is NOT classified as a Semetic language?",
+    "correct": "Sumerian",
+    "incorrect": [
+      "Maltese",
+      "Akkadian",
+      "Mandaic"
+    ],
+    "category": "History"
+  },
+  {
+    "question": "Who was the Confederate general in the American Civil War?",
+    "correct": "Robert E. Lee",
+    "incorrect": [
+      "George A. Custer",
+      "Ulysses S. Grant",
+      "George B. McClellan"
+    ],
+    "category": "History"
+  },
+  {
+    "question": "Who was the leader of the Communist Party of Yugoslavia ?",
+    "correct": "Josip Broz Tito",
+    "incorrect": [
+      "Karadjordje Petrovic",
+      "Milos Obilic",
+      "Aleskandar Petrovic"
+    ],
+    "category": "History"
+  },
+  {
+    "question": "Who is the creator of the soft drink, Dr. Pepper?",
+    "correct": "Charles Alderton",
+    "incorrect": [
+      "James Wellington",
+      "Johnson Hinsin",
+      "Boris Heviltik"
+    ],
+    "category": "History"
+  },
+  {
+    "question": "Which building was set aflame on August 24th, 1812?",
+    "correct": "The White House",
+    "incorrect": [
+      "Parliament Building",
+      "Grand National Assembly Building",
+      "Palace of the Nation"
+    ],
+    "category": "History"
+  },
+  {
+    "question": "Who was among those killed in the 2010 Smolensk, Russia plane crash tragedy?",
+    "correct": "The Polish President",
+    "incorrect": [
+      "Pope John Paul II",
+      "Bang-Ding Ow",
+      "Albert Putin"
+    ],
+    "category": "History"
+  },
+  {
+    "question": "What is the bloodiest event in United States history, in terms of casualties?",
+    "correct": "Battle of Antietam",
+    "incorrect": [
+      "Pearl Harbor",
+      "September 11th",
+      "D-Day"
+    ],
+    "category": "History"
+  },
+  {
+    "question": "Which modern day country is the region that was known as Phrygia in ancient times?",
+    "correct": "Turkey",
+    "incorrect": [
+      "Syria",
+      "Greece",
+      "Egypt"
+    ],
+    "category": "History"
+  },
+  {
+    "question": "In which one of these cities did the Great Stink of 1858 occur?",
+    "correct": "London",
+    "incorrect": [
+      "Berlin",
+      "New York",
+      "Moscow"
+    ],
+    "category": "History"
+  },
+  {
+    "question": "What is the mnemonic device for remembering the fates of the wives of Henry VIII?",
+    "correct": "Divorced, Beheaded, Died, Divorced, Beheaded, Survived",
+    "incorrect": [
+      "Beheaded, Died, Divorced, Divorced, Beheaded, Survived",
+      "Died, Beheaded, Divorced, Beheaded, Survived, Divorced",
+      "Survived, Beheaded, Died, Divorced, Divorced, Beheaded"
+    ],
+    "category": "History"
+  },
+  {
+    "question": "Which is the hull NO. of the Fletcher class destroyer Fletcher?",
+    "correct": "DD-445",
+    "incorrect": [
+      "DD-992",
+      "DD-444",
+      "DD-446"
+    ],
+    "category": "History"
+  },
+  {
+    "question": "Which of the following Physicists aided Nazi Germany in their production of a nuclear weapon?",
+    "correct": "Werner Heisenberg",
+    "incorrect": [
+      "John von Neumann",
+      "Albert Einstein",
+      "Max Planck"
+    ],
+    "category": "History"
+  },
+  {
+    "question": "The term Luddite originally applied to disgruntled workers in which industry?",
+    "correct": "Textile",
+    "incorrect": [
+      "Farming",
+      "Mining",
+      "Ceramics"
+    ],
+    "category": "History"
+  },
+  {
+    "question": "What nationality was sultan Saladin?",
+    "correct": "Kurdish",
+    "incorrect": [
+      "Arab",
+      "Egyptian",
+      "Syrian"
+    ],
+    "category": "History"
+  },
+  {
+    "question": "The catastrophic nuclear accident that occurred in Ukraine in 1986 occurred at which power plant?",
+    "correct": "Chernobyl",
+    "incorrect": [
+      "Ignalina",
+      "Mayak",
+      "Kursk"
+    ],
+    "category": "History"
+  },
+  {
+    "question": "In what year was the famous 45 foot tall Hollywood sign first erected?",
+    "correct": "1923",
+    "incorrect": [
+      "1903",
+      "1913",
+      "1933"
+    ],
+    "category": "History"
+  },
+  {
+    "question": "When did the Battle of the Somme begin?",
+    "correct": "July 1st, 1916",
+    "incorrect": [
+      "August 1st, 1916",
+      "July 2nd, 1916",
+      "June 30th, 1916"
+    ],
+    "category": "History"
+  },
+  {
+    "question": "In what year was the video game company Electronic Arts founded?",
+    "correct": "1982",
+    "incorrect": [
+      "1999",
+      "1981",
+      "2005"
+    ],
+    "category": "History"
+  },
+  {
+    "question": "List the following Iranic empires in chronological order:",
+    "correct": "Median, Achaemenid, Parthian, Sassanid",
+    "incorrect": [
+      "Median, Achaemenid, Sassanid, Parthian",
+      "Achaemenid, Median, Parthian, Sassanid",
+      "Achaemenid, Median, Sassanid, Parthian"
+    ],
+    "category": "History"
+  },
+  {
+    "question": "Which Greek god was the god of the Sun?",
+    "correct": "Helios",
+    "incorrect": [
+      "Zeus",
+      "Hades",
+      "Poseidon"
+    ],
+    "category": "History"
+  },
+  {
+    "question": "What number does the Roman numeral \"D\" stand for?",
+    "correct": "500",
+    "incorrect": [
+      "100",
+      "1000",
+      "50"
+    ],
+    "category": "History"
+  },
+  {
+    "question": "The \"Trail of Tears\" was a result of which United States President's Indian Removal Policy?",
+    "correct": "Andrew Jackson",
+    "incorrect": [
+      "Harry S. Truman",
+      "Martin Van Buren",
+      "John Quincy Adams"
+    ],
+    "category": "History"
+  },
+  {
+    "question": "The Spitfire L.F. Mk IX had what engine?",
+    "correct": "Merlin 66",
+    "incorrect": [
+      "Griffon 65",
+      "Merlin 50",
+      "Merlin X"
+    ],
+    "category": "History"
+  },
+  {
+    "question": "Who was the Prime Minister of Japan when Japan declared war on the US?",
+    "correct": "Hideki Tojo",
+    "incorrect": [
+      "Michinomiya Hirohito",
+      "Isoroku Yamamoto",
+      "Fumimaro Konoe"
+    ],
+    "category": "History"
+  },
+  {
+    "question": "What was the name of the first permanent English settlement in America?",
+    "correct": "Jamestown",
+    "incorrect": [
+      "New York",
+      "St. John's",
+      "Plymouth"
+    ],
+    "category": "History"
+  },
+  {
+    "question": "The RMS Titanic sunk during her maiden voyage from Southampton, England to which American city?",
+    "correct": "New York City",
+    "incorrect": [
+      "Boston ",
+      "Philadelphia",
+      "Washington"
+    ],
+    "category": "History"
+  },
+  {
+    "question": "What was the name of the German offensive operation in October 1941 to take Moscow before winter?",
+    "correct": "Operation Typhoon",
+    "incorrect": [
+      "Operation Sunflower",
+      "Operation Barbarossa",
+      "Case Blue"
+    ],
+    "category": "History"
+  },
+  {
+    "question": "In which year did the First World War begin?",
+    "correct": "1914",
+    "incorrect": [
+      "1930",
+      "1917",
+      "1939"
+    ],
+    "category": "History"
+  },
+  {
+    "question": "The assassination of which royal led to the start of World War I?",
+    "correct": "Archduke Franz Ferdinand",
+    "incorrect": [
+      "Louis Mountbatten",
+      "King Charles I",
+      "Nicholas II"
+    ],
+    "category": "History"
+  },
+  {
+    "question": " What Russian automatic gas-operated assault rifle was developed in the Soviet Union in 1947, and is still popularly used today?",
+    "correct": "AK-47",
+    "incorrect": [
+      "RPK",
+      "M16",
+      "MG 42"
+    ],
+    "category": "History"
+  },
+  {
+    "question": "The Korean War started in what year?",
+    "correct": "1950",
+    "incorrect": [
+      "1945",
+      "1960",
+      "1912"
+    ],
+    "category": "History"
+  },
+  {
+    "question": "When did Jamaica receive its independence from England? ",
+    "correct": "1962",
+    "incorrect": [
+      "1492",
+      "1963",
+      "1987"
+    ],
+    "category": "History"
+  },
+  {
+    "question": "How many women joined the United States Armed Services during World War II?",
+    "correct": "350,000",
+    "incorrect": [
+      "225,000",
+      "100,000",
+      "500,000"
+    ],
+    "category": "History"
+  },
+  {
+    "question": "What is widely considered to be the oldest civilization known to mankind?",
+    "correct": "Sumeria",
+    "incorrect": [
+      "Babylon",
+      "Assyria",
+      "Phoenicia"
+    ],
+    "category": "History"
+  },
+  {
+    "question": "What Southeast Asian country was formerly known as 'Lan Xang'?",
+    "correct": "Laos",
+    "incorrect": [
+      "Cambodia",
+      "Vietnam",
+      "Thailand"
+    ],
+    "category": "History"
+  },
+  {
+    "question": "Who was the leader of Sweden in the Great Northern War?",
+    "correct": "Charles XII",
+    "incorrect": [
+      "Per Albin Hansson",
+      "Peter the Great",
+      "Gustavus Adolphus"
+    ],
+    "category": "History"
+  },
+  {
+    "question": "In which years did the Battle of Gallipoli take place?",
+    "correct": "1915 - 1916",
+    "incorrect": [
+      "1914 - 1918",
+      "1914 - 1915",
+      "1915 - 1918"
+    ],
+    "category": "History"
+  },
+  {
+    "question": "The ancient city of Chichén Itzá was built by which civilization?",
+    "correct": "Mayans",
+    "incorrect": [
+      "Aztecs",
+      "Incas",
+      "Toltecs"
+    ],
+    "category": "History"
+  },
+  {
+    "question": "The son of which pope supposedly held a lecherous f&ecirc;te involving 50 courtesans in the papal palace?",
+    "correct": "Alexander VI",
+    "incorrect": [
+      "Innocent V",
+      "Urban II",
+      "Pius III"
+    ],
+    "category": "History"
+  },
+  {
+    "question": "What was the official German currency until 2002?",
+    "correct": "Mark",
+    "incorrect": [
+      "Frank",
+      "Pound sterling",
+      "Reichtoken"
+    ],
+    "category": "History"
+  },
+  {
+    "question": "Which of these theoretical phycisists first predicted the existence of antimatter?",
+    "correct": "Paul Dirac",
+    "incorrect": [
+      "Niels Bohr",
+      "Albert Einstein",
+      "Werner Heisenberg"
+    ],
+    "category": "History"
+  },
+  {
+    "question": "Who discovered Penicillin?",
+    "correct": "Alexander Flemming",
+    "incorrect": [
+      "Marie Curie",
+      "Alfred Nobel",
+      "Louis Pasteur"
+    ],
+    "category": "History"
+  },
+  {
+    "question": "These two countries held a commonwealth from the 16th to 18th century.",
+    "correct": "Poland and Lithuania",
+    "incorrect": [
+      "Hutu and Rwanda",
+      "North Korea and South Korea",
+      "Bangladesh and Bhutan"
+    ],
+    "category": "History"
+  },
+  {
+    "question": "What year did the Titanic sink?",
+    "correct": "1912",
+    "incorrect": [
+      "1930",
+      "1917",
+      "1941"
+    ],
+    "category": "History"
+  },
+  {
+    "question": "Bohdan Khmelnytsky was which of the following?",
+    "correct": "Leader of the Ukrainian Cossacks",
+    "incorrect": [
+      "General Secretary of the Communist Party of the USSR",
+      "Prince of Wallachia",
+      "Grand Prince of Novgorod"
+    ],
+    "category": "History"
+  },
+  {
+    "question": "Where was Abraham Lincoln when he was assassinated by John Wilkes Booth in 1865?",
+    "correct": "At the theatre",
+    "incorrect": [
+      "On a boat",
+      "On his horse",
+      "In bed"
+    ],
+    "category": "History"
+  },
+  {
+    "question": "Which one of these tanks was designed and operated by the United Kingdom?",
+    "correct": "Tog II",
+    "incorrect": [
+      "M4 Sherman",
+      "Tiger H1",
+      "T-34"
+    ],
+    "category": "History"
+  },
+  {
+    "question": "What was the capital of South Vietnam before the Vietnam War?",
+    "correct": "Saigon",
+    "incorrect": [
+      "Ho Chi Minh City",
+      "Hanoi",
+      "Hue"
+    ],
+    "category": "History"
+  },
+  {
+    "question": "On which day did construction start on \"The Pentagon\", the headquarters for the United States Department of Defense?",
+    "correct": "September 11, 1941",
+    "incorrect": [
+      "June 15, 1947",
+      "January 15, 1943",
+      "September 2, 1962"
+    ],
+    "category": "History"
+  },
+  {
+    "question": "In the War of the Pacific (1879 - 1883), Bolivia lost its access to the Pacific Ocean after being defeated by which South American country?",
+    "correct": "Chile",
+    "incorrect": [
+      "Peru",
+      "Brazil",
+      "Argentina"
+    ],
+    "category": "History"
+  },
+  {
+    "question": "Where and when was the first cardboard box made for industrial use?",
+    "correct": "England, 1817",
+    "incorrect": [
+      "United States, 1817",
+      "England, 1917",
+      "United States, 1917"
+    ],
+    "category": "History"
+  },
+  {
+    "question": "Which of the following Soviet revolutionaries was exiled from the USSR and later assassinated in 1940 for criticizing Stalinism?",
+    "correct": "Leon Trotsky",
+    "incorrect": [
+      "Lev Kamenev",
+      "Mikhail Kalinin",
+      "Vladimir Lenin"
+    ],
+    "category": "History"
+  },
+  {
+    "question": "Which of the following battles is often considered as marking the beginning of the fall of the Western Roman Empire?",
+    "correct": "Battle of Adrianople",
+    "incorrect": [
+      "Battle of Thessalonica",
+      "Battle of Pollentia",
+      "Battle of Constantinople"
+    ],
+    "category": "History"
+  },
+  {
+    "question": "What was the name of the chemical that was dropped on Vietnam during the Vietnam war?",
+    "correct": "Agent Orange",
+    "incorrect": [
+      "Phosgene",
+      "Mustard Gas",
+      "Hydrogen Cyanide"
+    ],
+    "category": "History"
+  },
+  {
+    "question": "The Herero genocide was perpetrated in Africa by which of the following colonial nations?",
+    "correct": "Germany",
+    "incorrect": [
+      "Britain",
+      "Belgium",
+      "France"
+    ],
+    "category": "History"
+  },
+  {
+    "question": "The American company \"Campbell's\" is most well known for making what food product?",
+    "correct": "Canned soups",
+    "incorrect": [
+      "Chocolate",
+      "Soft drinks",
+      "Sausages"
+    ],
+    "category": "General Knowledge"
+  },
+  {
+    "question": "Which month is Black History Month in the US?",
+    "correct": "February",
+    "incorrect": [
+      "May",
+      "November",
+      "August"
+    ],
+    "category": "General Knowledge"
+  },
+  {
+    "question": "What planet is not named after a Greek or Roman god?",
+    "correct": "Earth",
+    "incorrect": [
+      "Jupiter",
+      "Mars",
+      "Mercury"
+    ],
+    "category": "General Knowledge"
+  },
+  {
+    "question": "Rolex is a company that specializes in what type of product?",
+    "correct": "Watches",
+    "incorrect": [
+      "Cars",
+      "Computers",
+      "Sports equipment"
+    ],
+    "category": "General Knowledge"
+  },
+  {
+    "question": "In aerodynamics, which force pushes an object upwards?",
+    "correct": "Lift",
+    "incorrect": [
+      "Drag",
+      "Weight",
+      "Thrust"
+    ],
+    "category": "General Knowledge"
+  },
+  {
+    "question": "Which river flows through the Scottish city of Glasgow?",
+    "correct": "Clyde",
+    "incorrect": [
+      "Tay",
+      "Dee",
+      "Tweed"
+    ],
+    "category": "General Knowledge"
+  },
+  {
+    "question": "Which Italian automobile manufacturer gained majority control of U.S. automobile manufacturer Chrysler in 2011?",
+    "correct": "Fiat",
+    "incorrect": [
+      "Maserati",
+      "Alfa Romeo",
+      "Ferrari"
+    ],
+    "category": "General Knowledge"
+  },
+  {
+    "question": "What is the French word for \"hat\"?",
+    "correct": "Chapeau",
+    "incorrect": [
+      "Bonnet",
+      " &Eacute;charpe",
+      " Casque"
+    ],
+    "category": "General Knowledge"
+  },
+  {
+    "question": "Computer manufacturer Compaq was acquired for $25 billion dollars in 2002 by which company?",
+    "correct": "Hewlett-Packard",
+    "incorrect": [
+      "Toshiba",
+      "Asus",
+      "Dell"
+    ],
+    "category": "General Knowledge"
+  },
+  {
+    "question": "What country has had prime ministers named Eden, Major, Peel, Law, Brown and Heath?",
+    "correct": "United Kingdom",
+    "incorrect": [
+      "Australia",
+      "New Zealand",
+      "Canada"
+    ],
+    "category": "General Knowledge"
+  },
+  {
+    "question": "Antibiotics are generally taken to combat what?",
+    "correct": "Bacterial infections",
+    "incorrect": [
+      "Viruses",
+      "Migraines",
+      "Muscular pains"
+    ],
+    "category": "General Knowledge"
+  },
+  {
+    "question": "Who played General Aladeen in The Dictator?",
+    "correct": "Sacha Baron Cohen",
+    "incorrect": [
+      "Johnny Depp",
+      "James Franco",
+      "Leonardo Dicaprio"
+    ],
+    "category": "General Knowledge"
+  },
+  {
+    "question": "Which mountain has the highest peak in South America?",
+    "correct": "Aconcagua, Argentina",
+    "incorrect": [
+      "Ojos del Salado, Argentina/Chile border",
+      "Monte Pissis, Argentina",
+      "Huascarán, Peru"
+    ],
+    "category": "General Knowledge"
+  },
+  {
+    "question": "The word \"aprosexia\" means which of the following?",
+    "correct": "The inability to concentrate on anything",
+    "incorrect": [
+      "The inability to make decisions",
+      "A feverish desire to rip one's clothes off",
+      "The inability to stand up"
+    ],
+    "category": "General Knowledge"
+  },
+  {
+    "question": "The &ldquo;fairy&rdquo; type made it&rsquo;s debut in which generation of the Pokemon core series games?",
+    "correct": "6th",
+    "incorrect": [
+      "2nd",
+      "7th",
+      "4th"
+    ],
+    "category": "General Knowledge"
+  },
+  {
+    "question": "What is the official language of Brazil?",
+    "correct": "Portuguese",
+    "incorrect": [
+      "Brazilian",
+      "Spanish",
+      "English"
+    ],
+    "category": "General Knowledge"
+  },
+  {
+    "question": "What is the perimeter of a circle more commonly known as?",
+    "correct": "Circumference",
+    "incorrect": [
+      "Diameter",
+      "Radius",
+      "Arc"
+    ],
+    "category": "General Knowledge"
+  },
+  {
+    "question": "The Flag of the European Union has how many stars on it?",
+    "correct": "12",
+    "incorrect": [
+      "10",
+      "14",
+      "16"
+    ],
+    "category": "General Knowledge"
+  },
+  {
+    "question": "In past times, what would a gentleman keep in his fob pocket?",
+    "correct": "Watch",
+    "incorrect": [
+      "Money",
+      "Keys",
+      "Notebook"
+    ],
+    "category": "General Knowledge"
+  },
+  {
+    "question": "Which of the following card games revolves around numbers and basic math?",
+    "correct": "Uno",
+    "incorrect": [
+      "Go Fish",
+      "Twister",
+      "Munchkin"
+    ],
+    "category": "General Knowledge"
+  },
+  {
+    "question": "What is the Italian word for \"tomato\"?",
+    "correct": "Pomodoro",
+    "incorrect": [
+      "Aglio",
+      "Cipolla",
+      "Peperoncino"
+    ],
+    "category": "General Knowledge"
+  },
+  {
+    "question": "Which of the following is NOT one of Aesop's fables?",
+    "correct": "The Fox and the Hound",
+    "incorrect": [
+      "The Fox and the Grapes",
+      "The Tortoise and the Hare",
+      "The Frog and the Ox"
+    ],
+    "category": "General Knowledge"
+  },
+  {
+    "question": "Which of the following blood component forms a plug at the site of injuries?",
+    "correct": "Platelets",
+    "incorrect": [
+      "Red blood cells",
+      "White blood cells",
+      "Blood plasma"
+    ],
+    "category": "General Knowledge"
+  },
+  {
+    "question": "The word \"astasia\" means which of the following?",
+    "correct": "The inability to stand up",
+    "incorrect": [
+      "The inability to make decisions",
+      "The inability to concentrate on anything",
+      "A feverish desire to rip one's clothes off"
+    ],
+    "category": "General Knowledge"
+  },
+  {
+    "question": "What does a funambulist walk on?",
+    "correct": "A Tight Rope",
+    "incorrect": [
+      "Broken Glass",
+      "Balls",
+      "The Moon"
+    ],
+    "category": "General Knowledge"
+  },
+  {
+    "question": "What was the soft drink Pepsi originally introduced as?",
+    "correct": "Brad's Drink",
+    "incorrect": [
+      "Pepsin Pop",
+      "Carolina Cola",
+      "Pepsin Syrup"
+    ],
+    "category": "General Knowledge"
+  },
+  {
+    "question": "What do sailors call the left side of a boat?",
+    "correct": "Port",
+    "incorrect": [
+      "Starboard",
+      "Bow",
+      "Stern"
+    ],
+    "category": "General Knowledge"
+  },
+  {
+    "question": "What was the name of Sqiudward's bad painting in the Spongebob episode \"Artist Unknown?\"",
+    "correct": "Bold and Brash",
+    "incorrect": [
+      "Squidward en Repose",
+      "Rippy Bits",
+      "Tilted Perspectives"
+    ],
+    "category": "General Knowledge"
+  },
+  {
+    "question": "What is the name of the extra pedal on a manual or standard transmission car?",
+    "correct": "Clutch",
+    "incorrect": [
+      "Shifter",
+      "Booster",
+      "Parking Brake"
+    ],
+    "category": "General Knowledge"
+  },
+  {
+    "question": "How many furlongs are there in a mile?",
+    "correct": "Eight",
+    "incorrect": [
+      "Two",
+      "Four",
+      "Six"
+    ],
+    "category": "General Knowledge"
+  },
+  {
+    "question": "Virtual reality company Oculus VR lost which of it's co-founders in a freak car accident in 2013?",
+    "correct": "Andrew Scott Reisse",
+    "incorrect": [
+      "Nate Mitchell",
+      "Jack McCauley",
+      "Palmer Luckey"
+    ],
+    "category": "General Knowledge"
+  },
+  {
+    "question": "When someone is cowardly, they are said to have what color belly?",
+    "correct": "Yellow",
+    "incorrect": [
+      "Green",
+      "Red",
+      "Blue"
+    ],
+    "category": "General Knowledge"
+  },
+  {
+    "question": "In the video-game franchise Kingdom Hearts, the main protagonist, carries a weapon with what shape?",
+    "correct": "Key",
+    "incorrect": [
+      "Sword",
+      "Pen",
+      "Cellphone"
+    ],
+    "category": "General Knowledge"
+  },
+  {
+    "question": "Which film star has his statue in Leicester Square?",
+    "correct": "Charlie Chaplin",
+    "incorrect": [
+      "Paul Newman",
+      "Rowan Atkinson ",
+      "Alfred Hitchcock"
+    ],
+    "category": "General Knowledge"
+  },
+  {
+    "question": "What is the romanized Arabic word for \"moon\"?",
+    "correct": "Qamar",
+    "incorrect": [
+      "Najma",
+      "Kawkab",
+      "Shams"
+    ],
+    "category": "General Knowledge"
+  },
+  {
+    "question": "When someone is inexperienced they are said to be what color?",
+    "correct": "Green",
+    "incorrect": [
+      "Red",
+      "Blue",
+      "Yellow"
+    ],
+    "category": "General Knowledge"
+  },
+  {
+    "question": "What is the defining characteristic of someone who is described as hirsute?",
+    "correct": "Hairy",
+    "incorrect": [
+      "Rude",
+      "Funny",
+      "Tall"
+    ],
+    "category": "General Knowledge"
+  },
+  {
+    "question": "According to Fair Works Australia, how long do you have to work to get Long Service Leave?",
+    "correct": "7 years",
+    "incorrect": [
+      "2 years",
+      "8 years",
+      "6 months"
+    ],
+    "category": "General Knowledge"
+  },
+  {
+    "question": "The word \"abulia\" means which of the following?",
+    "correct": "The inability to make decisions",
+    "incorrect": [
+      "The inability to stand up",
+      "The inability to concentrate on anything",
+      "A feverish desire to rip one's clothes off"
+    ],
+    "category": "General Knowledge"
+  },
+  {
+    "question": "Earl Grey tea is black tea flavoured with what?",
+    "correct": "Bergamot oil",
+    "incorrect": [
+      "Lavender",
+      "Vanilla",
+      "Honey"
+    ],
+    "category": "General Knowledge"
+  },
+  {
+    "question": "In blood typing, the (+) and (-) marker after an A, B, AB, or O is called Rh factor. Which of the following is the source of its discovery?",
+    "correct": "Rhesus Monkeys",
+    "incorrect": [
+      "Rheumatism Patients",
+      "Red-Haired People",
+      "Rhizomes"
+    ],
+    "category": "General Knowledge"
+  },
+  {
+    "question": "Where is the train station \"Llanfair&shy;pwllgwyngyll&shy;gogery&shy;chwyrn&shy;drobwll&shy;llan&shy;tysilio&shy;gogo&shy;goch\"?",
+    "correct": "Wales",
+    "incorrect": [
+      "Moldova",
+      "Czech Republic",
+      "Denmark"
+    ],
+    "category": "General Knowledge"
+  },
+  {
+    "question": "What is the name of the Jewish New Year?",
+    "correct": "Rosh Hashanah",
+    "incorrect": [
+      "Elul",
+      "New Year",
+      "Succoss"
+    ],
+    "category": "General Knowledge"
+  },
+  {
+    "question": "The lesser-known continuation of the saying \"Curiosity killed the cat...\" is:",
+    "correct": "\"...but satisfaction brought it back.\"",
+    "incorrect": [
+      "\"...and the silent mouse remained thereat.\"",
+      "\"...which taught it not to do that.\"",
+      "\"...but death by the truth is better than ignorance.\""
+    ],
+    "category": "General Knowledge"
+  },
+  {
+    "question": "Who is the origin of the quote \"What doesn't kill you makes you stronger\"?",
+    "correct": "Friedrich Nietzsche",
+    "incorrect": [
+      " G. Gordon Liddy",
+      "Kelly Clarkson",
+      "Christopher Hitchens"
+    ],
+    "category": "General Knowledge"
+  },
+  {
+    "question": "The word \"dozen\" usually refers to a group of how many objects?",
+    "correct": "12",
+    "incorrect": [
+      "6",
+      "20",
+      "10"
+    ],
+    "category": "General Knowledge"
+  },
+  {
+    "question": "Virgin Trains, Virgin Atlantic and Virgin Racing, are all companies owned by which famous entrepreneur?   ",
+    "correct": "Richard Branson",
+    "incorrect": [
+      "Alan Sugar",
+      "Donald Trump",
+      "Bill Gates"
+    ],
+    "category": "General Knowledge"
+  },
+  {
+    "question": "Trypophobia is the fear of ",
+    "correct": "groups of holes",
+    "incorrect": [
+      "swimming in deep water",
+      "public speaking",
+      "eating too much"
+    ],
+    "category": "General Knowledge"
+  },
+  {
+    "question": "Which of the following carbonated soft drinks were introduced first?",
+    "correct": "Dr. Pepper",
+    "incorrect": [
+      "Coca-Cola",
+      "Sprite",
+      "Mountain Dew"
+    ],
+    "category": "General Knowledge"
+  },
+  {
+    "question": "This field is sometimes known as &ldquo;The Dismal Science.&rdquo;",
+    "correct": "Economics",
+    "incorrect": [
+      "Philosophy",
+      "Politics",
+      "Physics"
+    ],
+    "category": "General Knowledge"
+  },
+  {
+    "question": "Out of these four buildings, which one is the tallest, with a height of 1,250 ft (381 m)?",
+    "correct": "Empire State Building, United States",
+    "incorrect": [
+      "Bank of China Tower, Hong Kong",
+      "Federation Tower, Russia",
+      "Gevora Hotal, United Arab Emirates"
+    ],
+    "category": "General Knowledge"
+  },
+  {
+    "question": "What Latin phrase roughly translates to \"seize the day\"?",
+    "correct": "Carpe diem",
+    "incorrect": [
+      "Memento mori",
+      "Plus ultra",
+      "Sic semper tyrannis"
+    ],
+    "category": "General Knowledge"
+  },
+  {
+    "question": "In which fast food chain can you order a Jamocha Shake?",
+    "correct": "Arby's",
+    "incorrect": [
+      "McDonald's",
+      "Burger King",
+      "Wendy's"
+    ],
+    "category": "General Knowledge"
+  },
+  {
+    "question": "Which country, not including Japan, has the most people of Japanese descent?",
+    "correct": "Brazil",
+    "incorrect": [
+      "China",
+      "South Korea",
+      "United States of America"
+    ],
+    "category": "General Knowledge"
+  },
+  {
+    "question": "The Mexican Beer \"Corona\" is what type of beer?",
+    "correct": "Pale Lager",
+    "incorrect": [
+      "India Pale Ale",
+      "Pilfsner",
+      "Baltic Porter"
+    ],
+    "category": "General Knowledge"
+  },
+  {
+    "question": "The Canadian $1 coin is colloquially known as a what?",
+    "correct": "Loonie",
+    "incorrect": [
+      "Boolie",
+      "Foolie",
+      "Moodie"
+    ],
+    "category": "General Knowledge"
+  },
+  {
+    "question": "What is the name of the popular animatronic singing fish prop, singing such hits such as \"Don't Worry, Be Happy\"?",
+    "correct": "Big Mouth Billy Bass",
+    "incorrect": [
+      "Big Billy Bass",
+      "Singing Fish",
+      "Sardeen"
+    ],
+    "category": "General Knowledge"
+  },
+  {
+    "question": "What is the name of the poker hand containing three of a kind and a pair?",
+    "correct": "Full House",
+    "incorrect": [
+      "Flush",
+      "Straight",
+      "High card"
+    ],
+    "category": "General Knowledge"
+  },
+  {
+    "question": "How would one say goodbye in Spanish?",
+    "correct": "Adiós",
+    "incorrect": [
+      " Hola",
+      "Au Revoir",
+      "Salir"
+    ],
+    "category": "General Knowledge"
+  },
+  {
+    "question": "What do sailors call the back of a boat?",
+    "correct": "Stern",
+    "incorrect": [
+      "Bow",
+      "Starboard",
+      "Port"
+    ],
+    "category": "General Knowledge"
+  },
+  {
+    "question": "In 2013 how much money was lost by Nigerian scams?",
+    "correct": "$12.7 Billion",
+    "incorrect": [
+      "$95 Million",
+      "$956 Million",
+      "$2.7 Billion"
+    ],
+    "category": "General Knowledge"
+  },
+  {
+    "question": "What name represents the letter \"M\" in the NATO phonetic alphabet?",
+    "correct": "Mike",
+    "incorrect": [
+      "Matthew",
+      "Mark",
+      "Max"
+    ],
+    "category": "General Knowledge"
+  },
+  {
+    "question": "Which of these companies does NOT manufacture automobiles?",
+    "correct": "Ducati",
+    "incorrect": [
+      "Nissan",
+      "GMC",
+      "Fiat"
+    ],
+    "category": "General Knowledge"
+  },
+  {
+    "question": "In what year was McDonald's founded?",
+    "correct": "1955",
+    "incorrect": [
+      "1964",
+      "1951",
+      "1947"
+    ],
+    "category": "General Knowledge"
+  },
+  {
+    "question": "Scotch whisky and Drambuie make up which cocktail?",
+    "correct": "Rusty Nail",
+    "incorrect": [
+      "Screwdriver",
+      "Sex on the Beach",
+      "Manhattan"
+    ],
+    "category": "General Knowledge"
+  },
+  {
+    "question": "Which of these American singers and songwriters won a Nobel Prize in Literature?",
+    "correct": "Bob Dylan",
+    "incorrect": [
+      "Buddy Holly",
+      "Johnny Cash",
+      "Alice Cooper"
+    ],
+    "category": "General Knowledge"
+  },
+  {
+    "question": "Which church's interior in Vatican City was designed in 1503 by renaissance architects including Bramante, Michelangelo and Bernini?",
+    "correct": "St. Peter's Basilica",
+    "incorrect": [
+      "Catania Cathedral",
+      "St. Mark&rsquo;s Basilica",
+      "The Duomo of Florence"
+    ],
+    "category": "General Knowledge"
+  },
+  {
+    "question": "The new One World Trade Center in Manhattan, New York City was designed by which architect? ",
+    "correct": "David Childs",
+    "incorrect": [
+      "Bjarke Ingels",
+      "Michael Arad",
+      "Fumihiko Maki"
+    ],
+    "category": "General Knowledge"
+  },
+  {
+    "question": "Which of these banks are NOT authorized to issue currency notes in Hong Kong?",
+    "correct": "OCBC",
+    "incorrect": [
+      "HSBC",
+      "Standard Chartered",
+      "Bank of China"
+    ],
+    "category": "General Knowledge"
+  },
+  {
+    "question": "What was the name given to Japanese military dictators who ruled the country through the 12th and 19th Century?",
+    "correct": "Shogun",
+    "incorrect": [
+      "Ninja",
+      "Samurai",
+      "Shinobi"
+    ],
+    "category": "General Knowledge"
+  },
+  {
+    "question": "What is the name of the antagonist group in Danganronpa Another Episode: Ultra Despair Girls?",
+    "correct": "Warriors of Hope",
+    "incorrect": [
+      "The Monokubs",
+      "Warriors of Despair",
+      "The Ultimate Despair"
+    ],
+    "category": "General Knowledge"
+  },
+  {
+    "question": "What was Mountain Dew's original slogan?",
+    "correct": "Yahoo! Mountain Dew... It'll tickle your innards!",
+    "incorrect": [
+      "Give Me A Dew",
+      "Do The Dew",
+      "Get' that barefoot feelin' drinkin' Mountain Dew"
+    ],
+    "category": "General Knowledge"
+  },
+  {
+    "question": "Of the following months, which has the most amount of days?",
+    "correct": "December",
+    "incorrect": [
+      "April",
+      "September",
+      "November "
+    ],
+    "category": "General Knowledge"
+  },
+  {
+    "question": "If you are traveling at a speed of 80 mph, how long will it take you to drive 80 miles?",
+    "correct": "60 minutes",
+    "incorrect": [
+      "90 minutes",
+      "30 minutes",
+      "50 minutes"
+    ],
+    "category": "General Knowledge"
+  },
+  {
+    "question": "What is the full title of the Prime Minister of the UK?",
+    "correct": "First Lord of the Treasury",
+    "incorrect": [
+      "Duke of Cambridge",
+      "Her Majesty's Loyal Opposition",
+      "Manager of the Crown Estate"
+    ],
+    "category": "General Knowledge"
+  },
+  {
+    "question": "Only 9% of US Households owned a television in ",
+    "correct": "1950",
+    "incorrect": [
+      "1965",
+      "1913",
+      "1969"
+    ],
+    "category": "General Knowledge"
+  },
+  {
+    "question": "Terry Gilliam was an animator that worked with which British comedy group?",
+    "correct": "Monty Python",
+    "incorrect": [
+      "The Goodies&lrm;",
+      "The League of Gentlemen&lrm;",
+      "The Penny Dreadfuls"
+    ],
+    "category": "General Knowledge"
+  },
+  {
+    "question": "If someone said \"you are olid\", what would they mean?",
+    "correct": "You smell extremely unpleasant.",
+    "incorrect": [
+      "You are out of shape/weak.",
+      "Your appearance is repulsive.",
+      "You are incomprehensible/an idiot."
+    ],
+    "category": "General Knowledge"
+  },
+  {
+    "question": "What direction does the Statue of Liberty face?",
+    "correct": "Southeast",
+    "incorrect": [
+      "Southwest",
+      "Northwest",
+      "Northeast"
+    ],
+    "category": "General Knowledge"
+  },
+  {
+    "question": "What was the original name of the search engine \"Google\"?",
+    "correct": "BackRub",
+    "incorrect": [
+      "CatMassage",
+      "SearchPro",
+      "Netscape Navigator"
+    ],
+    "category": "General Knowledge"
+  },
+  {
+    "question": "When was the website reddit founded ?",
+    "correct": "2005",
+    "incorrect": [
+      "2008",
+      "2004",
+      "2006"
+    ],
+    "category": "General Knowledge"
+  },
+  {
+    "question": "If you are caught \"Goldbricking\", what are you doing wrong?",
+    "correct": "Slacking",
+    "incorrect": [
+      "Smoking",
+      "Stealing",
+      "Cheating"
+    ],
+    "category": "General Knowledge"
+  },
+  {
+    "question": "What is the French word for \"fish\"?",
+    "correct": "poisson",
+    "incorrect": [
+      "fiche",
+      "escargot",
+      "mer"
+    ],
+    "category": "General Knowledge"
+  },
+  {
+    "question": "What was the name of the WWF professional wrestling tag team made up of the wrestlers Ax and Smash?",
+    "correct": "Demolition",
+    "incorrect": [
+      "The Dream Team",
+      "The Bushwhackers",
+      "The British Bulldogs"
+    ],
+    "category": "General Knowledge"
+  },
+  {
+    "question": "What was the destination of the missing flight MH370?",
+    "correct": "Beijing",
+    "incorrect": [
+      "Kuala Lumpur",
+      "Singapore",
+      "Tokyo"
+    ],
+    "category": "General Knowledge"
+  },
+  {
+    "question": "What is the name of the very first video uploaded to YouTube?",
+    "correct": "Me at the zoo",
+    "incorrect": [
+      "tribute",
+      "carrie rides a truck",
+      "Her new puppy from great grandpa vern."
+    ],
+    "category": "General Knowledge"
+  },
+  {
+    "question": "Chartreuse is a color between yellow and what?",
+    "correct": "Green",
+    "incorrect": [
+      "Red",
+      "Black",
+      "Purple"
+    ],
+    "category": "General Knowledge"
+  },
+  {
+    "question": "Which of these Marvel games was released on the Playstation 2?",
+    "correct": "Spider-Man 2",
+    "incorrect": [
+      "Silver Surfer",
+      "Howard the Duck",
+      "Wolverine: Adamantium Rage"
+    ],
+    "category": "General Knowledge"
+  },
+  {
+    "question": "Which of these Indian languages is not part of the Indo-European language family?",
+    "correct": "Tamil",
+    "incorrect": [
+      "Hindi",
+      "Punjabi",
+      "Urdu"
+    ],
+    "category": "General Knowledge"
+  },
+  {
+    "question": "\"A3\", \"B1\", and \"Legal\" are typical names of sizes for what object?",
+    "correct": "Paper",
+    "incorrect": [
+      "Airplanes",
+      "Law books",
+      "Phone screens"
+    ],
+    "category": "General Knowledge"
+  },
+  {
+    "question": "What year was Queen Elizabeth II born?",
+    "correct": "1926",
+    "incorrect": [
+      "1923",
+      "1929",
+      "1930"
+    ],
+    "category": "General Knowledge"
+  },
+  {
+    "question": "Which company did Valve cooperate with in the creation of the Vive?",
+    "correct": "HTC",
+    "incorrect": [
+      "Oculus",
+      "Google",
+      "Razer"
+    ],
+    "category": "General Knowledge"
+  },
+  {
+    "question": "What is the currency of Poland?",
+    "correct": "Złoty",
+    "incorrect": [
+      "Ruble",
+      "Euro",
+      "Krone"
+    ],
+    "category": "General Knowledge"
+  },
+  {
+    "question": "Which of the following is not an Ivy League University?",
+    "correct": "Stanford",
+    "incorrect": [
+      "University of Pennsylvania",
+      "Harvard",
+      "Princeton"
+    ],
+    "category": "General Knowledge"
+  }
+]
