@@ -20,17 +20,17 @@ import './TierList.css'; // Reuse existing glass styles
 function getDbdPerkImageUrl(apiPath: string) {
   if (!apiPath) return '';
   const parts = apiPath.split('/');
-  const rawBaseName = parts[parts.length - 1].replace('.png', ''); // e.g. iconPerks_Terminus
+  const rawBaseName = parts[parts.length - 1].replace('.png', '');
   
   if (DOWNLOADED_PERKS.has(rawBaseName)) {
-    return `Imagenes/Perks/${rawBaseName}.png`;
+    return `/Imagenes/dbd_perks/${rawBaseName}.png`;
   }
-
+  
   let baseName = rawBaseName;
   if (baseName.startsWith('iconPerks_')) {
-    const perkPart = baseName.substring(10); // e.g. Terminus
-    const formattedPerkPart = perkPart.charAt(0).toLowerCase() + perkPart.slice(1); // e.g. terminus
-    baseName = 'IconPerks_' + formattedPerkPart + '.png'; // e.g. IconPerks_terminus.png
+    const perkPart = baseName.substring(10);
+    const formattedPerkPart = perkPart.charAt(0).toLowerCase() + perkPart.slice(1);
+    baseName = 'IconPerks_' + formattedPerkPart + '.png';
   } else {
     baseName = baseName.charAt(0).toUpperCase() + baseName.slice(1) + '.png';
   }
@@ -40,6 +40,14 @@ function getDbdPerkImageUrl(apiPath: string) {
   const s = hash.substring(0, 2);
   
   return `https://static.wikia.nocookie.net/deadbydaylight_gamepedia_en/images/${f}/${s}/${baseName}`;
+}
+
+// Helper to get local date string YYYY-MM-DD in user's local timezone
+function getLocalDateStr(date: Date = new Date()): string {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
 }
 
 interface QuizQuestion {
@@ -236,7 +244,7 @@ export default function Minijuegos() {
     }
 
     // 2. Fetch daily statistics (user_quiz_completions for today)
-    const todayStr = new Date().toISOString().split('T')[0];
+    const todayStr = getLocalDateStr();
     const { data: completionsTodayData } = await supabase
       .from('user_quiz_completions')
       .select('quiz_type, score')
@@ -342,7 +350,7 @@ export default function Minijuegos() {
       
     if (error || !profile) return;
     
-    const todayStr = new Date().toISOString().split('T')[0];
+    const todayStr = getLocalDateStr();
     
     // Prevent double streak awards on the same day
     if (profile.last_streak_date === todayStr) {
@@ -354,7 +362,7 @@ export default function Minijuegos() {
       const today = new Date();
       const yesterday = new Date(today);
       yesterday.setDate(yesterday.getDate() - 1);
-      const yesterdayStr = yesterday.toISOString().split('T')[0];
+      const yesterdayStr = getLocalDateStr(yesterday);
       
       if (profile.last_streak_date === yesterdayStr) {
         newStreak = profile.current_streak + 1;
@@ -420,7 +428,7 @@ export default function Minijuegos() {
       setCompletionsToday([]);
       return;
     }
-    const todayStr = new Date().toISOString().split('T')[0];
+    const todayStr = getLocalDateStr();
     supabase
       .from('user_quiz_completions')
       .select('quiz_type')
@@ -778,7 +786,7 @@ export default function Minijuegos() {
       // Add immediately to local completed list so UI locks it
       setCompletionsToday(prev => prev.includes(quizType) ? prev : [...prev, quizType]);
 
-      const todayStr = new Date().toISOString().split('T')[0];
+      const todayStr = getLocalDateStr();
       await supabase
         .from('user_quiz_completions')
         .upsert({
@@ -955,7 +963,7 @@ export default function Minijuegos() {
       localStorage.removeItem('active_quiz_abandoned');
 
       if (userId) {
-        const todayStr = new Date().toISOString().split('T')[0];
+        const todayStr = getLocalDateStr();
         supabase
           .from('user_quiz_completions')
           .upsert({
@@ -993,7 +1001,7 @@ export default function Minijuegos() {
     localStorage.removeItem('active_quiz_abandoned');
 
     if (userId) {
-      const todayStr = new Date().toISOString().split('T')[0];
+      const todayStr = getLocalDateStr();
       await supabase
         .from('user_quiz_completions')
         .upsert({
@@ -1949,7 +1957,7 @@ export default function Minijuegos() {
                     }
 
                     if (userId) {
-                      const todayStr = new Date().toISOString().split('T')[0];
+                      const todayStr = getLocalDateStr();
                       await supabase
                         .from('user_quiz_completions')
                         .insert({
