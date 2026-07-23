@@ -14,6 +14,7 @@ import TierList from './pages/TierList';
 import Minijuegos from './pages/Minijuegos';
 import Perfil from './pages/Perfil';
 import Ayuda from './pages/Ayuda';
+import Legal from './pages/Legal';
 import NotFound from './pages/NotFound';
 
 const App: React.FC = () => {
@@ -36,6 +37,7 @@ const App: React.FC = () => {
             <Route path="/minijuegos" element={<Minijuegos />} />
             <Route path="/perfil" element={<Perfil />} />
             <Route path="/ayuda" element={<Ayuda />} />
+            <Route path="/legal" element={<Legal />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </main>
