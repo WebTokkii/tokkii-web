@@ -686,17 +686,28 @@ export default function Minijuegos() {
       type === 'brands' ? (dbMinigames['brands'] || BRAND_QUESTIONS) :
       (dbMinigames['music'] || MUSIC_HITS_QUESTIONS);
 
-    const totalQuestions = sourceQuestions.length;
+    // Sanitize sourceQuestions: automatically exclude questions with empty/missing image or audio URLs
+    const sanitizedQuestions = sourceQuestions.filter((q: any) => {
+      if (type === 'covers' || type === 'disney' || type === 'pokemon' || type === 'brands' || type === 'flags') {
+        return Boolean(q.image && typeof q.image === 'string' && q.image.trim().length > 0);
+      }
+      if (type === 'audio_music') {
+        return Boolean(q.audioUrl && typeof q.audioUrl === 'string' && q.audioUrl.trim().length > 0);
+      }
+      return true;
+    });
+
+    const totalQuestions = sanitizedQuestions.length;
     const blockSize = 15;
 
     let dayBlock;
     if (totalQuestions <= blockSize) {
-      dayBlock = sourceQuestions;
+      dayBlock = sanitizedQuestions;
     } else {
       const totalBlocks = Math.floor(totalQuestions / blockSize);
       const currentBlockIdx = Math.abs(dayIndex) % totalBlocks;
       const startIndex = currentBlockIdx * blockSize;
-      dayBlock = sourceQuestions.slice(startIndex, startIndex + blockSize);
+      dayBlock = sanitizedQuestions.slice(startIndex, startIndex + blockSize);
     }
 
     const shuffled = JSON.parse(JSON.stringify(dayBlock));
