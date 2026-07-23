@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 
+import { findNewsArticleBySlug } from '../data/DailyNewsData';
+
 // Parrafo de Keywords constante para todas las noticias (Oculto para el usuario, visible para SEO)
 const SEO_KEYWORDS_PARAGRAPH = "Keywords: Tokkii, EvilTokkii, Noticias de Videojuegos, Anime, Manga, Cultura Geek, Sorteos, Comunidad, Streaming, Capcom, Pragata, Atomic Heart DLC final, noticia gaming hoy, videojuegos 2026, lanzamientos gaming abril, Atomic Heart expansión, Análisis de juegos, Reviews, Gaming News, Noticias de hoy";
 
@@ -21,11 +23,21 @@ const NoticiaDetalle = () => {
                     .eq('slug', slug)
                     .single();
 
-                if (sbError || !data) {
-                    throw new Error("No se pudo encontrar la noticia.");
+                if (!sbError && data) {
+                    setPost(data);
+                    return;
                 }
 
-                setPost(data);
+                // If not in Supabase, fallback to DailyNewsData
+                if (slug) {
+                    const fallbackPost = findNewsArticleBySlug(slug);
+                    if (fallbackPost) {
+                        setPost(fallbackPost);
+                        return;
+                    }
+                }
+
+                throw new Error("No se pudo encontrar la noticia.");
             } catch (err) {
                 console.error("Error fetching post:", err);
                 setError("Ocurrió un error al cargar la noticia o el slug es inválido.");

@@ -3,6 +3,8 @@ import { Link, useLocation } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import './Noticias.css';
 
+import { getGuaranteedCategoryNews } from '../data/DailyNewsData';
+
 const Noticias = () => {
     const [posts, setPosts] = useState<any[]>([]);
     const [sideItems, setSideItems] = useState<{ sorteos: any[], eventos: any[] }>({ sorteos: [], eventos: [] });
@@ -69,59 +71,7 @@ const Noticias = () => {
     };
 
     const getDisplayPosts = () => {
-        const isAnimePost = (post: any) => {
-            if (post.content_blocks && Array.isArray(post.content_blocks)) {
-                const meta = post.content_blocks.find((b: any) => b.type === 'metadata');
-                if (meta && meta.category) {
-                    return meta.category === 'ANIME';
-                }
-            }
-            const animeKeywords = ['anime', 'manga', 'otaku', 'crunchyroll', 'demon slayer', 'shingeki', 'dragon ball', 'jujutsu', 'goku', 'naruto', 'boruto', 'one piece'];
-            return animeKeywords.some(kw => post.title.toLowerCase().includes(kw) || (post.subtitle && post.subtitle.toLowerCase().includes(kw)));
-        };
-
-        // Helper to cap articles at max 3 per day
-        const filterMaxThreePerDay = (articles: any[]) => {
-            const dateCounts: Record<string, number> = {};
-            return articles.filter(post => {
-                const dateKey = (post.published_at || post.created_at || '').substring(0, 10);
-                if (!dateKey) return true;
-                dateCounts[dateKey] = (dateCounts[dateKey] || 0) + 1;
-                return dateCounts[dateKey] <= 3;
-            });
-        };
-        
-        if (activeCategory === 'videojuegos') {
-            const rawGames = posts.filter(p => !isAnimePost(p));
-            return filterMaxThreePerDay(rawGames);
-        } else {
-            const dbAnime = posts.filter(p => isAnimePost(p));
-            if (dbAnime.length > 0) return filterMaxThreePerDay(dbAnime);
-            
-            // Premium placeholders if no anime is synced yet
-            return [
-                {
-                    id: 'anime-mock-1',
-                    title: 'JUJUTSU KAISEN TEMPORADA 3 REVELA SU PRIMER ADELANTO OFICIAL',
-                    subtitle: 'El estudio MAPPA comparte las primeras escenas de la esperada continuación del arco de la Cacería del Sacrificio.',
-                    header_image: 'https://images.unsplash.com/photo-1578632767115-351597cf2477?w=800&auto=format&fit=crop&q=60',
-                    slug: 'jujutsu-kaisen-temporada-3-adelanto',
-                    author: 'EVILTOKKII',
-                    published_at: new Date().toISOString(),
-                    category: 'ANIME'
-                },
-                {
-                    id: 'anime-mock-2',
-                    title: 'DEMON SLAYER MOVIE TRILOGY CONTRAPRODUCE FECHAS DE LANZAMIENTO',
-                    subtitle: 'Ufotable detalla la distribución global de la trilogía de películas del arco del Castillo Infinito para finales de año.',
-                    header_image: 'https://images.unsplash.com/photo-1607604276583-eef5d076aa5f?w=800&auto=format&fit=crop&q=60',
-                    slug: 'demon-slayer-castillo-infinito-peliculas',
-                    author: 'ESPEEEOON',
-                    published_at: new Date(Date.now() - 3600000 * 5).toISOString(),
-                    category: 'ANIME'
-                }
-            ];
-        }
+        return getGuaranteedCategoryNews(activeCategory, posts);
     };
 
     // Componente para Sidebar (Estilo CR Mini)

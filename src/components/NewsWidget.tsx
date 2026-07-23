@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 
+import { getGuaranteedCategoryNews } from '../data/DailyNewsData';
+
 interface NewsWidgetProps {
     onActiveNewsChange?: (url: string) => void;
 }
@@ -14,17 +16,25 @@ const NewsWidget: React.FC<NewsWidgetProps> = ({ onActiveNewsChange }) => {
     useEffect(() => {
         const fetchLatest = async () => {
             try {
-                const { data, error } = await supabase
+                const { data } = await supabase
                     .from('news_articles')
                     .select('*')
                     .order('published_at', { ascending: false, nullsFirst: true })
                     .order('created_at', { ascending: false })
-                    .limit(5);
+                    .limit(10);
 
-                if (error) throw error;
-                setLatestPosts(data || []);
+                const vgPosts = getGuaranteedCategoryNews('videojuegos', data || []);
+                const animePosts = getGuaranteedCategoryNews('animes', data || []);
+
+                // Combine 3 Videojuegos + 3 Anime to guarantee 6 daily news articles
+                const combined = [...vgPosts.slice(0, 3), ...animePosts.slice(0, 3)];
+                setLatestPosts(combined);
             } catch (err) {
                 console.error("Error fetching latest posts:", err);
+                // Fallback to pool news
+                const vgPosts = getGuaranteedCategoryNews('videojuegos', []);
+                const animePosts = getGuaranteedCategoryNews('animes', []);
+                setLatestPosts([...vgPosts.slice(0, 3), ...animePosts.slice(0, 3)]);
             } finally {
                 setLoading(false);
             }
