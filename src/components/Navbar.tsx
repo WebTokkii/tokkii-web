@@ -168,21 +168,37 @@ const Navbar: React.FC = () => {
             }
         });
 
-        const handlePointsUpdate = () => {
-            supabase.auth.getSession().then(({ data: { session } }) => {
-                if (session?.user) {
-                    fetchProfile(session.user.id, session.user);
+        // Realtime subscription for user profile points changes
+        const profileChannel = supabase
+            .channel('navbar-profile-realtime')
+            .on('postgres_changes', { event: '*', schema: 'public', table: 'profiles' }, (payload) => {
+                if (payload.new && user && (payload.new as any).id === user.id) {
+                    setProfile((prev: any) => prev ? { ...prev, points: (payload.new as any).points } : payload.new);
                 }
-            });
+            })
+            .subscribe();
+
+        const handlePointsUpdate = (e: Event) => {
+            const customEvent = e as CustomEvent;
+            if (customEvent.detail && typeof customEvent.detail.points === 'number') {
+                setProfile((prev: any) => prev ? { ...prev, points: customEvent.detail.points } : prev);
+            } else {
+                supabase.auth.getSession().then(({ data: { session } }) => {
+                    if (session?.user) {
+                        fetchProfile(session.user.id, session.user);
+                    }
+                });
+            }
         };
         window.addEventListener('points-updated', handlePointsUpdate);
 
         return () => {
             subscription.unsubscribe();
             supabase.removeChannel(contentChannel);
+            supabase.removeChannel(profileChannel);
             window.removeEventListener('points-updated', handlePointsUpdate);
         };
-    }, []);
+    }, [user]);
 
     const fetchProfile = async (userId: string, authUser?: any) => {
         const { data, error } = await supabase

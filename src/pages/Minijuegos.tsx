@@ -1116,8 +1116,13 @@ export default function Minijuegos() {
     setIsRuletaSpinning(true);
     setRuletaResult(null);
 
-    // Deduct bet amount visually in real-time
-    setUserPoints(prev => Math.max(0, prev - betAmount));
+    // Deduct bet amount visually and in DB in real-time
+    setUserPoints(prev => {
+      const nextPts = Math.max(0, prev - betAmount);
+      // Dispatch immediate event for Navbar real-time display
+      window.dispatchEvent(new CustomEvent('points-updated', { detail: { points: nextPts } }));
+      return nextPts;
+    });
 
     const rand = Math.random() * 100;
     let targetType = 'pierde';
@@ -1164,8 +1169,9 @@ export default function Minijuegos() {
 
     const netChange = finalWinAmount - betAmount;
 
-    // Run database transaction in the background without blocking the UI
+    // Run database transaction in the background
     const dbUpdatePromise = (async () => {
+      if (!userId) return;
       const { error } = await supabase
         .rpc('increment_points', { user_id: userId, amount: netChange });
 
@@ -1191,7 +1197,6 @@ export default function Minijuegos() {
     setRuletaRotation(newRotation);
 
     setTimeout(async () => {
-      // Ensure DB update is completed before finishing spin
       await dbUpdatePromise;
 
       setIsRuletaSpinning(false);
@@ -1201,8 +1206,17 @@ export default function Minijuegos() {
         change: netChange
       });
 
-      // Update points globally (Navbar and display) in sync with animation end
-      window.dispatchEvent(new Event('points-updated'));
+      // If user won points, update local points & Navbar real-time immediately
+      if (finalWinAmount > 0) {
+        setUserPoints(prev => {
+          const finalPts = prev + finalWinAmount;
+          window.dispatchEvent(new CustomEvent('points-updated', { detail: { points: finalPts } }));
+          return finalPts;
+        });
+      } else {
+        window.dispatchEvent(new Event('points-updated'));
+      }
+
       playSynthWinSound(netChange > 0);
     }, 5000);
   };
