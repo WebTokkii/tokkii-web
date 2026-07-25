@@ -322,7 +322,9 @@ export function getGuaranteedCategoryNews(
     return animeKeywords.some(kw => title.includes(kw) || subtitle.includes(kw));
   };
 
-  const filteredSb = supabaseArticles.filter(p => category === 'animes' ? isAnimePost(p) : !isAnimePost(p));
+  const filteredSb = supabaseArticles
+    .filter(p => category === 'animes' ? isAnimePost(p) : !isAnimePost(p))
+    .sort((a, b) => new Date(b.published_at || b.created_at || 0).getTime() - new Date(a.published_at || a.created_at || 0).getTime());
 
   // If Supabase has enough articles (>= 3), return them!
   if (filteredSb.length >= 3) {

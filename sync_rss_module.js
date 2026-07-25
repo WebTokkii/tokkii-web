@@ -4,10 +4,10 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
-const supabaseUrl = process.env.VITE_SUPABASE_URL;
-const supabaseAnonKey = process.env.VITE_SUPABASE_ANON_KEY;
+const supabaseUrl = process.env.VITE_SUPABASE_URL || process.env.SUPABASE_URL || 'https://hddzijixsigsqsmabtej.supabase.co';
+const supabaseAnonKey = process.env.VITE_SUPABASE_ANON_KEY || process.env.SUPABASE_ANON_KEY || 'sb_publishable_bJGAVsHsVrSu2KAhbEC7DA_DpYnxDAp';
 
-const supabase = createClient(supabaseUrl || '', supabaseAnonKey || '');
+const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 const DEFAULT_AUTHORS = ['EVILTOKKII', 'REQUIEM373', 'ESPEEEOON'];
 
@@ -108,7 +108,9 @@ export async function syncRssFeeds(limit = 4) {
     const feeds = [
         { url: 'https://feeds.feedburner.com/ign/news', name: 'IGN', category: 'VIDEOJUEGOS' },
         { url: 'https://www.gamespot.com/feeds/news/', name: 'GameSpot', category: 'VIDEOJUEGOS' },
-        { url: 'https://www.animenewsnetwork.com/news/rss.xml?ann-edition=w', name: 'Anime News Network', category: 'ANIME' }
+        { url: 'https://www.polygon.com/rss/index.xml', name: 'Polygon', category: 'VIDEOJUEGOS' },
+        { url: 'https://www.animenewsnetwork.com/news/rss.xml?ann-edition=w', name: 'Anime News Network', category: 'ANIME' },
+        { url: 'https://otakuusamagazine.com/feed/', name: 'Otaku USA', category: 'ANIME' }
     ];
 
     console.log(`Starting RSS Feed Sync (Limit: ${limit} new articles per category)...`);
