@@ -340,8 +340,8 @@ export function getGuaranteedCategoryNews(
     }
   }
 
-  // Strictly cap at 3 articles per category per day
-  return merged.slice(0, 3);
+  // Return all historical articles sorted by date, guaranteed to have at least 3
+  return merged;
 }
 
 /**

@@ -2,7 +2,8 @@ name: Sincronizar Noticias RSS
 
 on:
   schedule:
-    - cron: '0 */12 * * *' # Se ejecuta cada 12 horas automáticamente
+    - cron: '0 12 * * *' # Se ejecuta diariamente a las 08:00 AM Chile (UTC-4) / 12:00 UTC
+    - cron: '0 11 * * *' # 08:00 AM Chile Horario de Verano (UTC-3) / 11:00 UTC
   workflow_dispatch: # Permite ejecutar el script manualmente desde la pestaña Actions en GitHub
 
 jobs:
