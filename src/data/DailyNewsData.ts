@@ -326,25 +326,22 @@ export function getGuaranteedCategoryNews(
     .filter(p => category === 'animes' ? isAnimePost(p) : !isAnimePost(p))
     .sort((a, b) => new Date(b.published_at || b.created_at || 0).getTime() - new Date(a.published_at || a.created_at || 0).getTime());
 
-  // If Supabase has enough articles (>= 3), return them!
-  if (filteredSb.length >= 3) {
-    return filteredSb;
-  }
-
-  // If Supabase has fewer than 3, supplement with constant daily news
-  const fallbackDaily = getConstantDailyNews(category, todayStr);
-  const existingSlugs = new Set(filteredSb.map(p => p.slug));
-
   const merged = [...filteredSb];
-  for (const item of fallbackDaily) {
-    if (merged.length >= 3) break;
-    if (!existingSlugs.has(item.slug)) {
-      merged.push(item);
-      existingSlugs.add(item.slug);
+  if (merged.length < 3) {
+    const fallbackDaily = getConstantDailyNews(category, todayStr);
+    const existingSlugs = new Set(merged.map(p => p.slug));
+
+    for (const item of fallbackDaily) {
+      if (merged.length >= 3) break;
+      if (!existingSlugs.has(item.slug)) {
+        merged.push(item);
+        existingSlugs.add(item.slug);
+      }
     }
   }
 
-  return merged;
+  // Strictly cap at 3 articles per category per day
+  return merged.slice(0, 3);
 }
 
 /**

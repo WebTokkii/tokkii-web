@@ -104,7 +104,7 @@ function formatParagraphs(text) {
         .join('\n');
 }
 
-export async function syncRssFeeds(limit = 4) {
+export async function syncRssFeeds(limit = 3) {
     const feeds = [
         { url: 'https://feeds.feedburner.com/ign/news', name: 'IGN', category: 'VIDEOJUEGOS' },
         { url: 'https://www.gamespot.com/feeds/news/', name: 'GameSpot', category: 'VIDEOJUEGOS' },
