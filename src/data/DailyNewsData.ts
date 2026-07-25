@@ -112,7 +112,7 @@ export const VIDEOJUEGOS_NEWS_POOL: Omit<NewsArticle, 'published_at' | 'created_
     subtitle: 'FromSoftware ajusta las armas de la Tierra de las Sombras e incluye opciones para jefes de prueba.',
     header_image: 'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=1200&auto=format&fit=crop&q=80',
     slug: 'elden-ring-shadow-erdtree-parche-final-desafios',
-    author: 'EVILTOKKII',
+    author: 'NPEZE',
     category: 'VIDEOJUEGOS',
     content_blocks: [
       {
@@ -224,7 +224,7 @@ export const ANIME_NEWS_POOL: Omit<NewsArticle, 'published_at' | 'created_at'>[]
     subtitle: 'MAPPA adapta la historia de la Chica Bomba en una producción cinematográfica apasionante.',
     header_image: 'https://images.unsplash.com/photo-1563089145-599997674d42?w=1200&auto=format&fit=crop&q=80',
     slug: 'chainsaw-man-pelicula-arco-reze-estreno',
-    author: 'EVILTOKKII',
+    author: 'NPEZE',
     category: 'ANIME',
     content_blocks: [
       {

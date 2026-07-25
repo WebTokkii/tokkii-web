@@ -9,7 +9,7 @@ const supabaseAnonKey = process.env.VITE_SUPABASE_ANON_KEY || process.env.SUPABA
 
 const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
-const DEFAULT_AUTHORS = ['EVILTOKKII', 'REQUIEM373', 'ESPEEEOON'];
+const DEFAULT_AUTHORS = ['EVILTOKKII', 'REQUIEM373', 'ESPEEEOON', 'PAMACHE', 'NPEZE'];
 
 // Helper to translate text to Spanish using Google Translate public API
 async function translateText(text) {
