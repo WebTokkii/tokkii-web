@@ -7,6 +7,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTwitch, faInstagram, faTiktok, faXTwitter, faDiscord } from '@fortawesome/free-brands-svg-icons';
 import { faGamepad } from '@fortawesome/free-solid-svg-icons';
 import { supabase } from '../lib/supabase';
+import { checkAndRotateMonthlyLeaderboard } from '../utils/monthlyRotation';
 import './Home.Socials.css';
 import './Home.css';
 
@@ -101,6 +102,11 @@ const Home: React.FC = () => {
     useEffect(() => {
         // Fetch top 10 profiles by points
         const fetchScoreboard = async () => {
+            try {
+                await checkAndRotateMonthlyLeaderboard(supabase);
+            } catch (e) {
+                console.error("Monthly rotation check error:", e);
+            }
             const { data, error } = await supabase
                 .from('profiles')
                 .select('id, username, avatar_url, points, role')

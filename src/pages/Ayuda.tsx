@@ -298,7 +298,7 @@ const Ayuda: React.FC = () => {
                                     isOpen={openFaqIdx === 2} 
                                     onClick={() => toggleFaq(2)}
                                 >
-                                    El Templo de la Fama lista a los 10 usuarios con mayor puntaje acumulado en el mes. La tabla se reinicia a cero el primer día de cada mes natural. Los finalistas del ranking mensual suelen recibir recompensas directas y roles honorarios en Discord.
+                                    El Templo de la Fama lista a los 10 usuarios con mayor puntaje acumulado en el mes. La tabla se reinicia a cero el día 30 de cada mes, o el último día si el mes no llega a 30 días. Los finalistas del ranking mensual suelen recibir recompensas directas y roles honorarios en Discord.
                                 </AccordionItem>
                             </div>
                         </div>

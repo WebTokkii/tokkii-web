@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { Sparkles, Volume2, VolumeX, ChevronLeft } from 'lucide-react';
 import { supabase } from '../lib/supabase';
+import { checkAndRotateMonthlyLeaderboard } from '../utils/monthlyRotation';
 import { OVERWATCH_QUESTIONS } from '../data/OverwatchQuestions';
 import { GAMES_QUESTIONS } from '../data/GamesQuestions';
 import { MUSIC_HITS_QUESTIONS } from '../data/MusicHitsQuestions';
@@ -233,6 +234,11 @@ export default function Minijuegos() {
   });
 
   const fetchScoreboardAndStats = useCallback(async () => {
+    try {
+      await checkAndRotateMonthlyLeaderboard(supabase);
+    } catch (e) {
+      console.error("Monthly rotation check error:", e);
+    }
     // 1. Fetch general leaderboard (all profiles ordered by points)
     const { data: boardData } = await supabase
       .from('profiles')

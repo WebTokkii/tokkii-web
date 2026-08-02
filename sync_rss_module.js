@@ -346,4 +346,80 @@ export async function syncRssFeeds(limit = 3) {
         }
     }
     console.log(`RSS Feed Sync Completed! Synced ${countVideojuegos} Videojuegos and ${countAnime} Anime new articles.`);
+
+    // Check and trigger monthly leaderboard rotation snapshot & points reset if due
+    await checkMonthlyLeaderboardRotation();
+}
+
+async function checkMonthlyLeaderboardRotation() {
+    try {
+        const now = new Date();
+        const currentDay = now.getDate();
+        const lastDayOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
+        const rotationDay = Math.min(30, lastDayOfMonth);
+
+        if (currentDay < rotationDay) {
+            console.log(`Monthly rotation is not due yet. Current day: ${currentDay}.`);
+            return;
+        }
+
+        const targetYear = now.getFullYear();
+        const targetMonth = now.getMonth() + 1;
+        const targetMonthStr = `${targetYear}-${String(targetMonth).padStart(2, '0')}`;
+
+        const { data: existing } = await supabase
+            .from('monthly_leaderboards')
+            .select('id')
+            .eq('year_month', targetMonthStr)
+            .maybeSingle();
+
+        if (!existing) {
+            console.log(`Monthly rotation due for ${targetMonthStr}. Executing rotate_monthly_leaderboard RPC...`);
+            const { data, error } = await supabase.rpc('rotate_monthly_leaderboard', {
+                target_year_month: targetMonthStr
+            });
+            if (error) {
+                console.warn(`Monthly rotation RPC error (${error.message}). Running JS fallback rotation...`);
+
+                // Fetch top 10 profiles by points
+                const { data: topProfiles } = await supabase
+                    .from('profiles')
+                    .select('username, avatar_url, points, role')
+                    .order('points', { ascending: false })
+                    .limit(10);
+
+                // Insert snapshot to monthly_leaderboards
+                const { error: insErr } = await supabase
+                    .from('monthly_leaderboards')
+                    .insert({
+                        year_month: targetMonthStr,
+                        leaderboard_data: topProfiles || []
+                    });
+
+                if (insErr) {
+                    console.error(`JS Fallback insert error: ${insErr.message}`);
+                } else {
+                    console.log(`JS Fallback snapshot saved successfully for ${targetMonthStr}!`);
+                }
+
+                // Reset all user points to 0
+                const { error: resetErr } = await supabase
+                    .from('profiles')
+                    .update({ points: 0 })
+                    .neq('id', '00000000-0000-0000-0000-000000000000');
+
+                if (resetErr) {
+                    console.error(`JS Fallback reset points error: ${resetErr.message}`);
+                } else {
+                    console.log(`JS Fallback reset points to 0 successfully for ${targetMonthStr}!`);
+                }
+            } else {
+                console.log(`Monthly rotation successful for ${targetMonthStr}! Result: ${data}`);
+            }
+        } else {
+            console.log(`Monthly leaderboard for ${targetMonthStr} is up to date.`);
+        }
+    } catch (e) {
+        console.error('Error during monthly rotation check:', e.message);
+    }
 }

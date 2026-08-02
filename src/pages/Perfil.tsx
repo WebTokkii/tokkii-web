@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
+import { checkAndRotateMonthlyLeaderboard } from '../utils/monthlyRotation';
 import { Sparkles, Trophy, Calendar, CheckCircle, MessageSquare, Mail, CornerDownRight } from 'lucide-react';
 import './TierList.css';
 
@@ -176,11 +177,7 @@ export default function Perfil() {
         .subscribe();
 
       try {
-        const now = new Date();
-        const prevMonthYear = now.getMonth() === 0 ? now.getFullYear() - 1 : now.getFullYear();
-        const prevMonthVal = now.getMonth() === 0 ? 12 : now.getMonth();
-        const prevMonthStr = `${prevMonthYear}-${String(prevMonthVal).padStart(2, '0')}`;
-        await supabase.rpc('rotate_monthly_leaderboard', { target_year_month: prevMonthStr });
+        await checkAndRotateMonthlyLeaderboard(supabase);
       } catch (e) {
         console.error("Monthly rotation check error:", e);
       }

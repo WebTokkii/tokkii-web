@@ -91,7 +91,8 @@ CREATE POLICY "Permitir lectura publica de historial mensual"
 ON public.monthly_leaderboards FOR SELECT 
 USING (true);
 
--- 3. Create database function to archive leaderboard and reset points for the new month
+-- 3. Create database function to archive leaderboard and reset points on day 30
+-- For shorter months, call it on the last day of the month.
 CREATE OR REPLACE FUNCTION public.rotate_monthly_leaderboard(target_year_month TEXT)
 RETURNS BOOLEAN AS $$
 DECLARE
