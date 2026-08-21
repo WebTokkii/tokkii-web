@@ -502,18 +502,35 @@ export default function TierList() {
   // Move character logic
   const moveCharacter = (charId: string, targetTierId: string, targetIndex?: number) => {
     setTiers(prevTiers => {
+      // Find where the character currently lives
+      const sourceTier = prevTiers.find(t => t.characterIds.includes(charId));
+      const sourceIndex = sourceTier ? sourceTier.characterIds.indexOf(charId) : -1;
+
       // 1. Remove character from any previous tier
       const cleanedTiers = prevTiers.map(t => ({
         ...t,
         characterIds: t.characterIds.filter(id => id !== charId)
       }));
 
-      // 2. Add character to target tier
+      // 2. Add character to target tier at the correct index
       return cleanedTiers.map(t => {
         if (t.id === targetTierId) {
           const list = [...t.characterIds];
+          let insertAt: number;
+
           if (typeof targetIndex === 'number') {
-            list.splice(targetIndex, 0, charId);
+            // If moving within the same tier and the original position was before
+            // the target index, removal already shifted everything left by 1 —
+            // so we must subtract 1 to land on the correct slot.
+            const isSameTier = sourceTier?.id === targetTierId;
+            if (isSameTier && sourceIndex !== -1 && sourceIndex < targetIndex) {
+              insertAt = targetIndex - 1;
+            } else {
+              insertAt = targetIndex;
+            }
+            // Clamp to valid range
+            insertAt = Math.max(0, Math.min(insertAt, list.length));
+            list.splice(insertAt, 0, charId);
           } else {
             list.push(charId);
           }
