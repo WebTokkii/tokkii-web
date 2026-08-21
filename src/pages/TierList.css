@@ -1743,25 +1743,8 @@ body.dragging-active * {
   50% { height: 50px; }
 }
 
-/* Reordering Drop Indicator Line */
-.drop-indicator-bar {
-  width: 5px;
-  height: 86px;
-  background: var(--accent, #9d4edd);
-  border-radius: 4px;
-  box-shadow: 0 0 12px var(--accent, #9d4edd);
-  margin: 0 -2.5px;
-  align-self: center;
-  position: relative;
-  z-index: 100;
-  pointer-events: none;
-  animation: pulse-drop-indicator 1.2s infinite ease-in-out;
-}
 
-@keyframes pulse-drop-indicator {
-  0%, 100% { opacity: 0.6; transform: scaleY(0.98); }
-  50% { opacity: 1; transform: scaleY(1.02); }
-}
+
 
 
 
