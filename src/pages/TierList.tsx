@@ -1358,10 +1358,8 @@ export default function TierList() {
                   <div 
                     className="tier-label-wrapper"
                     style={{ 
-                      background: 'linear-gradient(180deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.01))',
-                      borderLeft: `5px solid ${tier.color}`,
-                      backdropFilter: 'blur(12px)',
-                      WebkitBackdropFilter: 'blur(12px)'
+                      background: tier.color,
+                      borderLeft: `5px solid rgba(0,0,0,0.25)`,
                     }}
                     onClick={(e) => {
                       if (selectedCharId) {
@@ -1375,6 +1373,7 @@ export default function TierList() {
 
                   <div 
                     className="tier-dropzone"
+                    style={{ background: `${tier.color}22` }}
                     onDragOver={(e) => {
                       e.preventDefault();
                       e.currentTarget.classList.add('drag-over');

@@ -1162,6 +1162,11 @@ body.dragging-active * {
   user-select: none;
 }
 
+.clean-board .tier-label-text {
+  color: #fff;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.6);
+}
+
 /* Save Toast notification style */
 .save-toast {
   position: fixed;
