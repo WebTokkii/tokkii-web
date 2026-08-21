@@ -1120,19 +1120,35 @@ body.dragging-active * {
 .clean-board .tier-dropzone {
   display: flex;
   flex-direction: row;
-  flex-wrap: nowrap; /* CRITICAL: Prevent wrapping so cards fit on a single line */
-  overflow-x: auto; /* Allow horizontal scroll if cards overflow width */
+  flex-wrap: nowrap;
+  overflow-x: auto;
   overflow-y: hidden;
-  align-items: center;
-  padding: 0.25rem 1.25rem;
-  gap: 0.5rem;
+  align-items: stretch; /* Cards fill the full row height */
+  padding: 0;
+  gap: 0;
   height: 100%;
-  scrollbar-width: none; /* Hide scrollbar for premium touch */
+  scrollbar-width: none;
 }
 
 /* Hide horizontal scrollbar in presentation row for Webkit browsers */
 .clean-board .tier-dropzone::-webkit-scrollbar {
   display: none;
+}
+
+/* Presentation-mode cards: borderless, full-height, auto-width from aspect ratio */
+.clean-board .character-card {
+  width: auto !important;
+  height: 100% !important;
+  aspect-ratio: 3 / 4;
+  border-radius: 0 !important;
+  border: none !important;
+  box-shadow: none !important;
+  outline: none !important;
+  background-size: cover;
+  background-position: center top;
+  flex-shrink: 0;
+  position: relative;
+  overflow: hidden;
 }
 
 .tier-label-text {

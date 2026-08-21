@@ -1441,16 +1441,9 @@ export default function TierList() {
                             handleDrop(e, tier.id, hoveredIndex);
                           }}
                           className={`character-card rarity-${char.rarity}-card element-${char.element.toLowerCase()}-glow`}
-                          style={{ 
-                            backgroundImage: `url(${char.imgUrl})`,
-                            width: `${presenterCardSize}px`,
-                            height: `${presenterCardSize}px`,
-                            borderRadius: `${Math.max(6, Math.floor(presenterCardSize * 0.16))}px`
-                          }}
+                          style={{ backgroundImage: `url(${char.imgUrl})` }}
                         >
-                          {presenterCardSize >= 72 && (
-                            <div className="character-name-overlay">{char.name}</div>
-                          )}
+                          <div className="character-name-overlay">{char.name}</div>
                         </div>
                       );
                     })}
