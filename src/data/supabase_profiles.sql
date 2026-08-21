@@ -38,8 +38,17 @@ CREATE POLICY "Permitir lectura propia de quiz completados"
 ON public.user_quiz_completions FOR SELECT
 USING (auth.uid() = user_id);
 
+CREATE POLICY "Permitir lectura publica de estadisticas de minijuegos"
+ON public.user_quiz_completions FOR SELECT
+USING (true);
+
 CREATE POLICY "Permitir insercion propia de quiz completados"
 ON public.user_quiz_completions FOR INSERT
+WITH CHECK (auth.uid() = user_id);
+
+CREATE POLICY "Permitir actualizar propio quiz completado"
+ON public.user_quiz_completions FOR UPDATE
+USING (auth.uid() = user_id)
 WITH CHECK (auth.uid() = user_id);
 
 -- 3. Create trigger function to register profiles with Twitch metadata on signup

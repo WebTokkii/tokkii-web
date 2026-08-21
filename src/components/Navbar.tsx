@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { NavLink, Link } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 
@@ -90,6 +91,7 @@ const Navbar: React.FC = () => {
     const [profile, setProfile] = useState<any>(null);
     const [showLoginModal, setShowLoginModal] = useState(false);
     const [showUserMenu, setShowUserMenu] = useState(false);
+    const [loginConsent, setLoginConsent] = useState(false);
 
     const [unreadSections, setUnreadSections] = useState<Record<string, boolean>>({
         noticias: false,
@@ -239,13 +241,39 @@ const Navbar: React.FC = () => {
     };
 
     const handleLoginWithTwitch = async () => {
-        setShowLoginModal(false);
-        await supabase.auth.signInWithOAuth({
+        if (!loginConsent) {
+            alert('Debes confirmar que autorizas el inicio de sesion con Twitch y el tratamiento minimo de datos para continuar.');
+            return;
+        }
+
+        const { data, error } = await supabase.auth.signInWithOAuth({
             provider: 'twitch',
             options: {
-                redirectTo: window.location.origin
+                redirectTo: window.location.origin,
+                skipBrowserRedirect: true
             }
         });
+
+        if (error) {
+            console.error('Twitch OAuth error:', error);
+            alert('No se pudo iniciar sesion con Twitch. Intenta nuevamente.');
+            return;
+        }
+
+        if (data?.url) {
+            const popup = window.open(
+                data.url,
+                'eviltokkii-twitch-login',
+                'width=520,height=720,menubar=no,toolbar=no,location=no,status=no,scrollbars=yes,resizable=yes'
+            );
+
+            if (!popup) {
+                window.location.assign(data.url);
+            } else {
+                setShowLoginModal(false);
+                setLoginConsent(false);
+            }
+        }
     };
 
     const handleLogout = async () => {
@@ -253,6 +281,7 @@ const Navbar: React.FC = () => {
     };
 
     return (
+        <>
         <nav className="navbar glass">
             <div className="wrap nav-content" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <Link to="/" className="logo-container">
@@ -419,64 +448,141 @@ const Navbar: React.FC = () => {
                     </div>
                 </div>
             </div>
+        </nav>
 
             {/* Twitch Login Modal Dialog */}
-            {showLoginModal && !user && (
+            {showLoginModal && !user && createPortal((
                 <div style={{
                     position: 'fixed',
+                    inset: 0,
                     top: 0,
                     left: 0,
-                    width: '100vw',
-                    height: '100vh',
-                    backgroundColor: 'rgba(5, 3, 8, 0.75)',
-                    zIndex: 99999,
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    backdropFilter: 'blur(20px)',
-                    WebkitBackdropFilter: 'blur(20px)',
+                    right: 0,
+                    bottom: 0,
+                    background: 'radial-gradient(circle at 50% 42%, rgba(145, 70, 255, 0.22) 0%, rgba(20, 10, 30, 0.22) 28%, rgba(0, 0, 0, 0.92) 72%), rgba(0, 0, 0, 0.88)',
+                    zIndex: 999999,
+                    display: 'grid',
+                    placeItems: 'center',
+                    backdropFilter: 'blur(16px) saturate(120%)',
+                    WebkitBackdropFilter: 'blur(16px) saturate(120%)',
+                    padding: '1rem',
+                    overflowY: 'auto',
                 }}>
-                    <div className="controls-bar" style={{ 
+                    <div className="glass" style={{ 
                         display: 'flex', 
                         flexDirection: 'column', 
-                        padding: '2.5rem 2rem', 
-                        gap: '1.5rem', 
-                        maxWidth: '420px', 
-                        width: '90%', 
+                        padding: '2rem 1.75rem', 
+                        gap: '1rem', 
+                        maxWidth: '460px', 
+                        width: '100%', 
+                        maxHeight: 'calc(100dvh - 2rem)',
+                        overflowY: 'auto',
+                        margin: 'auto',
                         textAlign: 'center', 
                         position: 'relative',
-                        background: 'rgba(255, 255, 255, 0.04)',
-                        border: '1px solid rgba(233, 176, 255, 0.08)',
-                        borderRadius: '24px',
-                        boxShadow: '0 20px 50px rgba(0, 0, 0, 0.5)'
+                        background: 'rgba(20, 10, 30, 0.96)',
+                        border: '2px solid #9146FF',
+                        borderRadius: '28px',
+                        boxShadow: '0 0 70px rgba(145, 70, 255, 0.35), 0 28px 70px rgba(0, 0, 0, 0.65)',
+                        animation: 'scaleIn 0.2s ease-out'
                     }}>
                         
                         <button 
-                            onClick={() => setShowLoginModal(false)}
+                            onClick={() => {
+                                setShowLoginModal(false);
+                                setLoginConsent(false);
+                            }}
                             style={{
                                 position: 'absolute',
                                 top: '15px',
                                 right: '15px',
-                                background: 'transparent',
-                                border: 'none',
-                                color: 'rgba(255,255,255,0.4)',
-                                fontSize: '1.5rem',
+                                background: 'rgba(255, 255, 255, 0.06)',
+                                border: '1px solid rgba(255, 255, 255, 0.1)',
+                                borderRadius: '50%',
+                                color: 'rgba(255,255,255,0.7)',
+                                fontSize: '1.25rem',
                                 cursor: 'pointer',
                                 padding: '5px',
                                 display: 'flex',
                                 alignItems: 'center',
                                 justifyContent: 'center',
-                                width: '30px',
-                                height: '30px'
+                                width: '34px',
+                                height: '34px',
+                                lineHeight: 1
                             }}
+                            aria-label="Cerrar ventana de inicio de sesion"
                         >
                             &times;
                         </button>
 
-                        <h2 style={{ fontSize: '1.6rem', fontWeight: 900, color: '#fff', margin: 0 }}>Inicia Sesión</h2>
-                        <p style={{ fontSize: '0.9rem', color: 'var(--text-muted)', margin: 0, lineHeight: 1.5 }}>
+                        <div style={{
+                            alignSelf: 'center',
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            width: '56px',
+                            height: '56px',
+                            borderRadius: '18px',
+                            background: 'linear-gradient(135deg, #9146FF 0%, #6441A5 100%)',
+                            color: '#fff',
+                            fontSize: '1.2rem',
+                            fontWeight: 900,
+                            letterSpacing: '0.5px',
+                            boxShadow: '0 12px 30px rgba(145, 70, 255, 0.35)',
+                            marginBottom: '-0.15rem'
+                        }}>
+                            TW
+                        </div>
+
+                        <h2 style={{ fontSize: '1.55rem', fontWeight: 900, color: '#9146FF', margin: 0, textTransform: 'uppercase', letterSpacing: '1px' }}>Inicia Sesión</h2>
+                        <p style={{ fontSize: '0.9rem', color: 'var(--text-muted)', margin: 0, lineHeight: 1.45 }}>
                             Conéctate con tu cuenta de Twitch para registrar tu usuario del canal y competir por los mejores puestos del marcador.
                         </p>
+                        
+                        <div style={{
+                            textAlign: 'left',
+                            background: 'rgba(255, 255, 255, 0.03)',
+                            border: '1px solid rgba(255, 255, 255, 0.08)',
+                            borderRadius: '20px',
+                            padding: '0.9rem',
+                            color: 'rgba(255,255,255,0.82)',
+                            fontSize: '0.82rem',
+                            lineHeight: 1.45
+                        }}>
+                            <strong style={{ color: '#00d27f' }}>Antes de abrir Twitch, confirma tu autorizacion:</strong>
+                            <ul style={{ margin: '0.55rem 0 0 1.1rem', padding: 0 }}>
+                                <li>Usaremos OAuth de Twitch para validar tu identidad.</li>
+                                <li>Podremos recibir tu ID unico, nombre publico y avatar publico de Twitch.</li>
+                                <li>Estos datos se usan para perfil, puntos, rachas, reportes, seguridad y prevencion de abuso.</li>
+                            </ul>
+                            <p style={{ margin: '0.6rem 0 0 0' }}>
+                                No recibimos tu contrasena de Twitch. No vendemos ni cedemos tus datos a terceros comerciales.
+                            </p>
+                        </div>
+
+                        <label style={{
+                            display: 'flex',
+                            alignItems: 'flex-start',
+                            gap: '10px',
+                            textAlign: 'left',
+                            color: 'rgba(255,255,255,0.82)',
+                            fontSize: '0.8rem',
+                            lineHeight: 1.38,
+                            cursor: 'pointer'
+                        }}>
+                            <input
+                                type="checkbox"
+                                checked={loginConsent}
+                                onChange={(e) => setLoginConsent(e.target.checked)}
+                                style={{ marginTop: '3px', width: '16px', height: '16px', accentColor: '#9146FF' }}
+                            />
+                            <span>
+                                Autorizo el inicio de sesion con Twitch y el tratamiento de estos datos para las funciones comunitarias de EvilTokkii. Declaro haber revisado la{' '}
+                                <Link to="/legal?tab=privacidad" onClick={() => setShowLoginModal(false)} style={{ color: '#00e5ff', fontWeight: 800 }}>
+                                    Politica de Privacidad
+                                </Link>.
+                            </span>
+                        </label>
                         
                         <button 
                             onClick={handleLoginWithTwitch}
@@ -486,18 +592,24 @@ const Navbar: React.FC = () => {
                                 justifyContent: 'center',
                                 padding: '0.8rem',
                                 fontSize: '1rem',
-                                borderRadius: '12px',
-                                background: 'linear-gradient(135deg, #9146FF 0%, #6441A5 100%)',
+                                fontWeight: 'bold',
+                                borderRadius: '16px',
+                                background: loginConsent ? 'linear-gradient(135deg, #9146FF 0%, #6441A5 100%)' : 'rgba(255,255,255,0.08)',
                                 border: 'none',
-                                boxShadow: '0 8px 20px rgba(145, 70, 255, 0.25)'
+                                boxShadow: loginConsent ? '0 8px 20px rgba(145, 70, 255, 0.25)' : 'none',
+                                cursor: loginConsent ? 'pointer' : 'not-allowed',
+                                opacity: loginConsent ? 1 : 0.65
                             }}
                         >
                             Conectar con Twitch
                         </button>
+                        <p style={{ fontSize: '0.74rem', color: 'rgba(255,255,255,0.45)', margin: 0, lineHeight: 1.4 }}>
+                            Se abrira una ventana emergente segura de Twitch. Puedes cancelar el proceso antes de autorizar.
+                        </p>
                     </div>
                 </div>
-            )}
-        </nav>
+            ), document.body)}
+        </>
     );
 };
 

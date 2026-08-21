@@ -29,6 +29,95 @@ function getLocalDateStr(date: Date = new Date()): string {
   return `${year}-${month}-${day}`;
 }
 
+function getArticleDateStr(post: any): string {
+  const rawDate = post?.published_at || post?.created_at;
+  if (!rawDate) return '';
+  const date = new Date(rawDate);
+  if (Number.isNaN(date.getTime())) return '';
+  return getLocalDateStr(date);
+}
+
+function normalizeCategoryValue(value?: string): 'videojuegos' | 'animes' | null {
+  const normalized = (value || '')
+    .toString()
+    .trim()
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '');
+
+  if (['anime', 'animes', 'manga', 'otaku'].includes(normalized)) return 'animes';
+  if (['videojuegos', 'videojuego', 'gaming', 'games', 'game'].includes(normalized)) return 'videojuegos';
+  return null;
+}
+
+function getArticleCategory(post: any): 'videojuegos' | 'animes' {
+  const directCategory = normalizeCategoryValue(post?.category);
+  if (directCategory) return directCategory;
+
+  if (post?.content_blocks && Array.isArray(post.content_blocks)) {
+    const meta = post.content_blocks.find((b: any) => b?.type === 'metadata');
+    const metadataCategory = normalizeCategoryValue(meta?.category);
+    if (metadataCategory) return metadataCategory;
+  }
+
+  const animeKeywords = [
+    'anime',
+    'manga',
+    'otaku',
+    'crunchyroll',
+    'demon slayer',
+    'kimetsu',
+    'shingeki',
+    'dragon ball',
+    'jujutsu',
+    'goku',
+    'naruto',
+    'boruto',
+    'one piece',
+    'chainsaw',
+    'solo leveling',
+    'bleach',
+    'hero academia',
+    'spy x family',
+    'mappa',
+    'ufotable',
+    'toei',
+    'aniplex'
+  ];
+  const searchableText = `${post?.title || ''} ${post?.subtitle || ''}`.toLowerCase();
+  return animeKeywords.some(keyword => searchableText.includes(keyword)) ? 'animes' : 'videojuegos';
+}
+
+function normalizeNewsArticle(post: any, fallbackCategory: 'videojuegos' | 'animes'): NewsArticle {
+  const category = getArticleCategory(post) === 'animes' ? 'ANIME' : 'VIDEOJUEGOS';
+  const contentBlocks = Array.isArray(post?.content_blocks)
+    ? post.content_blocks
+    : [{ type: 'metadata', category }, { type: 'text', content: '<p>Contenido disponible próximamente.</p>' }];
+
+  return {
+    id: String(post?.id || post?.slug || `${fallbackCategory}-${Math.random().toString(36).slice(2)}`),
+    title: post?.title || 'Noticia destacada',
+    subtitle: post?.subtitle || 'Resumen no disponible por el momento.',
+    header_image: post?.header_image || '',
+    slug: post?.slug || String(post?.id || 'noticia'),
+    author: post?.author || 'EVILTOKKII',
+    published_at: post?.published_at || post?.created_at || new Date().toISOString(),
+    created_at: post?.created_at || post?.published_at || new Date().toISOString(),
+    category,
+    content_blocks: contentBlocks
+  };
+}
+
+function uniqueBySlug(posts: NewsArticle[]): NewsArticle[] {
+  const seen = new Set<string>();
+  return posts.filter(post => {
+    const key = post.slug || post.id;
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
+}
+
 export const VIDEOJUEGOS_NEWS_POOL: Omit<NewsArticle, 'published_at' | 'created_at'>[] = [
   {
     id: 'vg-news-1',
@@ -289,6 +378,8 @@ export function getConstantDailyNews(category: 'videojuegos' | 'animes', targetD
     const baseItem = pool[itemIdx];
     selected.push({
       ...baseItem,
+      id: `${baseItem.id}-${dateStr}`,
+      slug: `${baseItem.slug}-${dateStr}`,
       published_at: `${dateStr}T10:${String(i * 15).padStart(2, '0')}:00Z`,
       created_at: `${dateStr}T10:${String(i * 15).padStart(2, '0')}:00Z`
     });
@@ -298,50 +389,65 @@ export function getConstantDailyNews(category: 'videojuegos' | 'animes', targetD
 }
 
 /**
- * Ensures there are ALWAYS at least 3 news articles per category for the specified date (or overall).
- * Merges Supabase articles with generated daily news cleanly.
+ * Ensures there are always exactly 3 daily news articles per category.
+ * Priority:
+ * 1. Supabase/API articles published today for the selected category.
+ * 2. Recent Supabase/API articles for the selected category.
+ * 3. Deterministic local fallback for the selected day.
  */
+export function getDailyCategoryNews(
+  category: 'videojuegos' | 'animes',
+  supabaseArticles: any[],
+  targetDateStr: string = getLocalDateStr(),
+  count = 3
+): NewsArticle[] {
+  const normalizedSupabase = (supabaseArticles || [])
+    .filter(post => getArticleCategory(post) === category)
+    .map(post => normalizeNewsArticle(post, category))
+    .sort((a, b) => new Date(b.published_at || b.created_at || 0).getTime() - new Date(a.published_at || a.created_at || 0).getTime());
+
+  const todayArticles = normalizedSupabase.filter(post => getArticleDateStr(post) === targetDateStr);
+  const recentArticles = normalizedSupabase.filter(post => getArticleDateStr(post) !== targetDateStr);
+  const fallbackDaily = getConstantDailyNews(category, targetDateStr);
+
+  return uniqueBySlug([
+    ...todayArticles,
+    ...recentArticles,
+    ...fallbackDaily
+  ]).slice(0, count);
+}
+
 export function getGuaranteedCategoryNews(
   category: 'videojuegos' | 'animes',
   supabaseArticles: any[]
 ): NewsArticle[] {
-  const todayStr = getLocalDateStr();
+  return getDailyCategoryNews(category, supabaseArticles, getLocalDateStr(), 3);
+}
 
-  // Helper to check if post is anime
-  const isAnimePost = (post: any) => {
-    if (post.category && post.category.toUpperCase() === 'ANIME') return true;
-    if (post.content_blocks && Array.isArray(post.content_blocks)) {
-      const meta = post.content_blocks.find((b: any) => b.type === 'metadata');
-      if (meta && meta.category && meta.category.toUpperCase() === 'ANIME') {
-        return true;
-      }
-    }
-    const animeKeywords = ['anime', 'manga', 'otaku', 'crunchyroll', 'demon slayer', 'shingeki', 'dragon ball', 'jujutsu', 'goku', 'naruto', 'boruto', 'one piece', 'chainsaw', 'solo leveling', 'bleach', 'hero academia', 'spy x family'];
-    const title = (post.title || '').toLowerCase();
-    const subtitle = (post.subtitle || '').toLowerCase();
-    return animeKeywords.some(kw => title.includes(kw) || subtitle.includes(kw));
-  };
-
-  const filteredSb = supabaseArticles
-    .filter(p => category === 'animes' ? isAnimePost(p) : !isAnimePost(p))
+export function getCategoryNewsArchive(
+  category: 'videojuegos' | 'animes',
+  supabaseArticles: any[],
+  targetDateStr: string = getLocalDateStr()
+): NewsArticle[] {
+  const normalizedSupabase = (supabaseArticles || [])
+    .filter(post => getArticleCategory(post) === category)
+    .map(post => normalizeNewsArticle(post, category))
     .sort((a, b) => new Date(b.published_at || b.created_at || 0).getTime() - new Date(a.published_at || a.created_at || 0).getTime());
 
-  const merged = [...filteredSb];
-  if (merged.length < 3) {
-    const fallbackDaily = getConstantDailyNews(category, todayStr);
-    const existingSlugs = new Set(merged.map(p => p.slug));
+  const dailyFeatured = getDailyCategoryNews(category, supabaseArticles, targetDateStr, 3);
+  const remainingArchive = normalizedSupabase.filter(post => !dailyFeatured.some(featured => featured.slug === post.slug));
 
-    for (const item of fallbackDaily) {
-      if (merged.length >= 3) break;
-      if (!existingSlugs.has(item.slug)) {
-        merged.push(item);
-        existingSlugs.add(item.slug);
-      }
-    }
-  }
+  return uniqueBySlug([
+    ...dailyFeatured,
+    ...remainingArchive
+  ]);
+}
 
-  // Return all historical articles sorted by date, guaranteed to have at least 3
-  return merged;
+export function getDailyNewsBundle(supabaseArticles: any[] = [], targetDateStr: string = getLocalDateStr()): NewsArticle[] {
+  return [
+    ...getDailyCategoryNews('videojuegos', supabaseArticles, targetDateStr, 3),
+    ...getDailyCategoryNews('animes', supabaseArticles, targetDateStr, 3)
+  ];
 }
 
 /**
@@ -350,11 +456,20 @@ export function getGuaranteedCategoryNews(
 export function findNewsArticleBySlug(slug: string, supabaseData?: any): NewsArticle | null {
   if (supabaseData) return supabaseData;
 
-  const found = ALL_POOL_NEWS.find(n => n.slug === slug);
+  const todayStr = getLocalDateStr();
+  const dailyFallback = [
+    ...getConstantDailyNews('videojuegos', todayStr),
+    ...getConstantDailyNews('animes', todayStr)
+  ];
+  const foundDaily = dailyFallback.find(n => n.slug === slug);
+  if (foundDaily) return foundDaily;
+
+  const found = ALL_POOL_NEWS.find(n => n.slug === slug || slug.startsWith(`${n.slug}-`));
   if (found) {
-    const todayStr = getLocalDateStr();
     return {
       ...found,
+      id: `${found.id}-${todayStr}`,
+      slug: `${found.slug}-${todayStr}`,
       published_at: `${todayStr}T10:00:00Z`,
       created_at: `${todayStr}T10:00:00Z`
     };

@@ -368,6 +368,43 @@ const Home: React.FC = () => {
                     </div>
                 </div>
             </section>
+
+            <section className="section" style={{ paddingTop: '1rem' }}>
+                <div className="wrap">
+                    <div className="glass" style={{
+                        maxWidth: '860px',
+                        margin: '0 auto',
+                        padding: '1.5rem',
+                        borderRadius: '18px',
+                        border: '1px solid rgba(0, 210, 127, 0.28)',
+                        background: 'rgba(0, 210, 127, 0.045)',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                        gap: '1rem',
+                        flexWrap: 'wrap'
+                    }}>
+                        <div style={{ textAlign: 'left', flex: '1 1 360px' }}>
+                            <div className="kicker" style={{ color: '#00d27f', marginBottom: '6px' }}>Privacidad y datos personales</div>
+                            <p style={{ margin: 0, color: 'rgba(255,255,255,0.78)', lineHeight: 1.55 }}>
+                                Revisa como protegemos tus datos, el inicio de sesion con Twitch y tus derechos para solicitar acceso, rectificacion o eliminacion.
+                            </p>
+                        </div>
+                        <Link
+                            to="/legal?tab=privacidad"
+                            className="btn primary"
+                            style={{
+                                background: 'linear-gradient(135deg, #00d27f 0%, #00a3ff 100%)',
+                                border: 'none',
+                                boxShadow: '0 10px 26px rgba(0, 210, 127, 0.22)',
+                                whiteSpace: 'nowrap'
+                            }}
+                        >
+                            Ver Politica de Privacidad
+                        </Link>
+                    </div>
+                </div>
+            </section>
         </div>
     );
 };

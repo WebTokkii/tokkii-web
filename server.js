@@ -265,18 +265,35 @@ app.get("/api/health", (req, res) => {
   });
 });
 
+app.post("/api/sync-news", async (req, res) => {
+  const expectedToken = process.env.NEWS_SYNC_TOKEN;
+  const providedToken = req.headers.authorization?.replace(/^Bearer\s+/i, '') || req.query.token;
+
+  if (expectedToken && providedToken !== expectedToken) {
+    return res.status(401).json({ success: false, error: "No autorizado" });
+  }
+
+  try {
+    await syncRssFeeds(3);
+    res.json({ success: true });
+  } catch (error) {
+    console.error("ERROR SYNC NEWS:", error.message);
+    res.status(500).json({ success: false, error: "Error sincronizando noticias" });
+  }
+});
+
 const PORT = process.env.PORT || 3001;
 
 app.listen(PORT, () => {
   console.log(`Servidor corriendo en puerto ${PORT}`);
   
-  // Run initial news sync on server startup (imports 4 new articles translated to Spanish)
-  syncRssFeeds(4);
+  // Run initial news sync on server startup.
+  syncRssFeeds(3);
 
-  // Schedule to sync 4 new news articles every 12 hours
-  const TWELVE_HOURS = 12 * 60 * 60 * 1000;
+  // Schedule recurring RSS sync so the daily pack stays fresh even if one feed fails.
+  const SIX_HOURS = 6 * 60 * 60 * 1000;
   setInterval(() => {
-    console.log("Running scheduled 12-hour RSS Feed Sync...");
-    syncRssFeeds(4);
-  }, TWELVE_HOURS);
+    console.log("Running scheduled RSS Feed Sync...");
+    syncRssFeeds(3);
+  }, SIX_HOURS);
 });

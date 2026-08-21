@@ -17,6 +17,121 @@ import { DOWNLOADED_PERKS } from '../data/DbdPerksDownloaded';
 import md5 from 'blueimp-md5';
 import './TierList.css'; // Reuse existing glass styles
 
+const QUIZ_TYPES = [
+  'overwatch',
+  'games',
+  'audio_music',
+  'flags',
+  'word_scramble',
+  'dbd_perks',
+  'disney',
+  'covers',
+  'pokemon',
+  'brands',
+  'history'
+] as const;
+
+type QuizType = typeof QUIZ_TYPES[number];
+
+const DAILY_CHALLENGE_TYPES: QuizType[] = [...QUIZ_TYPES];
+const DAILY_QUIZ_BLOCK_SIZE = 15;
+const DAILY_MONTH_DAYS = 30;
+
+const GAME_NAMES: Record<string, string> = {
+  overwatch: 'Overwatch Quiz',
+  games: 'Videojuegos Trivia',
+  flags: 'Adivina la Bandera',
+  word_scramble: 'Word Scramble',
+  dbd_perks: 'Perks de DBD',
+  disney: 'Personajes Disney',
+  covers: 'Caratulas de Juegos',
+  audio_music: 'Adivina la Cancion',
+  pokemon: 'Adivina el Pokemon',
+  brands: 'Adivina la Marca',
+  history: 'Eventos Mundiales',
+  ruleta: 'Ruleta de la Suerte',
+  mayor_menor: 'Mayor o Menor'
+};
+
+const hashString = (value: string): number => {
+  let hash = 0;
+  for (let i = 0; i < value.length; i++) {
+    hash = (hash << 5) - hash + value.charCodeAt(i);
+    hash |= 0;
+  }
+  return Math.abs(hash);
+};
+
+const createSeededRandom = (seed: number) => {
+  let seedVal = seed || 1;
+  return () => {
+    let t = seedVal += 0x6D2B79F5;
+    t = Math.imul(t ^ (t >>> 15), t | 1);
+    t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+};
+
+const shuffleWithRandom = <T,>(items: T[], random: () => number): T[] => {
+  const shuffled = [...items];
+  for (let i = shuffled.length - 1; i > 0; i--) {
+    const j = Math.floor(random() * (i + 1));
+    const temp = shuffled[i];
+    shuffled[i] = shuffled[j];
+    shuffled[j] = temp;
+  }
+  return shuffled;
+};
+
+const getMonthlyCycleIndex = (date: Date = new Date()): number => {
+  return Math.min(date.getDate(), DAILY_MONTH_DAYS) - 1;
+};
+
+const getStableQuestionKey = (item: any, fallbackIndex: number): string => {
+  if (item?.id !== undefined && item?.id !== null) return String(item.id);
+  if (item?.scrambleWord) return String(item.scrambleWord);
+  if (item?.word) return String(item.word);
+  if (item?.name) return String(item.name);
+  if (item?.brandName) return String(item.brandName);
+  if (item?.flagCode) return String(item.flagCode);
+  if (item?.pokemonImage) return String(item.pokemonImage);
+  if (item?.logoUrl) return String(item.logoUrl);
+  if (item?.image) return String(item.image);
+  if (item?.audioUrl) return String(item.audioUrl);
+  if (item?.youtubeId) return String(item.youtubeId);
+  if (item?.text) return String(item.text);
+  return `fallback-${fallbackIndex}`;
+};
+
+const getMonthlyQuestionBlock = <T,>(
+  items: T[],
+  date: Date = new Date(),
+  blockSize = DAILY_QUIZ_BLOCK_SIZE
+): T[] => {
+  if (items.length <= blockSize) return [...items];
+
+  const sortedItems = [...items].sort((a: any, b: any) => {
+    return getStableQuestionKey(a, 0).localeCompare(getStableQuestionKey(b, 0), undefined, {
+      numeric: true,
+      sensitivity: 'base'
+    });
+  });
+  const dayIndex = getMonthlyCycleIndex(date);
+  const totalBlocks = Math.max(1, Math.ceil(sortedItems.length / blockSize));
+  const blockIndex = totalBlocks >= DAILY_MONTH_DAYS
+    ? dayIndex
+    : dayIndex % totalBlocks;
+  const startIndex = blockIndex * blockSize;
+  const block = sortedItems.slice(startIndex, startIndex + blockSize);
+
+  if (block.length === blockSize || sortedItems.length <= blockSize) return block;
+
+  return [
+    ...block,
+    ...sortedItems.slice(0, blockSize - block.length)
+  ];
+};
+
 
 function getDbdPerkImageUrl(apiPath: string) {
   if (!apiPath) return '';
@@ -154,7 +269,7 @@ const renderBadge = (role?: string) => {
 
 export default function Minijuegos() {
   const [currentView, setCurrentView] = useState<'hub' | 'quiz' | 'ruleta' | 'mayor_menor'>('hub');
-  const [quizType, setQuizType] = useState<'overwatch' | 'games' | 'audio_music' | 'flags' | 'word_scramble' | 'dbd_perks' | 'disney' | 'covers' | 'pokemon' | 'brands' | 'history'>('overwatch');
+  const [quizType, setQuizType] = useState<QuizType>('overwatch');
 
   // Mayor o Menor States
   const [mmChoice, setMmChoice] = useState<'mayor' | 'menor'>('mayor');
@@ -291,7 +406,7 @@ export default function Minijuegos() {
         }
       });
 
-      const popularGameName = mostPopularKey ? (gameNamesMap[mostPopularKey] || mostPopularKey) : 'Sin registros hoy';
+      const popularGameName = mostPopularKey ? (GAME_NAMES[mostPopularKey] || mostPopularKey) : 'Sin registros hoy';
 
       setDailyStats({
         pointsToday,
@@ -429,11 +544,6 @@ export default function Minijuegos() {
       setCompletionsToday([]);
       return;
     }
-    const isTester = (username || '').toLowerCase().includes('pamache');
-    if (isTester) {
-      setCompletionsToday([]);
-      return;
-    }
     const todayStr = getLocalDateStr();
     supabase
       .from('user_quiz_completions')
@@ -445,7 +555,7 @@ export default function Minijuegos() {
           setCompletionsToday(data.map(d => d.quiz_type));
         }
       });
-  }, [userId, username]);
+  }, [userId]);
 
   useEffect(() => {
     fetchUserPoints();
@@ -589,58 +699,89 @@ export default function Minijuegos() {
     }
   };
 
-  const getDailyQuestions = (type: 'overwatch' | 'games' | 'audio_music' | 'flags' | 'word_scramble' | 'dbd_perks' | 'disney' | 'covers' | 'pokemon' | 'brands' | 'history') => {
-    const today = new Date();
-    const dateStr = `${today.getFullYear()}-${today.getMonth() + 1}-${today.getDate()}`;
-    
-    // Hash the date string to get a highly distinct seed value
-    let hash = 0;
-    for (let i = 0; i < dateStr.length; i++) {
-      hash = (hash << 5) - hash + dateStr.charCodeAt(i);
-      hash |= 0; // Convert to 32bit integer
+  const createMinigameCompletion = useCallback(async (gameType: QuizType) => {
+    if (!userId) return false;
+
+    const todayStr = getLocalDateStr();
+    const { error } = await supabase
+      .from('user_quiz_completions')
+      .insert({
+        user_id: userId,
+        quiz_type: gameType,
+        score: 0,
+        completed_date: todayStr
+      });
+
+    if (error) {
+      if ((error as any).code === '23505') {
+        alert(`Ya realizaste ${GAME_NAMES[gameType] || 'este minijuego'} hoy. Vuelve manana.`);
+        setCompletionsToday(prev => prev.includes(gameType) ? prev : [...prev, gameType]);
+      } else {
+        console.error('Error creating daily minigame completion:', error);
+        alert('No se pudo registrar el intento diario. Intenta nuevamente en unos segundos.');
+      }
+      return false;
     }
 
-    // Mulberry32 generator for robust, seedable random numbers
-    let seedVal = Math.abs(hash);
-    const random = () => {
-      let t = seedVal += 0x6D2B79F5;
-      t = Math.imul(t ^ (t >>> 15), t | 1);
-      t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
-      return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
-    };
+    setCompletionsToday(prev => prev.includes(gameType) ? prev : [...prev, gameType]);
+    fetchScoreboardAndStats();
+    return true;
+  }, [fetchScoreboardAndStats, userId]);
+
+  const updateMinigameCompletionScore = useCallback(async (gameType: QuizType, score: number = 0) => {
+    if (!userId) return false;
+
+    const todayStr = getLocalDateStr();
+    const { data, error } = await supabase
+      .from('user_quiz_completions')
+      .update({ score })
+      .eq('user_id', userId)
+      .eq('quiz_type', gameType)
+      .eq('completed_date', todayStr)
+      .select('id')
+      .maybeSingle();
+
+    if (error) {
+      console.error('Error updating daily minigame score:', error);
+      return false;
+    }
+
+    if (!data) {
+      const created = await createMinigameCompletion(gameType);
+      if (!created) return false;
+      return updateMinigameCompletionScore(gameType, score);
+    }
+
+    setCompletionsToday(prev => {
+      const nextCompletions = prev.includes(gameType) ? prev : [...prev, gameType];
+      if (DAILY_CHALLENGE_TYPES.every(req => nextCompletions.includes(req))) {
+        triggerStreakAward();
+      }
+      return nextCompletions;
+    });
+    fetchScoreboardAndStats();
+    return true;
+  }, [createMinigameCompletion, fetchScoreboardAndStats, userId]);
+
+  const getDailyQuestions = (type: QuizType) => {
+    const today = new Date();
+    const dateStr = getLocalDateStr(today);
+    const random = createSeededRandom(hashString(`${type}-${dateStr}`));
 
     if (type === 'dbd_perks') {
       const activeDbdPerks = (dbMinigames['dbd'] || DBD_PERKS).filter((perk: any) => {
+        if (!perk?.image || !perk?.name || !perk?.role) return false;
         const parts = perk.image.split('/');
         const imgName = parts[parts.length - 1].replace('.png', '');
         return DOWNLOADED_PERKS.has(imgName);
       });
+      const dayBlock = getMonthlyQuestionBlock<any>(activeDbdPerks, today);
 
-      // Calculate dayIndex since a fixed epoch
-      const startOfEpoch = new Date('2026-01-01');
-      const localToday = new Date(today.getFullYear(), today.getMonth(), today.getDate());
-      const msInDay = 24 * 60 * 60 * 1000;
-      const dayIndex = Math.floor((localToday.getTime() - startOfEpoch.getTime()) / msInDay);
-
-      const totalPerks = activeDbdPerks.length;
-      const blockSize = 15;
-      let dayBlock;
-
-      if (totalPerks <= blockSize) {
-        dayBlock = activeDbdPerks;
-      } else {
-        const totalBlocks = Math.floor(totalPerks / blockSize);
-        const currentBlockIdx = Math.abs(dayIndex) % totalBlocks;
-        const startIndex = currentBlockIdx * blockSize;
-        dayBlock = activeDbdPerks.slice(startIndex, startIndex + blockSize);
-      }
-
-      const selectedPerks = [];
-      const tempPerks = [...dayBlock];
+      const selectedPerks: QuizQuestion[] = [];
+      const tempPerks = shuffleWithRandom<any>(dayBlock, random);
       
-      for (let i = 0; i < 15; i++) {
-        const randIdx = Math.floor(random() * tempPerks.length);
-        const perk = tempPerks.splice(randIdx, 1)[0];
+      for (let i = 0; i < DAILY_QUIZ_BLOCK_SIZE; i++) {
+        const perk = tempPerks[i];
         if (perk) {
           const incorrectOptions = [];
           const potentialIncorrect = activeDbdPerks.filter((p: any) => p.role === perk.role && p.name !== perk.name);
@@ -669,12 +810,6 @@ export default function Minijuegos() {
       return selectedPerks;
     }
 
-    // Calculate dayIndex since a fixed epoch
-    const startOfEpoch = new Date('2026-01-01');
-    const localToday = new Date(today.getFullYear(), today.getMonth(), today.getDate());
-    const msInDay = 24 * 60 * 60 * 1000;
-    const dayIndex = Math.floor((localToday.getTime() - startOfEpoch.getTime()) / msInDay);
-
     const sourceQuestions = 
       type === 'flags' ? (dbMinigames['flags'] || FLAG_QUESTIONS) :
       type === 'overwatch' ? (dbMinigames['overwatch'] || OVERWATCH_QUESTIONS) : 
@@ -694,7 +829,16 @@ export default function Minijuegos() {
 
     // Sanitize sourceQuestions: automatically exclude questions with empty/missing image or audio URLs
     const sanitizedQuestions = sourceQuestions.filter((q: any) => {
-      if (type === 'covers' || type === 'disney' || type === 'pokemon' || type === 'brands' || type === 'flags') {
+      if (type === 'brands') {
+        return Boolean(q.logoUrl && typeof q.logoUrl === 'string' && q.logoUrl.trim().length > 0);
+      }
+      if (type === 'pokemon') {
+        return Boolean(q.pokemonImage && typeof q.pokemonImage === 'string' && q.pokemonImage.trim().length > 0);
+      }
+      if (type === 'flags') {
+        return Boolean(q.flagCode && typeof q.flagCode === 'string' && q.flagCode.trim().length > 0);
+      }
+      if (type === 'covers' || type === 'disney') {
         return Boolean(q.image && typeof q.image === 'string' && q.image.trim().length > 0);
       }
       if (type === 'audio_music') {
@@ -703,34 +847,14 @@ export default function Minijuegos() {
       return true;
     });
 
-    const totalQuestions = sanitizedQuestions.length;
-    const blockSize = 15;
+    const dayBlock = getMonthlyQuestionBlock<any>(sanitizedQuestions, today);
+    const shuffled = shuffleWithRandom<QuizQuestion>(JSON.parse(JSON.stringify(dayBlock)), random);
 
-    let dayBlock;
-    if (totalQuestions <= blockSize) {
-      dayBlock = sanitizedQuestions;
-    } else {
-      const totalBlocks = Math.floor(totalQuestions / blockSize);
-      const currentBlockIdx = Math.abs(dayIndex) % totalBlocks;
-      const startIndex = currentBlockIdx * blockSize;
-      dayBlock = sanitizedQuestions.slice(startIndex, startIndex + blockSize);
-    }
-
-    const shuffled = JSON.parse(JSON.stringify(dayBlock));
-    // 1. Shuffle the order of the questions
-    for (let i = shuffled.length - 1; i > 0; i--) {
-      const j = Math.floor(random() * (i + 1));
-      const temp = shuffled[i];
-      shuffled[i] = shuffled[j];
-      shuffled[j] = temp;
-    }
-
-    // 2. Shuffle the options within each question and update answerIndex
     for (const q of shuffled) {
       if (q.options && q.options.length > 0) {
         const correctText = q.options[q.answerIndex];
         for (let i = q.options.length - 1; i > 0; i--) {
-          const j = Math.floor(Math.random() * (i + 1));
+          const j = Math.floor(random() * (i + 1));
           const temp = q.options[i];
           q.options[i] = q.options[j];
           q.options[j] = temp;
@@ -742,7 +866,7 @@ export default function Minijuegos() {
     return shuffled;
   };
 
-  const startQuiz = (type: 'overwatch' | 'games' | 'audio_music' | 'flags' | 'word_scramble' | 'dbd_perks' | 'disney' | 'covers' | 'pokemon' | 'brands' | 'history') => {
+  const startQuiz = (type: QuizType) => {
     if (!userId) {
       alert("Inicia sesión con Twitch para realizar las trivias diarias.");
       return;
@@ -756,11 +880,12 @@ export default function Minijuegos() {
     
     // Pre-scramble letters for Word Scramble
     if (type === 'word_scramble') {
+      const random = createSeededRandom(hashString(`scramble-letters-${getLocalDateStr()}`));
       questions.forEach((q: any) => {
         if (q.scrambleWord) {
           const arr = q.scrambleWord.split('');
           for (let i = arr.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1));
+            const j = Math.floor(random() * (i + 1));
             const temp = arr[i];
             arr[i] = arr[j];
             arr[j] = temp;
@@ -797,21 +922,12 @@ export default function Minijuegos() {
     // Set flag in localStorage to detect refresh/abandonment
     localStorage.setItem('active_quiz_abandoned', quizType);
 
-    const isTester = (username || '').toLowerCase().includes('pamache');
-
-    if (userId && !isTester) {
-      // Add immediately to local completed list so UI locks it
-      setCompletionsToday(prev => prev.includes(quizType) ? prev : [...prev, quizType]);
-
-      const todayStr = getLocalDateStr();
-      await supabase
-        .from('user_quiz_completions')
-        .upsert({
-          user_id: userId,
-          quiz_type: quizType,
-          score: 0,
-          completed_date: todayStr
-        }, { onConflict: 'user_id,quiz_type,completed_date' });
+    const created = await createMinigameCompletion(quizType);
+    if (!created) {
+      stopCurrentQuestionAudio();
+      localStorage.removeItem('active_quiz_abandoned');
+      setQuizStarted(false);
+      setCurrentView('hub');
     }
   };
 
@@ -980,28 +1096,7 @@ export default function Minijuegos() {
       localStorage.removeItem('active_quiz_abandoned');
 
       if (userId) {
-        const todayStr = getLocalDateStr();
-        supabase
-          .from('user_quiz_completions')
-          .upsert({
-            user_id: userId,
-            quiz_type: quizType,
-            score: userScore,
-            completed_date: todayStr
-          }, { onConflict: 'user_id,quiz_type,completed_date' })
-          .then(({ error }) => {
-            if (!error) {
-              setCompletionsToday(prev => {
-                const nextCompletions = prev.includes(quizType) ? prev : [...prev, quizType];
-                const required = ['overwatch', 'games', 'flags', 'word_scramble', 'dbd_perks'];
-                const completedAll = required.every(req => nextCompletions.includes(req));
-                if (completedAll) {
-                  triggerStreakAward();
-                }
-                return nextCompletions;
-              });
-            }
-          });
+        updateMinigameCompletionScore(quizType, userScore);
       }
     }
   };
@@ -1018,15 +1113,7 @@ export default function Minijuegos() {
     localStorage.removeItem('active_quiz_abandoned');
 
     if (userId) {
-      const todayStr = getLocalDateStr();
-      await supabase
-        .from('user_quiz_completions')
-        .upsert({
-          user_id: userId,
-          quiz_type: quizType,
-          score: userScore,
-          completed_date: todayStr
-        }, { onConflict: 'user_id,quiz_type,completed_date' });
+      await updateMinigameCompletionScore(quizType, userScore);
     }
 
     setQuizStarted(false);
@@ -1418,9 +1505,10 @@ export default function Minijuegos() {
                 { id: 'mayor_menor', name: 'Mayor o Menor', desc: 'Apuesta tus puntos adivinando si el número final (1-100) será Mayor (>50) o Menor (≤50). Multiplica tu apuesta x2.', color: '#00e5ff', bg: '/Imagenes/minijuego_mayormenor.png?v=1' },
                 { id: 'ruleta', name: 'Ruleta de la Suerte', desc: '¡Apuesta tus puntos y prueba tu suerte! Multiplica tu apuesta hasta x5 o gana premios planos de hasta 1500 puntos.', color: '#ffaa00', bg: '/Imagenes/minijuego_ruleta.png?v=2' }
               ].map((g) => {
-                  const isCompleted = completionsToday.includes(g.id);
+                  const isBettingGame = g.id === 'ruleta' || g.id === 'mayor_menor';
+                  const isCompleted = !isBettingGame && completionsToday.includes(g.id);
                   const isLocked = !userId;
-                  const canClick = (g.id === 'ruleta' || g.id === 'mayor_menor') ? true : isLocked ? false : !isCompleted;
+                  const canClick = !isLocked && !isCompleted;
                   return (
                       <div
                           key={g.id}
@@ -1437,7 +1525,7 @@ export default function Minijuegos() {
                               textAlign: 'left'
                           }}
                           onMouseEnter={(e) => {
-                              if (g.id !== 'ruleta' && g.id !== 'mayor_menor' && (isLocked || isCompleted)) return;
+                              if (isLocked || isCompleted) return;
                               e.currentTarget.style.borderColor = 'var(--accent)';
                               e.currentTarget.style.boxShadow = '0 0 30px rgba(255, 0, 115, 0.15)';
                               e.currentTarget.style.transform = 'translateY(-4px)';
@@ -1445,7 +1533,7 @@ export default function Minijuegos() {
                               if (bgImg) bgImg.style.transform = 'scale(1.08)';
                           }}
                           onMouseLeave={(e) => {
-                              if (g.id !== 'ruleta' && g.id !== 'mayor_menor' && (isLocked || isCompleted)) return;
+                              if (isLocked || isCompleted) return;
                               e.currentTarget.style.borderColor = 'rgba(233, 176, 255, .08)';
                               e.currentTarget.style.boxShadow = 'var(--shadow)';
                               e.currentTarget.style.transform = 'none';
@@ -1482,7 +1570,7 @@ export default function Minijuegos() {
                           )}
 
                           {/* Locked full color overlay */}
-                          {isLocked && g.id !== 'ruleta' && g.id !== 'mayor_menor' && (
+                          {isLocked && (
                               <div style={{
                                   position: 'absolute',
                                   top: 0,
@@ -1513,7 +1601,7 @@ export default function Minijuegos() {
                           )}
 
                           {/* Completed full color overlay */}
-                          {isCompleted && g.id !== 'ruleta' && g.id !== 'mayor_menor' && (
+                          {isCompleted && (
                               <div style={{
                                   position: 'absolute',
                                   top: 0,
@@ -1914,6 +2002,10 @@ export default function Minijuegos() {
                 type="button"
                 disabled={mmIsPlaying || mmBetAmount <= 0 || (userId ? userPoints < mmBetAmount : false)}
                 onClick={async () => {
+                  if (!userId) {
+                    alert("Inicia sesion con Twitch para jugar Mayor o Menor.");
+                    return;
+                  }
                   if (userId && userPoints < mmBetAmount) {
                     alert('No tienes suficientes puntos para realizar esta apuesta.');
                     return;
@@ -1985,18 +2077,6 @@ export default function Minijuegos() {
                         .eq('id', userId);
 
                       setUserPoints(newPts);
-                    }
-
-                    if (userId) {
-                      const todayStr = getLocalDateStr();
-                      await supabase
-                        .from('user_quiz_completions')
-                        .insert({
-                          user_id: userId,
-                          quiz_type: 'mayor_menor',
-                          score: winAmount,
-                          completed_date: todayStr
-                        });
                     }
 
                     setMmResult({ win: userWins, winAmount, finalNum });

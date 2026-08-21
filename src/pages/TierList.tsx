@@ -260,24 +260,43 @@ export default function TierList() {
   const [dragStart, setDragStart] = useState({ x: 0, y: 0, scrollLeft: 0 });
   const [dragPosition, setDragPosition] = useState({ x: 0, y: 0 });
   const [hoveredTierId, setHoveredTierId] = useState<string | null>(null);
+  const [hoveredIndex, setHoveredIndex] = useState<number | undefined>(undefined);
   const [activeDragCharId, setActiveDragCharId] = useState<string | null>(null);
   const [hasPointerMoved, setHasPointerMoved] = useState(false);
 
-  const getTierIdFromPoint = (x: number, y: number): string | null => {
+  const getDropTargetFromPoint = (x: number, y: number): { tierId: string | null; index: number | undefined } => {
     const element = document.elementFromPoint(x, y);
-    if (!element) return null;
+    if (!element) return { tierId: null, index: undefined };
+    
+    // Check if hovered element is a character card in a tier row
+    const targetCard = element.closest('.tier-dropzone .character-card');
+    if (targetCard) {
+      const dropzone = targetCard.parentElement;
+      const tierRow = targetCard.closest('.tier-row');
+      if (dropzone && tierRow) {
+        const tierId = tierRow.getAttribute('data-tier-id');
+        const cards = Array.from(dropzone.querySelectorAll('.character-card'));
+        const rect = targetCard.getBoundingClientRect();
+        const isAfter = x > rect.left + rect.width / 2;
+        const index = cards.indexOf(targetCard);
+        return { 
+          tierId, 
+          index: index !== -1 ? (isAfter ? index + 1 : index) : undefined 
+        };
+      }
+    }
     
     const tierRow = element.closest('.tier-row');
     if (tierRow) {
-      return tierRow.getAttribute('data-tier-id');
+      return { tierId: tierRow.getAttribute('data-tier-id'), index: undefined };
     }
     
     const poolSection = element.closest('.pool-section');
     if (poolSection) {
-      return 'pool';
+      return { tierId: 'pool', index: undefined };
     }
     
-    return null;
+    return { tierId: null, index: undefined };
   };
 
   const handleCharCardPointerDown = (charId: string, e: React.PointerEvent) => {
@@ -323,17 +342,14 @@ export default function TierList() {
         // Detect movement threshold (10px) to determine mode
         if (Math.abs(diffX) > 10 || Math.abs(diffY) > 10) {
           setHasPointerMoved(true);
-          if (Math.abs(diffX) >= Math.abs(diffY)) {
+          if (pressedCharId === 'pool-scroll') {
             setDragMode('scroll');
-          } else if (diffY < -10) {
-            // Drag character card upwards
+          } else {
+            // Drag character card in any direction!
             setDragMode('drag');
             setActiveDragCharId(pressedCharId);
             setSelectedCharId(null); // Clear click selection
             document.body.classList.add('dragging-active'); // Prevent text selection globally
-          } else {
-            // Treat downwards as scrolling or ignore
-            setDragMode('scroll');
           }
         }
       } else if (dragMode === 'scroll') {
@@ -343,9 +359,10 @@ export default function TierList() {
       } else if (dragMode === 'drag') {
         setDragPosition({ x: e.clientX, y: e.clientY });
         
-        // Find hovered tier row dynamically
-        const currentTierId = getTierIdFromPoint(e.clientX, e.clientY);
-        setHoveredTierId(currentTierId);
+        // Find hovered drop target and index dynamically
+        const target = getDropTargetFromPoint(e.clientX, e.clientY);
+        setHoveredTierId(target.tierId);
+        setHoveredIndex(target.index);
       }
     };
 
@@ -354,7 +371,7 @@ export default function TierList() {
 
       if (dragMode === 'drag' && activeDragCharId) {
         if (hoveredTierId && hoveredTierId !== 'pool') {
-          moveCharacter(activeDragCharId, hoveredTierId);
+          moveCharacter(activeDragCharId, hoveredTierId, hoveredIndex);
         } else {
           moveToPool(activeDragCharId);
         }
@@ -368,6 +385,7 @@ export default function TierList() {
       setDragMode(null);
       setActiveDragCharId(null);
       setHoveredTierId(null);
+      setHoveredIndex(undefined);
       setHasPointerMoved(false);
     };
 
@@ -926,38 +944,61 @@ export default function TierList() {
               onDragOver={(e) => {
                 e.preventDefault();
                 e.currentTarget.classList.add('drag-over');
+                setHoveredTierId(tier.id);
+                if (e.target === e.currentTarget) {
+                  setHoveredIndex(tier.characterIds.length);
+                }
               }}
               onDragLeave={(e) => {
                 e.currentTarget.classList.remove('drag-over');
+                if (e.relatedTarget === null || !(e.relatedTarget as HTMLElement).closest('.tier-dropzone')) {
+                  setHoveredTierId(null);
+                  setHoveredIndex(undefined);
+                }
               }}
               onDrop={(e) => {
                 e.currentTarget.classList.remove('drag-over');
-                handleDrop(e, tier.id);
+                handleDrop(e, tier.id, hoveredIndex);
               }}
             >
               {tier.characterIds.map((charId, idx) => {
                 const char = charactersMap.current[charId];
                 if (!char) return null;
                 return (
-                  <div
-                    key={char.id}
-                    draggable
-                    onDragStart={(e) => handleDragStart(e, char.id)}
-                    onDragEnd={handleDragEnd}
-                    onClick={(e) => handleCharCardClick(char.id, e)}
-                    onDragOver={(e) => e.preventDefault()}
-                    onDrop={(e) => {
-                      e.preventDefault();
-                      e.stopPropagation();
-                      handleDrop(e, tier.id, idx);
-                    }}
-                    className={`character-card rarity-${char.rarity}-card element-${char.element.toLowerCase()}-glow ${selectedCharId === char.id ? 'selected' : ''}`}
-                    style={{ backgroundImage: `url(${char.imgUrl})` }}
-                  >
-                    <div className="character-name-overlay">{char.name}</div>
-                  </div>
+                  <React.Fragment key={char.id}>
+                    {hoveredTierId === tier.id && hoveredIndex === idx && (
+                      <div className="drop-indicator-bar" />
+                    )}
+                    <div
+                      draggable
+                      onDragStart={(e) => handleDragStart(e, char.id)}
+                      onDragEnd={handleDragEnd}
+                      onClick={(e) => handleCharCardClick(char.id, e)}
+                      onDragOver={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        const rect = e.currentTarget.getBoundingClientRect();
+                        const isAfter = e.clientX > rect.left + rect.width / 2;
+                        const targetIdx = isAfter ? idx + 1 : idx;
+                        setHoveredTierId(tier.id);
+                        setHoveredIndex(targetIdx);
+                      }}
+                      onDrop={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        handleDrop(e, tier.id, hoveredIndex);
+                      }}
+                      className={`character-card rarity-${char.rarity}-card element-${char.element.toLowerCase()}-glow ${selectedCharId === char.id ? 'selected' : ''}`}
+                      style={{ backgroundImage: `url(${char.imgUrl})` }}
+                    >
+                      <div className="character-name-overlay">{char.name}</div>
+                    </div>
+                  </React.Fragment>
                 );
               })}
+              {hoveredTierId === tier.id && hoveredIndex === tier.characterIds.length && (
+                <div className="drop-indicator-bar" />
+              )}
             </div>
 
             {/* Tier Controls (Right Sidebar) */}
@@ -1267,45 +1308,74 @@ export default function TierList() {
                     onDragOver={(e) => {
                       e.preventDefault();
                       e.currentTarget.classList.add('drag-over');
+                      setHoveredTierId(tier.id);
+                      if (e.target === e.currentTarget) {
+                        setHoveredIndex(tier.characterIds.length);
+                      }
                     }}
                     onDragLeave={(e) => {
                       e.currentTarget.classList.remove('drag-over');
+                      if (e.relatedTarget === null || !(e.relatedTarget as HTMLElement).closest('.tier-dropzone')) {
+                        setHoveredTierId(null);
+                        setHoveredIndex(undefined);
+                      }
                     }}
                     onDrop={(e) => {
                       e.currentTarget.classList.remove('drag-over');
-                      handleDrop(e, tier.id);
+                      handleDrop(e, tier.id, hoveredIndex);
                     }}
                   >
                     {tier.characterIds.map((charId, idx) => {
                       const char = charactersMap.current[charId];
                       if (!char) return null;
                       return (
-                        <div
-                          key={char.id}
-                          draggable
-                          onDragStart={(e) => handleDragStart(e, char.id)}
-                          onDragEnd={handleDragEnd}
-                          onClick={(e) => handleCharCardClick(char.id, e)}
-                          onDragOver={(e) => e.preventDefault()}
-                          onDrop={(e) => {
-                            e.preventDefault();
-                            e.stopPropagation();
-                            handleDrop(e, tier.id, idx);
-                          }}
-                          className={`character-card rarity-${char.rarity}-card element-${char.element.toLowerCase()}-glow`}
-                          style={{ 
-                            backgroundImage: `url(${char.imgUrl})`,
-                            width: `${presenterCardSize}px`,
-                            height: `${presenterCardSize}px`,
-                            borderRadius: `${Math.max(6, Math.floor(presenterCardSize * 0.16))}px`
-                          }}
-                        >
-                          {presenterCardSize >= 72 && (
-                            <div className="character-name-overlay">{char.name}</div>
+                        <React.Fragment key={char.id}>
+                          {hoveredTierId === tier.id && hoveredIndex === idx && (
+                            <div 
+                              className="drop-indicator-bar" 
+                              style={{ height: `${presenterCardSize}px` }} 
+                            />
                           )}
-                        </div>
+                          <div
+                            draggable
+                            onDragStart={(e) => handleDragStart(e, char.id)}
+                            onDragEnd={handleDragEnd}
+                            onClick={(e) => handleCharCardClick(char.id, e)}
+                            onDragOver={(e) => {
+                              e.preventDefault();
+                              e.stopPropagation();
+                              const rect = e.currentTarget.getBoundingClientRect();
+                              const isAfter = e.clientX > rect.left + rect.width / 2;
+                              const targetIdx = isAfter ? idx + 1 : idx;
+                              setHoveredTierId(tier.id);
+                              setHoveredIndex(targetIdx);
+                            }}
+                            onDrop={(e) => {
+                              e.preventDefault();
+                              e.stopPropagation();
+                              handleDrop(e, tier.id, hoveredIndex);
+                            }}
+                            className={`character-card rarity-${char.rarity}-card element-${char.element.toLowerCase()}-glow`}
+                            style={{ 
+                              backgroundImage: `url(${char.imgUrl})`,
+                              width: `${presenterCardSize}px`,
+                              height: `${presenterCardSize}px`,
+                              borderRadius: `${Math.max(6, Math.floor(presenterCardSize * 0.16))}px`
+                            }}
+                          >
+                            {presenterCardSize >= 72 && (
+                              <div className="character-name-overlay">{char.name}</div>
+                            )}
+                          </div>
+                        </React.Fragment>
                       );
                     })}
+                    {hoveredTierId === tier.id && hoveredIndex === tier.characterIds.length && (
+                      <div 
+                        className="drop-indicator-bar" 
+                        style={{ height: `${presenterCardSize}px` }} 
+                      />
+                    )}
                   </div>
                 </div>
               ))}

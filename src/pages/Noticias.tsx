@@ -3,7 +3,7 @@ import { Link, useLocation } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import './Noticias.css';
 
-import { getGuaranteedCategoryNews } from '../data/DailyNewsData';
+import { getCategoryNewsArchive } from '../data/DailyNewsData';
 
 const Noticias = () => {
     const [posts, setPosts] = useState<any[]>([]);
@@ -28,7 +28,8 @@ const Noticias = () => {
                     .from('news_articles')
                     .select('*')
                     .order('published_at', { ascending: false, nullsFirst: true })
-                    .order('created_at', { ascending: false });
+                    .order('created_at', { ascending: false })
+                    .limit(120);
 
                 // Fetch Active Sorteos (2) & Eventos (2) from content_items (solo activos)
                 const [{ data: sorteosData }, { data: eventosData }] = await Promise.all([
@@ -71,7 +72,7 @@ const Noticias = () => {
     };
 
     const getDisplayPosts = () => {
-        return getGuaranteedCategoryNews(activeCategory, posts);
+        return getCategoryNewsArchive(activeCategory, posts);
     };
 
     // Componente para Sidebar (Estilo CR Mini)

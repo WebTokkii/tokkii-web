@@ -1,8 +1,11 @@
 import React, { useState } from 'react';
 import { ShieldCheck, Scale, FileText, Lock, AlertTriangle, Mail } from 'lucide-react';
+import { useSearchParams } from 'react-router-dom';
 
 const Legal: React.FC = () => {
-  const [activeTab, setActiveTab] = useState<'terminos' | 'privacidad' | 'dmca'>('terminos');
+  const [searchParams] = useSearchParams();
+  const initialTab = searchParams.get('tab') === 'privacidad' ? 'privacidad' : searchParams.get('tab') === 'dmca' ? 'dmca' : 'terminos';
+  const [activeTab, setActiveTab] = useState<'terminos' | 'privacidad' | 'dmca'>(initialTab);
 
   return (
     <div className="app-container" style={{ minHeight: '85vh', padding: '3rem 1rem', maxWidth: '1100px', margin: '0 auto' }}>
@@ -144,6 +147,33 @@ const Legal: React.FC = () => {
             </p>
           </div>
         )}
+
+            {activeTab === 'privacidad' && (
+              <div style={{ background: 'rgba(0, 229, 255, 0.06)', border: '1px solid rgba(0, 229, 255, 0.24)', borderRadius: '18px', padding: '1.4rem', marginTop: '0.5rem' }}>
+                <h3 style={{ color: '#00e5ff', fontSize: '1.25rem', marginTop: 0 }}>Refuerzo de Transparencia y Derechos de Datos</h3>
+                <p>
+                  Esta politica se prepara considerando la normativa chilena vigente y el nuevo estandar de proteccion de datos personales establecido por la Ley 21.719, cuya entrada en vigencia general esta prevista para el 1 de diciembre de 2026.
+                </p>
+                <p>
+                  <strong>Finalidades:</strong> autenticacion con Twitch, creacion de perfil comunitario, puntos, rankings, rachas, reportes, prevencion de abuso, soporte y seguridad de la plataforma.
+                </p>
+                <p>
+                  <strong>Datos minimos:</strong> identificador unico de Twitch, nombre publico, avatar publico, puntajes, registros de participacion, reportes enviados y datos tecnicos basicos de seguridad o analitica.
+                </p>
+                <p>
+                  <strong>Base de tratamiento:</strong> autorizacion del usuario, ejecucion de servicios solicitados, cumplimiento de obligaciones aplicables e interes legitimo en operar una comunidad segura.
+                </p>
+                <p>
+                  <strong>Derechos:</strong> puedes solicitar acceso, rectificacion, eliminacion, oposicion, bloqueo/restriccion, portabilidad y desvinculacion de tu cuenta de Twitch, salvo conservaciones minimas necesarias por seguridad o cumplimiento legal.
+                </p>
+                <p>
+                  <strong>Encargados tecnicos:</strong> podemos usar Supabase, Twitch, Cloudflare/R2 y herramientas de analitica solo para operar la web. No vendemos datos ni los entregamos a brokers o terceros comerciales.
+                </p>
+                <p style={{ marginBottom: 0 }}>
+                  <strong>Solicitudes:</strong> usa la seccion Ayuda o los canales oficiales de Discord/X indicando tu usuario de Twitch y la solicitud concreta. Podremos pedir verificacion de identidad para proteger tu cuenta.
+                </p>
+              </div>
+            )}
 
         {/* TAB 3: POLITICA DMCA & REGLAMENTO DE RETIRO */}
         {activeTab === 'dmca' && (

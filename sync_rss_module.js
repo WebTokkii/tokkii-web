@@ -10,6 +10,52 @@ const supabaseAnonKey = process.env.VITE_SUPABASE_ANON_KEY || process.env.SUPABA
 const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 const DEFAULT_AUTHORS = ['EVILTOKKII', 'REQUIEM373', 'ESPEEEOON', 'PAMACHE', 'NPEZE'];
+const DAILY_CATEGORY_LIMIT = 3;
+
+function getLocalDateStr(date = new Date()) {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+}
+
+function getHash(value) {
+    return Math.abs(
+        String(value || '').split('').reduce((acc, char) => {
+            acc = ((acc << 5) - acc) + char.charCodeAt(0);
+            return acc & acc;
+        }, 0)
+    ).toString(36).substring(0, 8);
+}
+
+function pickAuthor(seed) {
+    const hash = getHash(seed);
+    const index = parseInt(hash, 36) % DEFAULT_AUTHORS.length;
+    return DEFAULT_AUTHORS[index];
+}
+
+function ensureAbsoluteUrl(url, baseUrl) {
+    if (!url) return '';
+    try {
+        return new URL(url, baseUrl).toString();
+    } catch {
+        return url;
+    }
+}
+
+function extractTagValue(xml, tagName) {
+    const escapedTag = tagName.replace(':', '\\:');
+    const cdataMatch = xml.match(new RegExp(`<${escapedTag}[^>]*>\\s*<!\\[CDATA\\[([\\s\\S]*?)\\]\\]>\\s*<\\/${escapedTag}>`, 'i'));
+    if (cdataMatch?.[1]) return cdataMatch[1];
+    const regularMatch = xml.match(new RegExp(`<${escapedTag}[^>]*>([\\s\\S]*?)<\\/${escapedTag}>`, 'i'));
+    return regularMatch?.[1] || '';
+}
+
+function getCategoryFallbackImage(category) {
+    return category === 'ANIME'
+        ? 'https://images.unsplash.com/photo-1578632767115-351597cf2477?w=1200&auto=format&fit=crop&q=80'
+        : 'https://images.unsplash.com/photo-1542751371-adc38448a05e?w=1200&auto=format&fit=crop&q=80';
+}
 
 // Helper to translate text to Spanish using Google Translate public API
 async function translateText(text) {
@@ -104,7 +150,7 @@ function formatParagraphs(text) {
         .join('\n');
 }
 
-export async function syncRssFeeds(limit = 3) {
+export async function syncRssFeeds(limit = DAILY_CATEGORY_LIMIT) {
     const feeds = [
         { url: 'https://feeds.feedburner.com/ign/news', name: 'IGN', category: 'VIDEOJUEGOS' },
         { url: 'https://www.gamespot.com/feeds/news/', name: 'GameSpot', category: 'VIDEOJUEGOS' },
@@ -113,9 +159,12 @@ export async function syncRssFeeds(limit = 3) {
         { url: 'https://otakuusamagazine.com/feed/', name: 'Otaku USA', category: 'ANIME' }
     ];
 
-    console.log(`Starting RSS Feed Sync (Limit: ${limit} new articles per category)...`);
+    const targetDateStr = getLocalDateStr();
+    console.log(`Starting RSS Feed Sync (Limit: ${limit} new articles per category for ${targetDateStr})...`);
     let countVideojuegos = 0;
     let countAnime = 0;
+    let scannedVideojuegos = 0;
+    let scannedAnime = 0;
 
     for (const feed of feeds) {
         if (feed.category === 'VIDEOJUEGOS' && countVideojuegos >= limit) continue;
@@ -128,7 +177,7 @@ export async function syncRssFeeds(limit = 3) {
                     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/120.0.0.0'
                 }
             });
-            const xml = response.data;
+            const xml = String(response.data || '');
             
             const itemBlocks = xml.split('<item>');
             itemBlocks.shift();
@@ -137,21 +186,27 @@ export async function syncRssFeeds(limit = 3) {
                 if (feed.category === 'VIDEOJUEGOS' && countVideojuegos >= limit) break;
                 if (feed.category === 'ANIME' && countAnime >= limit) break;
 
-                const rawTitle = itemXml.match(/<title><!\[CDATA\[([\s\S]*?)\]\]><\/title>/)?.[1] || 
-                                 itemXml.match(/<title>([\s\S]*?)<\/title>/)?.[1] || '';
+                if (feed.category === 'VIDEOJUEGOS') scannedVideojuegos++;
+                if (feed.category === 'ANIME') scannedAnime++;
+
+                const rawTitle = extractTagValue(itemXml, 'title');
                 const titleEnglish = decodeHtmlEntities(rawTitle.trim());
                 
-                const link = (itemXml.match(/<link>([\s\S]*?)<\/link>/)?.[1] || '').trim();
+                const rawLink = extractTagValue(itemXml, 'link').trim();
+                const guid = extractTagValue(itemXml, 'guid').trim();
+                const link = ensureAbsoluteUrl(rawLink || guid, feed.url);
                 
                 if (!titleEnglish || !link) continue;
 
-                const hash = Math.abs(link.split('').reduce((a, b) => { a = ((a << 5) - a) + b.charCodeAt(0); return a & a }, 0)).toString(36).substring(0, 5);
+                const hash = getHash(link || `${feed.name}-${titleEnglish}`);
+                const baseSlug = generateSlug(titleEnglish || `${feed.name}-${hash}`);
+                const slug = `${baseSlug}-${hash}`;
                 
-                // Check if this article (link) already exists in Supabase to avoid duplicates
+                // Check if this article already exists in Supabase to avoid duplicates.
                 const { data: existing } = await supabase
                     .from('news_articles')
                     .select('id')
-                    .filter('slug', 'like', `%-${hash}`)
+                    .eq('slug', slug)
                     .maybeSingle();
 
                 if (existing) {
@@ -166,23 +221,20 @@ export async function syncRssFeeds(limit = 3) {
                 let subtitleEnglish = '';
 
                 // Try content:encoded first (typically has full paragraphs)
-                const contentEncoded = itemXml.match(/<content:encoded><!\[CDATA\[([\s\S]*?)\]\]><\/content:encoded>/)?.[1] || 
-                                       itemXml.match(/<content:encoded>([\s\S]*?)<\/content:encoded>/)?.[1] || '';
+                const contentEncoded = extractTagValue(itemXml, 'content:encoded');
                 let cleanedContent = cleanDescription(contentEncoded);
                 
                 if (cleanedContent && cleanedContent.trim().length >= 100) {
                     subtitleEnglish = cleanedContent;
                 } else {
                     // Try description
-                    const rawDesc = itemXml.match(/<description><!\[CDATA\[([\s\S]*?)\]\]><\/description>/)?.[1] || 
-                                    itemXml.match(/<description>([\s\S]*?)<\/description>/)?.[1] || '';
+                    const rawDesc = extractTagValue(itemXml, 'description');
                     const cleanedDesc = cleanDescription(rawDesc);
                     if (cleanedDesc && cleanedDesc.trim().length >= 50) {
                         subtitleEnglish = cleanedDesc;
                     } else {
                         // Try summary
-                        const summary = itemXml.match(/<summary><!\[CDATA\[([\s\S]*?)\]\]><\/summary>/)?.[1] || 
-                                        itemXml.match(/<summary>([\s\S]*?)<\/summary>/)?.[1] || '';
+                        const summary = extractTagValue(itemXml, 'summary');
                         const cleanedSummary = cleanDescription(summary);
                         if (cleanedSummary && cleanedSummary.trim().length >= 50) {
                             subtitleEnglish = cleanedSummary;
@@ -245,10 +297,11 @@ export async function syncRssFeeds(limit = 3) {
                     }
                 }
 
-                const pubDateStr = itemXml.match(/<pubDate>([\s\S]*?)<\/pubDate>/)?.[1] || '';
-                const published_at = pubDateStr ? new Date(pubDateStr).toISOString() : new Date().toISOString();
+                const pubDateStr = extractTagValue(itemXml, 'pubDate') || extractTagValue(itemXml, 'dc:date') || extractTagValue(itemXml, 'updated');
+                const parsedDate = pubDateStr ? new Date(pubDateStr) : new Date();
+                const published_at = Number.isNaN(parsedDate.getTime()) ? new Date().toISOString() : parsedDate.toISOString();
                 
-                const author = DEFAULT_AUTHORS[Math.floor(Math.random() * DEFAULT_AUTHORS.length)];
+                const author = pickAuthor(link);
 
                 // Find image url
                 let header_image = '';
@@ -261,12 +314,11 @@ export async function syncRssFeeds(limit = 3) {
                 } else if (medMatch) {
                     header_image = medMatch[1];
                 } else {
-                    const rawDesc = itemXml.match(/<description><!\[CDATA\[([\s\S]*?)\]\]><\/description>/)?.[1] || 
-                                    itemXml.match(/<description>([\s\S]*?)<\/description>/)?.[1] || '';
+                    const rawDesc = extractTagValue(itemXml, 'description');
                     const decodedDesc = decodeHtmlEntities(rawDesc);
                     const imgMatch = decodedDesc.match(/<img[^>]*src="([^"]*)"/i);
                     if (imgMatch) {
-                        header_image = imgMatch[1];
+                        header_image = ensureAbsoluteUrl(imgMatch[1], link);
                     }
                 }
 
@@ -294,12 +346,8 @@ export async function syncRssFeeds(limit = 3) {
                 }
 
                 if (!header_image) {
-                    header_image = feed.category === 'ANIME' 
-                        ? 'https://images.unsplash.com/photo-1578632767115-351597cf2477?w=800&auto=format&fit=crop&q=60' 
-                        : 'https://pub-0bf9a87cec964ff49bfd058873c948c3.r2.dev/public/logo.png';
+                    header_image = getCategoryFallbackImage(feed.category);
                 }
-
-                const slug = `${generateSlug(title)}-${hash}`;
 
                 const paragraphsHtml = formatParagraphs(fullDescriptionSpanish);
                 const articleHtml = `
@@ -313,22 +361,33 @@ export async function syncRssFeeds(limit = 3) {
 
                 // Tag category in metadata block inside content_blocks JSON
                 const content_blocks = [
-                    { type: 'metadata', category: feed.category },
+                    { type: 'metadata', category: feed.category, source: feed.name, source_url: link, source_hash: hash, imported_date: targetDateStr },
                     { type: 'text', content: articleHtml }
                 ];
 
+                const articlePayload = {
+                    title,
+                    subtitle,
+                    slug,
+                    header_image,
+                    content_blocks,
+                    author,
+                    published_at,
+                    category: feed.category
+                };
+
                 // Insert into Supabase
-                const { error: insertError } = await supabase
+                let { error: insertError } = await supabase
                     .from('news_articles')
-                    .insert({
-                        title,
-                        subtitle,
-                        slug,
-                        header_image,
-                        content_blocks,
-                        author,
-                        published_at
-                    });
+                    .upsert(articlePayload, { onConflict: 'slug' });
+
+                if (insertError && insertError.message?.includes('category')) {
+                    const { category, ...payloadWithoutCategory } = articlePayload;
+                    const retry = await supabase
+                        .from('news_articles')
+                        .upsert(payloadWithoutCategory, { onConflict: 'slug' });
+                    insertError = retry.error;
+                }
 
                 if (insertError) {
                     console.error(`Error inserting article "${title}":`, insertError.message);
@@ -345,7 +404,7 @@ export async function syncRssFeeds(limit = 3) {
             console.error(`Error syncing feed ${feed.name}:`, e.message);
         }
     }
-    console.log(`RSS Feed Sync Completed! Synced ${countVideojuegos} Videojuegos and ${countAnime} Anime new articles.`);
+    console.log(`RSS Feed Sync Completed! Scanned ${scannedVideojuegos} Videojuegos / ${scannedAnime} Anime items. Synced ${countVideojuegos} Videojuegos and ${countAnime} Anime new articles.`);
 
     // Check and trigger monthly leaderboard rotation snapshot & points reset if due
     await checkMonthlyLeaderboardRotation();
