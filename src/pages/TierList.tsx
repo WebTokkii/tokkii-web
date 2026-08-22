@@ -295,56 +295,52 @@ export default function TierList() {
   // Mouse/Touch drag-to-scroll horizontal pool ref and states
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   
-  // Dedicated Mouse Drag-to-Scroll for the Horizontal Characters Pool
-  const isPoolMouseDownRef = useRef(false);
-  const poolStartXRef = useRef(0);
-  const poolScrollLeftRef = useRef(0);
-  const isPoolDraggingRef = useRef(false);
+  // Unified Mouse & Pointer Drag-to-Scroll / Selection for Horizontal Pool
+  const [activeDragCharId, setActiveDragCharId] = useState<string | null>(null);
+  const [dragPosition, setDragPosition] = useState({ x: 0, y: 0 });
+  const [hoveredTierId, setHoveredTierId] = useState<string | null>(null);
+  const [hoveredIndex, setHoveredIndex] = useState<number | undefined>(undefined);
 
-  const handlePoolMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
-    // Only primary left mouse button and ignore clicks on buttons
+  const hoveredTierIdRef = useRef<string | null>(null);
+  const hoveredIndexRef = useRef<number | undefined>(undefined);
+
+  // Pool pointer gesture state (avoids any conflict with native draggable)
+  const poolGestureRef = useRef<{
+    isDown: boolean;
+    startX: number;
+    startY: number;
+    startScrollLeft: number;
+    charId: string | null;
+    mode: 'scroll' | 'drag' | null;
+    hasMoved: boolean;
+  }>({
+    isDown: false,
+    startX: 0,
+    startY: 0,
+    startScrollLeft: 0,
+    charId: null,
+    mode: null,
+    hasMoved: false,
+  });
+
+  const handlePoolPointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
+    // Only primary mouse button or touch
     if (e.button !== 0 || !scrollContainerRef.current) return;
     const target = e.target as HTMLElement;
     if (target.closest('button')) return;
 
-    isPoolMouseDownRef.current = true;
-    poolStartXRef.current = e.pageX - scrollContainerRef.current.offsetLeft;
-    poolScrollLeftRef.current = scrollContainerRef.current.scrollLeft;
-    isPoolDraggingRef.current = false;
-  };
+    const card = target.closest('.character-card') as HTMLElement | null;
+    const charId = card ? card.getAttribute('data-char-id') : null;
 
-  const handlePoolMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (!isPoolMouseDownRef.current || !scrollContainerRef.current) return;
-    const x = e.pageX - scrollContainerRef.current.offsetLeft;
-    const walk = (x - poolStartXRef.current) * 1.5;
-    if (Math.abs(walk) > 4) {
-      isPoolDraggingRef.current = true;
-      scrollContainerRef.current.scrollLeft = poolScrollLeftRef.current - walk;
-      scrollContainerRef.current.style.cursor = 'grabbing';
-      scrollContainerRef.current.style.userSelect = 'none';
-    }
-  };
-
-  const handlePoolMouseUp = () => {
-    isPoolMouseDownRef.current = false;
-    if (scrollContainerRef.current) {
-      scrollContainerRef.current.style.cursor = 'grab';
-      scrollContainerRef.current.style.userSelect = '';
-    }
-    setTimeout(() => {
-      isPoolDraggingRef.current = false;
-    }, 60);
-  };
-
-  const handlePoolMouseLeave = () => {
-    isPoolMouseDownRef.current = false;
-    if (scrollContainerRef.current) {
-      scrollContainerRef.current.style.cursor = 'grab';
-      scrollContainerRef.current.style.userSelect = '';
-    }
-    setTimeout(() => {
-      isPoolDraggingRef.current = false;
-    }, 60);
+    poolGestureRef.current = {
+      isDown: true,
+      startX: e.clientX,
+      startY: e.clientY,
+      startScrollLeft: scrollContainerRef.current.scrollLeft,
+      charId: charId,
+      mode: null,
+      hasMoved: false,
+    };
   };
 
   const handlePoolWheel = (e: React.WheelEvent<HTMLDivElement>) => {
@@ -353,20 +349,6 @@ export default function TierList() {
       scrollContainerRef.current.scrollLeft += e.deltaY;
     }
   };
-
-  // Pointer-drag state machine
-  const [pressedCharId, setPressedCharId] = useState<string | null>(null);
-  const [dragMode, setDragMode] = useState<'scroll' | 'drag' | null>(null);
-  const [dragStart, setDragStart] = useState({ x: 0, y: 0, scrollLeft: 0 });
-  const [dragPosition, setDragPosition] = useState({ x: 0, y: 0 });
-  const [hoveredTierId, setHoveredTierId] = useState<string | null>(null);
-  const [hoveredIndex, setHoveredIndex] = useState<number | undefined>(undefined);
-  const [activeDragCharId, setActiveDragCharId] = useState<string | null>(null);
-  const [hasPointerMoved, setHasPointerMoved] = useState(false);
-
-  // Refs to read latest drag state inside event handlers (avoids stale closures)
-  const hoveredTierIdRef = useRef<string | null>(null);
-  const hoveredIndexRef = useRef<number | undefined>(undefined);
 
   const getDropTargetFromPoint = (x: number, y: number): { tierId: string | null; index: number | undefined } => {
     const element = document.elementFromPoint(x, y);
@@ -430,39 +412,38 @@ export default function TierList() {
   };
 
   useEffect(() => {
-    const handlePointerMove = (e: PointerEvent) => {
-      if (!pressedCharId) return;
+    const onPointerMove = (e: PointerEvent) => {
+      const g = poolGestureRef.current;
+      if (!g.isDown || !scrollContainerRef.current) return;
 
-      // Prevent default selection, scrolling and text drags
-      if (e.cancelable) {
-        e.preventDefault();
-      }
+      const diffX = e.clientX - g.startX;
+      const diffY = e.clientY - g.startY;
 
-      const diffX = e.clientX - dragStart.x;
-      const diffY = e.clientY - dragStart.y;
-
-      if (dragMode === null) {
-        // Detect movement threshold (10px) to determine mode
-        if (Math.abs(diffX) > 10 || Math.abs(diffY) > 10) {
-          setHasPointerMoved(true);
-          if (pressedCharId === 'pool-scroll') {
-            setDragMode('scroll');
+      // Determine interaction mode once movement threshold is exceeded
+      if (g.mode === null) {
+        if (Math.abs(diffX) > 4 || Math.abs(diffY) > 4) {
+          g.hasMoved = true;
+          // Drag character upward toward tier list rows
+          if (diffY < -15 && Math.abs(diffY) > Math.abs(diffX) && g.charId) {
+            g.mode = 'drag';
+            setActiveDragCharId(g.charId);
+            setDragPosition({ x: e.clientX, y: e.clientY });
+            document.body.classList.add('dragging-active');
           } else {
-            // Drag character card in any direction!
-            setDragMode('drag');
-            setActiveDragCharId(pressedCharId);
-            setSelectedCharId(null); // Clear click selection
-            document.body.classList.add('dragging-active'); // Prevent text selection globally
+            // Horizontal scroll in pool
+            g.mode = 'scroll';
+            scrollContainerRef.current.style.cursor = 'grabbing';
+            scrollContainerRef.current.style.userSelect = 'none';
           }
         }
-      } else if (dragMode === 'scroll') {
-        if (scrollContainerRef.current) {
-          scrollContainerRef.current.scrollLeft = dragStart.scrollLeft - diffX;
-        }
-      } else if (dragMode === 'drag') {
+      }
+
+      if (g.mode === 'scroll') {
+        if (e.cancelable) e.preventDefault();
+        scrollContainerRef.current.scrollLeft = g.startScrollLeft - diffX;
+      } else if (g.mode === 'drag' && g.charId) {
+        if (e.cancelable) e.preventDefault();
         setDragPosition({ x: e.clientX, y: e.clientY });
-        
-        // Find hovered drop target and index dynamically
         const target = getDropTargetFromPoint(e.clientX, e.clientY);
         hoveredTierIdRef.current = target.tierId;
         hoveredIndexRef.current = target.index;
@@ -471,53 +452,50 @@ export default function TierList() {
       }
     };
 
-    const handlePointerUp = (e: PointerEvent) => {
-      if (!pressedCharId) return;
+    const onPointerUp = (e: PointerEvent) => {
+      const g = poolGestureRef.current;
+      if (!g.isDown) return;
+      g.isDown = false;
 
-      // Read from refs to avoid stale closure values
-      const currentTierId = hoveredTierIdRef.current;
-      const currentIndex = hoveredIndexRef.current;
+      if (scrollContainerRef.current) {
+        scrollContainerRef.current.style.cursor = 'grab';
+        scrollContainerRef.current.style.userSelect = '';
+      }
+      document.body.classList.remove('dragging-active');
 
-      if (dragMode === 'drag' && activeDragCharId) {
+      if (g.mode === 'drag' && g.charId) {
+        const currentTierId = hoveredTierIdRef.current;
+        const currentIndex = hoveredIndexRef.current;
         if (currentTierId && currentTierId !== 'pool') {
-          moveCharacter(activeDragCharId, currentTierId, currentIndex);
+          moveCharacter(g.charId, currentTierId, currentIndex);
         } else {
-          moveToPool(activeDragCharId);
+          moveToPool(g.charId);
         }
-      } else if (dragMode === null && !hasPointerMoved && pressedCharId !== 'pool-scroll') {
-        // Treated as standard click selection
-        handleCharCardClick(pressedCharId, e as any);
+      } else if (!g.hasMoved && g.charId) {
+        // Clean single click without movement -> select character
+        handleCharCardClick(g.charId, e as any);
       }
 
-      document.body.classList.remove('dragging-active');
+      g.mode = null;
+      g.charId = null;
+      g.hasMoved = false;
       hoveredTierIdRef.current = null;
       hoveredIndexRef.current = undefined;
-      setPressedCharId(null);
-      setDragMode(null);
       setActiveDragCharId(null);
       setHoveredTierId(null);
       setHoveredIndex(undefined);
-      setHasPointerMoved(false);
     };
 
-    const handleGlobalDragStart = (e: DragEvent) => {
-      if (pressedCharId) {
-        e.preventDefault();
-      }
-    };
-
-    window.addEventListener('pointermove', handlePointerMove, { passive: false });
-    window.addEventListener('pointerup', handlePointerUp);
-    window.addEventListener('pointercancel', handlePointerUp);
-    window.addEventListener('dragstart', handleGlobalDragStart);
+    window.addEventListener('pointermove', onPointerMove, { passive: false });
+    window.addEventListener('pointerup', onPointerUp);
+    window.addEventListener('pointercancel', onPointerUp);
 
     return () => {
-      window.removeEventListener('pointermove', handlePointerMove);
-      window.removeEventListener('pointerup', handlePointerUp);
-      window.removeEventListener('pointercancel', handlePointerUp);
-      window.removeEventListener('dragstart', handleGlobalDragStart);
+      window.removeEventListener('pointermove', onPointerMove);
+      window.removeEventListener('pointerup', onPointerUp);
+      window.removeEventListener('pointercancel', onPointerUp);
     };
-  }, [pressedCharId, dragStart, dragMode, activeDragCharId, hoveredTierId, hasPointerMoved]);
+  }, []);
 
   const scrollPool = (direction: 'left' | 'right') => {
     if (!scrollContainerRef.current) return;
@@ -655,7 +633,6 @@ export default function TierList() {
   };
 
   const handleDragStart = (e: React.DragEvent, charId: string) => {
-    setDragMode(null);
     e.dataTransfer.setData('text/plain', charId);
     e.dataTransfer.effectAllowed = 'move';
     setActiveDragCharId(charId);
@@ -1440,10 +1417,7 @@ export default function TierList() {
           <div 
             ref={scrollContainerRef}
             className="pool-horizontal-scroll"
-            onMouseDown={handlePoolMouseDown}
-            onMouseMove={handlePoolMouseMove}
-            onMouseUp={handlePoolMouseUp}
-            onMouseLeave={handlePoolMouseLeave}
+            onPointerDown={handlePoolPointerDown}
             onWheel={handlePoolWheel}
           >
             {filteredPool.length > 0 ? (
@@ -1453,21 +1427,7 @@ export default function TierList() {
                 return (
                   <div
                     key={char.id}
-                    draggable={true}
-                    onDragStart={(e) => {
-                      isPoolMouseDownRef.current = false;
-                      isPoolDraggingRef.current = false;
-                      handleDragStart(e, char.id);
-                    }}
-                    onDragEnd={handleDragEnd}
-                    onClick={(e) => {
-                      if (isPoolDraggingRef.current) {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        return;
-                      }
-                      handleCharCardClick(char.id, e);
-                    }}
+                    data-char-id={char.id}
                     className={`character-card ${currentTemplateId === 'dbd' ? 'dbd-pool-card' : ''} rarity-${char.rarity}-card element-${char.element.toLowerCase()}-glow ${selectedCharId === char.id ? 'selected' : ''}`}
                     style={{ 
                       backgroundImage: `url(${char.imgUrl})`, 
@@ -1501,7 +1461,7 @@ export default function TierList() {
         </div>
 
       {/* Custom drag-and-drop overlay preview */}
-      {activeDragCharId && dragMode === 'drag' && (
+      {activeDragCharId && (
         <div 
           className="custom-drag-preview"
           style={{
