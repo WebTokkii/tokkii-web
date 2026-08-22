@@ -718,7 +718,6 @@ if (e.pointerType !== 'mouse') {
 
   const handleSetRowColor = (tierId: string, color: string) => {
     setTiers(prev => prev.map(t => t.id === tierId ? { ...t, color } : t));
-    setActiveColorPickerRowId(null);
   };
 
   const handleAddTier = () => {
