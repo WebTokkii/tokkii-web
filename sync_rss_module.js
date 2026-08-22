@@ -152,11 +152,15 @@ function formatParagraphs(text) {
 
 export async function syncRssFeeds(limit = DAILY_CATEGORY_LIMIT) {
     const feeds = [
-        { url: 'https://feeds.feedburner.com/ign/news', name: 'IGN', category: 'VIDEOJUEGOS' },
-        { url: 'https://www.gamespot.com/feeds/news/', name: 'GameSpot', category: 'VIDEOJUEGOS' },
-        { url: 'https://www.polygon.com/rss/index.xml', name: 'Polygon', category: 'VIDEOJUEGOS' },
-        { url: 'https://www.animenewsnetwork.com/news/rss.xml?ann-edition=w', name: 'Anime News Network', category: 'ANIME' },
-        { url: 'https://otakuusamagazine.com/feed/', name: 'Otaku USA', category: 'ANIME' }
+        // Videojuegos (Español nativo e Internacional)
+        { url: 'https://www.3djuegos.com/universo/rss/rss.php', name: '3DJuegos', category: 'VIDEOJUEGOS', lang: 'es' },
+        { url: 'https://es.ign.com/feed.xml', name: 'IGN España', category: 'VIDEOJUEGOS', lang: 'es' },
+        { url: 'https://www.gamespot.com/feeds/news/', name: 'GameSpot', category: 'VIDEOJUEGOS', lang: 'en' },
+
+        // Anime (Español nativo e Internacional)
+        { url: 'https://www.crunchyroll.com/news/rss?lang=esES', name: 'Crunchyroll', category: 'ANIME', lang: 'es' },
+        { url: 'https://www.anmtvla.com/feeds/posts/default?alt=rss', name: 'ANMTV LA', category: 'ANIME', lang: 'es' },
+        { url: 'https://www.animenewsnetwork.com/news/rss.xml?ann-edition=w', name: 'Anime News Network', category: 'ANIME', lang: 'en' }
     ];
 
     const targetDateStr = getLocalDateStr();
@@ -171,15 +175,18 @@ export async function syncRssFeeds(limit = DAILY_CATEGORY_LIMIT) {
         if (feed.category === 'ANIME' && countAnime >= limit) continue;
 
         try {
-            console.log(`Fetching feed from: ${feed.name} (${feed.category})...`);
+            console.log(`Fetching feed from: ${feed.name} (${feed.category}) [${feed.lang}]...`);
             const response = await axios.get(feed.url, {
                 headers: {
-                    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/120.0.0.0'
-                }
+                    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/122.0.0.0',
+                    'Accept': 'application/rss+xml, application/xml, text/xml, */*'
+                },
+                timeout: 10000
             });
             const xml = String(response.data || '');
             
-            const itemBlocks = xml.split('<item>');
+            // Split by item or entry tags (RSS / Atom support)
+            const itemBlocks = xml.includes('<item>') ? xml.split('<item>') : xml.split('<entry>');
             itemBlocks.shift();
 
             for (const itemXml of itemBlocks) {
@@ -190,16 +197,16 @@ export async function syncRssFeeds(limit = DAILY_CATEGORY_LIMIT) {
                 if (feed.category === 'ANIME') scannedAnime++;
 
                 const rawTitle = extractTagValue(itemXml, 'title');
-                const titleEnglish = decodeHtmlEntities(rawTitle.trim());
+                const rawTitleClean = decodeHtmlEntities(rawTitle.trim());
                 
-                const rawLink = extractTagValue(itemXml, 'link').trim();
-                const guid = extractTagValue(itemXml, 'guid').trim();
+                const rawLink = extractTagValue(itemXml, 'link').trim() || (itemXml.match(/<link[^>]*href=["']([^"']*)["']/i)?.[1] || '');
+                const guid = extractTagValue(itemXml, 'guid').trim() || extractTagValue(itemXml, 'id').trim();
                 const link = ensureAbsoluteUrl(rawLink || guid, feed.url);
                 
-                if (!titleEnglish || !link) continue;
+                if (!rawTitleClean || !link) continue;
 
-                const hash = getHash(link || `${feed.name}-${titleEnglish}`);
-                const baseSlug = generateSlug(titleEnglish || `${feed.name}-${hash}`);
+                const hash = getHash(link || `${feed.name}-${rawTitleClean}`);
+                const baseSlug = generateSlug(rawTitleClean || `${feed.name}-${hash}`);
                 const slug = `${baseSlug}-${hash}`;
                 
                 // Check if this article already exists in Supabase to avoid duplicates.
@@ -213,15 +220,18 @@ export async function syncRssFeeds(limit = DAILY_CATEGORY_LIMIT) {
                     continue;
                 }
 
-                console.log(`Found new article: "${titleEnglish}" for category ${feed.category}. Translating...`);
+                console.log(`Found new article: "${rawTitleClean}" for category ${feed.category} from ${feed.name}...`);
 
-                // Translate Title and Subtitle/Description to Spanish
-                const title = await translateText(titleEnglish);
+                // Translate only if source is in English
+                let title = rawTitleClean;
+                if (feed.lang === 'en') {
+                    title = await translateText(rawTitleClean);
+                }
                 
                 let subtitleEnglish = '';
 
                 // Try content:encoded first (typically has full paragraphs)
-                const contentEncoded = extractTagValue(itemXml, 'content:encoded');
+                const contentEncoded = extractTagValue(itemXml, 'content:encoded') || extractTagValue(itemXml, 'summary') || extractTagValue(itemXml, 'description');
                 let cleanedContent = cleanDescription(contentEncoded);
                 
                 if (cleanedContent && cleanedContent.trim().length >= 100) {
@@ -247,54 +257,55 @@ export async function syncRssFeeds(limit = DAILY_CATEGORY_LIMIT) {
                 // Limit to 1500 characters to avoid overwhelming the user
                 if (subtitleEnglish.length > 1500) {
                     subtitleEnglish = subtitleEnglish.substring(0, 1500);
-                }
-
+                }                
                 let subtitle = '';
                 let fullDescriptionSpanish = '';
 
-                if (subtitleEnglish && subtitleEnglish.length >= 10) {
+                if (feed.lang === 'es') {
+                    // Source is natively in Spanish -> No translation needed, avoids 429
+                    fullDescriptionSpanish = subtitleEnglish;
+                    subtitle = fullDescriptionSpanish.length > 200 ? fullDescriptionSpanish.substring(0, 197) + '...' : fullDescriptionSpanish;
+                } else if (subtitleEnglish && subtitleEnglish.length >= 10) {
                     subtitle = await translateText(subtitleEnglish.length > 200 ? subtitleEnglish.substring(0, 197) + '...' : subtitleEnglish);
                     fullDescriptionSpanish = await translateText(subtitleEnglish);
-                    
-                    // If it is too short (less than 500 chars), it will look empty. Add two paragraphs to guarantee the same text depth!
-                    if (fullDescriptionSpanish.length < 500) {
-                        const extraFallbacks = feed.category === 'ANIME' ? [
-                            [
-                                `¡No te pierdas ningún detalle de este estreno! Te mantendremos informado sobre las últimas novedades del mundo del anime, manga y la cultura otaku. Haz clic en el botón de abajo para explorar el artículo completo y ver todo el contenido oficial disponible.`,
-                                `La comunidad otaku y los amantes de la animación japonesa están muy atentos a estos nuevos desarrollos. Te invitamos a profundizar más y consultar opiniones de expertos accediendo directamente a la nota original.`
-                            ],
-                            [
-                                `Esta producción promete ser de lo más comentado de la temporada. Puedes conocer todos los pormenores, detalles del staff de animación y fechas clave visitando el enlace al sitio oficial que te dejamos abajo.`,
-                                `El mundo del anime se expande constantemente con lanzamientos y producciones cada semana. Accede a la cobertura completa y detallada de este estreno directo de la fuente oficial.`
-                            ]
-                        ] : [
-                            [
-                                `¡No te pierdas ningún detalle de esta noticia! Te mantendremos informado sobre las últimas novedades del mundo de los videojuegos y la cultura geek. Haz clic en el botón de abajo para explorar el artículo completo y ver todo el contenido oficial disponible.`,
-                                `La comunidad gamer está atenta a estos nuevos desarrollos. Te invitamos a profundizar más y consultar todos los detalles técnicos y opiniones de los expertos accediendo directamente a la nota de prensa original a continuación.`
-                            ],
-                            [
-                                `Esta actualización promete cambiar las cosas para los jugadores. Puedes conocer todos los pormenores, imágenes y videos relacionados visitando el enlace al sitio oficial que te dejamos en la parte inferior.`,
-                                `El gaming evoluciona constantemente y esta es solo una de las muchas novedades de la semana. Accede a la cobertura completa y detallada de este lanzamiento directamente desde la fuente original.`
-                            ]
-                        ];
-                        const idx = titleEnglish.length % extraFallbacks.length;
-                        const chosenParagraphs = extraFallbacks[idx];
-                        fullDescriptionSpanish = fullDescriptionSpanish + "\n\n" + chosenParagraphs.join("\n\n");
-                    }
-                } else {
-                    // Complete fallback text with 2 structured paragraphs
-                    const fallbacks = [
-                        `¡Mantente al día con las últimas novedades del mundo de los videojuegos y el anime! Hay grandes noticias sucediendo en este momento en la industria.\n\nHaz clic en el botón de abajo para leer el artículo completo con todos los detalles directamente en la fuente oficial.`,
-                        `El universo del gaming y el anime no se detiene y hoy nos trae detalles emocionantes que no te puedes perder.\n\nTe invitamos a leer la cobertura completa y detallada de esta noticia haciendo clic en el enlace oficial que se encuentra a continuación.`,
-                        `¡Una nueva actualización ha llegado a la comunidad geek! Explora todas las novedades, detalles técnicos e información relevante de este lanzamiento.\n\nPuedes acceder a la nota completa de forma directa en el portal oficial de noticias.`,
-                        `¡Entérate de lo último en tecnología, lanzamientos y tendencias del mundo geek, del anime y de los videojuegos!\n\nHaz clic en el botón inferior para consultar la publicación original y no perderte ningún detalle.`
+                }
+
+                // If description is short (less than 400 chars), add thematic complementary paragraphs
+                if (fullDescriptionSpanish && fullDescriptionSpanish.length < 400) {
+                    const extraFallbacks = feed.category === 'ANIME' ? [
+                        [
+                            `¡No te pierdas ningún detalle de este estreno! Te mantendremos informado sobre las últimas novedades del mundo del anime, manga y la cultura otaku. Haz clic en el botón de abajo para explorar el artículo completo y ver todo el contenido oficial disponible.`,
+                            `La comunidad otaku y los amantes de la animación japonesa están muy atentos a estos nuevos desarrollos. Te invitamos a profundizar más y consultar opiniones de expertos accediendo directamente a la nota original.`
+                        ],
+                        [
+                            `Esta producción promete ser de lo más comentado de la temporada. Puedes conocer todos los pormenores, detalles del staff de animación y fechas clave visitando el enlace al sitio oficial que te dejamos abajo.`,
+                            `El mundo del anime se expande constantemente con lanzamientos y producciones cada semana. Accede a la cobertura completa y detallada de este estreno directo de la fuente oficial.`
+                        ]
+                    ] : [
+                        [
+                            `¡No te pierdas ningún detalle de esta noticia! Te mantendremos informado sobre las últimas novedades del mundo de los videojuegos y la cultura geek. Haz clic en el botón de abajo para explorar el artículo completo y ver todo el contenido oficial disponible.`,
+                            `La comunidad gamer está atenta a estos nuevos desarrollos. Te invitamos a profundizar más y consultar todos los detalles técnicos y opiniones de los expertos accediendo directamente a la nota de prensa original a continuación.`
+                        ],
+                        [
+                            `Esta actualización promete cambiar las cosas para los jugadores. Puedes conocer todos los pormenores, imágenes y videos relacionados visitando el enlace al sitio oficial que te dejamos en la parte inferior.`,
+                            `El gaming evoluciona constantemente y esta es solo una de las muchas novedades de la semana. Accede a la cobertura completa y detallada de este lanzamiento directamente desde la fuente original.`
+                        ]
                     ];
-                    const index = titleEnglish.length % fallbacks.length;
+                    const idx = title.length % extraFallbacks.length;
+                    const chosenParagraphs = extraFallbacks[idx];
+                    fullDescriptionSpanish = fullDescriptionSpanish + "\n\n" + chosenParagraphs.join("\n\n");
+                } else if (!fullDescriptionSpanish) {
+                    // Complete fallback text with structured paragraphs
+                    const fallbacks = feed.category === 'ANIME' ? [
+                        `¡El universo del anime y el manga continúa sorprendiéndonos con noticias de impacto!\n\nNo te pierdas ningún detalle de esta historia haciendo clic en el enlace oficial a continuación para acceder al reporte completo.`,
+                        `¡Grandes novedades para los fans de la animación japonesa! Mantente al día con todos los anuncios, trailers y fechas clave.\n\nPuedes consultar todos los pormenores accediendo directamente a la fuente original de la noticia.`
+                    ] : [
+                        `¡Mantente al día con las últimas novedades del mundo de los videojuegos! Hay grandes noticias sucediendo en este momento en la industria.\n\nHaz clic en el botón de abajo para leer el artículo completo con todos los detalles directamente en la fuente oficial.`,
+                        `El universo del gaming no se detiene y hoy nos trae anuncios y detalles que todo jugador debe conocer.\n\nTe invitamos a leer la cobertura completa y detallada haciendo clic en el enlace oficial que se encuentra a continuación.`
+                    ];
+                    const index = title.length % fallbacks.length;
                     fullDescriptionSpanish = fallbacks[index];
                     subtitle = fullDescriptionSpanish.split('\n')[0];
-                    if (subtitle.length > 200) {
-                        subtitle = subtitle.substring(0, 197) + '...';
-                    }
                 }
 
                 const pubDateStr = extractTagValue(itemXml, 'pubDate') || extractTagValue(itemXml, 'dc:date') || extractTagValue(itemXml, 'updated');
@@ -305,37 +316,42 @@ export async function syncRssFeeds(limit = DAILY_CATEGORY_LIMIT) {
 
                 // Find image url
                 let header_image = '';
-                const encMatch = itemXml.match(/<enclosure[^>]*url="([^"]*)"/i);
-                const medMatch = itemXml.match(/<media:content[^>]*url="([^"]*)"/i) || 
-                                 itemXml.match(/<media:thumbnail[^>]*url="([^"]*)"/i);
+                const encMatch = itemXml.match(/<enclosure[^>]*url=["']([^"']*)["']/i);
+                const medMatch = itemXml.match(/<media:content[^>]*url=["']([^"']*)["']/i) || 
+                                 itemXml.match(/<media:thumbnail[^>]*url=["']([^"']*)["']/i);
                 
                 if (encMatch) {
                     header_image = encMatch[1];
                 } else if (medMatch) {
                     header_image = medMatch[1];
                 } else {
-                    const rawDesc = extractTagValue(itemXml, 'description');
+                    const rawDesc = extractTagValue(itemXml, 'description') || extractTagValue(itemXml, 'content:encoded');
                     const decodedDesc = decodeHtmlEntities(rawDesc);
-                    const imgMatch = decodedDesc.match(/<img[^>]*src="([^"]*)"/i);
+                    const imgMatch = decodedDesc.match(/<img[^>]*src=["']([^"']*)["']/i);
                     if (imgMatch) {
                         header_image = ensureAbsoluteUrl(imgMatch[1], link);
                     }
                 }
 
-                // If still empty (like ANN feeds), scrape the page for og:image/twitter:image
+                // If Blogger/Google thumbnail, upgrade to original high-res size
+                if (header_image && (header_image.includes('blogger.googleusercontent.com') || header_image.includes('bp.blogspot.com'))) {
+                    header_image = header_image.replace(/\/s[0-9]+(-c)?\//i, '/s1600/').replace(/\/w[0-9]+-h[0-9]+[^/]*\//i, '/s1600/');
+                }
+
+                // If still empty, scrape the page for og:image/twitter:image
                 if (!header_image && link) {
                     try {
                         console.log(`Scraping page for cover image: ${link}...`);
                         const pageRes = await axios.get(link, {
                             headers: { 
-                                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36' 
+                                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/122.0.0.0' 
                             },
                             timeout: 6000
                         });
                         const html = pageRes.data;
-                        const ogImageMatch = html.match(/<meta[^>]*property="og:image"[^>]*content="([^"]*)"/i) || 
-                                             html.match(/<meta[^>]*content="([^"]*)"[^>]*property="og:image"/i) ||
-                                             html.match(/<meta[^>]*name="twitter:image"[^>]*content="([^"]*)"/i);
+                        const ogImageMatch = html.match(/<meta[^>]*property=["']og:image["'][^>]*content=["']([^"']*)["']/i) || 
+                                             html.match(/<meta[^>]*content=["']([^"']*)["'][^>]*property=["']og:image["']/i) ||
+                                             html.match(/<meta[^>]*name=["']twitter:image["'][^>]*content=["']([^"']*)["']/i);
                         if (ogImageMatch) {
                             header_image = ogImageMatch[1];
                             console.log(`Found og:image: ${header_image}`);
