@@ -11,6 +11,7 @@ import {
 import {
   DBD_CHARACTERS
 } from '../data/DbdDb';
+import { supabase } from '../lib/supabase';
 import './TierList.css';
 interface Character {
   id: string;
@@ -177,7 +178,48 @@ export default function TierList() {
     currentTemplateId === 'overwatch' ? OVERWATCH_WEAPONS :
     DBD_WEAPONS;
 
-  // Re-sync states when template ID changes
+  // Dynamic characters from Supabase (updated from Builder)
+  const [customCharacters, setCustomCharacters] = useState<Record<string, Character[]>>({});
+
+  // Load custom tierlists from Supabase & subscribe to realtime updates
+  useEffect(() => {
+    const fetchTierlists = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('minigames_content')
+          .select('*')
+          .in('game_type', ['tierlist_genshin', 'tierlist_wuwa', 'tierlist_overwatch', 'tierlist_dbd']);
+
+        if (!error && data && data.length > 0) {
+          const dict: Record<string, Character[]> = {};
+          data.forEach(row => {
+            const key = row.game_type.replace('tierlist_', '');
+            if (Array.isArray(row.data) && row.data.length > 0) {
+              dict[key] = row.data as Character[];
+            }
+          });
+          setCustomCharacters(dict);
+        }
+      } catch (err) {
+        console.error("Error loading tierlists from Supabase:", err);
+      }
+    };
+
+    fetchTierlists();
+
+    const channel = supabase
+      .channel('tierlists_realtime_sync')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'minigames_content' }, () => {
+        fetchTierlists();
+      })
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, []);
+
+  // Re-sync states when template ID or characters data change
   useEffect(() => {
     const storageKey = 
       currentTemplateId === 'genshin' ? 'genshin_tierlist_tiers' : 
@@ -185,11 +227,13 @@ export default function TierList() {
       currentTemplateId === 'overwatch' ? 'overwatch_tierlist_tiers' :
       'dbd_tierlist_tiers';
       
-    const characters = 
+    const defaultCharacters = 
       currentTemplateId === 'genshin' ? GENSHIN_CHARACTERS : 
       currentTemplateId === 'wuwa' ? WUTHERING_WAVES_CHARACTERS : 
       currentTemplateId === 'overwatch' ? OVERWATCH_CHARACTERS :
       DBD_CHARACTERS;
+
+    const characters = customCharacters[currentTemplateId] || defaultCharacters;
     
     // Rebuild quick lookup map
     charactersMap.current = characters.reduce((acc, char) => {
@@ -223,7 +267,7 @@ export default function TierList() {
     setActiveWeaponFilter(null);
     setActiveRarityFilter(null);
     setSearchQuery('');
-  }, [currentTemplateId]);
+  }, [currentTemplateId, customCharacters]);
 
   // Dock auto-hide states
   const [isDockHidden, setIsDockHidden] = useState(false);
@@ -1250,10 +1294,10 @@ if (e.pointerType !== 'mouse') {
             </h2>
             <span className="pool-count">
               {filteredPool.length} / {
-                currentTemplateId === 'genshin' ? GENSHIN_CHARACTERS.length : 
-                currentTemplateId === 'wuwa' ? WUTHERING_WAVES_CHARACTERS.length : 
-                currentTemplateId === 'overwatch' ? OVERWATCH_CHARACTERS.length :
-                DBD_CHARACTERS.length
+                currentTemplateId === 'genshin' ? (customCharacters.genshin?.length || GENSHIN_CHARACTERS.length) : 
+                currentTemplateId === 'wuwa' ? (customCharacters.wuwa?.length || WUTHERING_WAVES_CHARACTERS.length) : 
+                currentTemplateId === 'overwatch' ? (customCharacters.overwatch?.length || OVERWATCH_CHARACTERS.length) :
+                (customCharacters.dbd?.length || DBD_CHARACTERS.length)
               }
             </span>
           </div>
