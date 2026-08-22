@@ -159,7 +159,7 @@ export default function TierList() {
 
 
   // Active view state ('home' menu of 4 cards, or 'editor')
-  const [currentView, setCurrentView] = useState<'home' | 'editor'>('editor');
+  const [currentView, setCurrentView] = useState<'home' | 'editor'>('home');
 
   // Active template state
   const [currentTemplateId, setCurrentTemplateId] = useState<'genshin' | 'wuwa' | 'overwatch' | 'dbd'>('genshin');
