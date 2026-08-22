@@ -295,6 +295,65 @@ export default function TierList() {
   // Mouse/Touch drag-to-scroll horizontal pool ref and states
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   
+  // Dedicated Mouse Drag-to-Scroll for the Horizontal Characters Pool
+  const isPoolMouseDownRef = useRef(false);
+  const poolStartXRef = useRef(0);
+  const poolScrollLeftRef = useRef(0);
+  const isPoolDraggingRef = useRef(false);
+
+  const handlePoolMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
+    // Only primary left mouse button and ignore clicks on buttons
+    if (e.button !== 0 || !scrollContainerRef.current) return;
+    const target = e.target as HTMLElement;
+    if (target.closest('button')) return;
+
+    isPoolMouseDownRef.current = true;
+    poolStartXRef.current = e.pageX - scrollContainerRef.current.offsetLeft;
+    poolScrollLeftRef.current = scrollContainerRef.current.scrollLeft;
+    isPoolDraggingRef.current = false;
+  };
+
+  const handlePoolMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!isPoolMouseDownRef.current || !scrollContainerRef.current) return;
+    const x = e.pageX - scrollContainerRef.current.offsetLeft;
+    const walk = (x - poolStartXRef.current) * 1.5;
+    if (Math.abs(walk) > 4) {
+      isPoolDraggingRef.current = true;
+      scrollContainerRef.current.scrollLeft = poolScrollLeftRef.current - walk;
+      scrollContainerRef.current.style.cursor = 'grabbing';
+      scrollContainerRef.current.style.userSelect = 'none';
+    }
+  };
+
+  const handlePoolMouseUp = () => {
+    isPoolMouseDownRef.current = false;
+    if (scrollContainerRef.current) {
+      scrollContainerRef.current.style.cursor = 'grab';
+      scrollContainerRef.current.style.userSelect = '';
+    }
+    setTimeout(() => {
+      isPoolDraggingRef.current = false;
+    }, 60);
+  };
+
+  const handlePoolMouseLeave = () => {
+    isPoolMouseDownRef.current = false;
+    if (scrollContainerRef.current) {
+      scrollContainerRef.current.style.cursor = 'grab';
+      scrollContainerRef.current.style.userSelect = '';
+    }
+    setTimeout(() => {
+      isPoolDraggingRef.current = false;
+    }, 60);
+  };
+
+  const handlePoolWheel = (e: React.WheelEvent<HTMLDivElement>) => {
+    if (!scrollContainerRef.current) return;
+    if (e.deltaY !== 0 && e.deltaX === 0) {
+      scrollContainerRef.current.scrollLeft += e.deltaY;
+    }
+  };
+
   // Pointer-drag state machine
   const [pressedCharId, setPressedCharId] = useState<string | null>(null);
   const [dragMode, setDragMode] = useState<'scroll' | 'drag' | null>(null);
@@ -353,9 +412,9 @@ export default function TierList() {
           const rect = closestCard.getBoundingClientRect();
           const isAfter = x > rect.left + rect.width / 2;
           const index = cards.indexOf(closestCard);
-          return {
-            tierId,
-            index: index !== -1 ? (isAfter ? index + 1 : index) : undefined
+          return { 
+            tierId, 
+            index: index !== -1 ? (isAfter ? index + 1 : index) : undefined 
           };
         }
       }
@@ -368,35 +427,6 @@ export default function TierList() {
     }
     
     return { tierId: null, index: undefined };
-  };
-
-  const handleCharCardPointerDown = (charId: string, e: React.PointerEvent) => {
-    if (e.pointerType === 'mouse' && e.button !== 0) return;
-    
-    // Prevent default touch scroll and drag behaviors only for touch or pen
-if (e.pointerType !== 'mouse') {
-  e.preventDefault();
-}
-    
-    const initialScroll = scrollContainerRef.current ? scrollContainerRef.current.scrollLeft : 0;
-    setPressedCharId(charId);
-    setDragStart({ x: e.clientX, y: e.clientY, scrollLeft: initialScroll });
-    setDragPosition({ x: e.clientX, y: e.clientY }); // Initialize position immediately to prevent 1-frame ghost flash!
-    setDragMode(null);
-    setHasPointerMoved(false);
-  };
-
-  const handlePoolPointerDown = (e: React.PointerEvent) => {
-    if (e.pointerType === 'mouse' && e.button !== 0) return;
-    
-    const target = e.target as HTMLElement;
-    if (target.closest('.character-card') || target.closest('button')) return;
-    
-    const initialScroll = scrollContainerRef.current ? scrollContainerRef.current.scrollLeft : 0;
-    setPressedCharId('pool-scroll');
-    setDragStart({ x: e.clientX, y: e.clientY, scrollLeft: initialScroll });
-    setDragMode('scroll'); // Scroll directly on container click
-    setHasPointerMoved(false);
   };
 
   useEffect(() => {
@@ -1410,7 +1440,11 @@ if (e.pointerType !== 'mouse') {
           <div 
             ref={scrollContainerRef}
             className="pool-horizontal-scroll"
-            onPointerDown={handlePoolPointerDown}
+            onMouseDown={handlePoolMouseDown}
+            onMouseMove={handlePoolMouseMove}
+            onMouseUp={handlePoolMouseUp}
+            onMouseLeave={handlePoolMouseLeave}
+            onWheel={handlePoolWheel}
           >
             {filteredPool.length > 0 ? (
               filteredPool.map(charId => {
@@ -1420,9 +1454,20 @@ if (e.pointerType !== 'mouse') {
                   <div
                     key={char.id}
                     draggable={true}
-                    onDragStart={(e) => handleDragStart(e, char.id)}
+                    onDragStart={(e) => {
+                      isPoolMouseDownRef.current = false;
+                      isPoolDraggingRef.current = false;
+                      handleDragStart(e, char.id);
+                    }}
                     onDragEnd={handleDragEnd}
-                    onClick={(e) => handleCharCardClick(char.id, e)}
+                    onClick={(e) => {
+                      if (isPoolDraggingRef.current) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        return;
+                      }
+                      handleCharCardClick(char.id, e);
+                    }}
                     className={`character-card ${currentTemplateId === 'dbd' ? 'dbd-pool-card' : ''} rarity-${char.rarity}-card element-${char.element.toLowerCase()}-glow ${selectedCharId === char.id ? 'selected' : ''}`}
                     style={{ 
                       backgroundImage: `url(${char.imgUrl})`, 
