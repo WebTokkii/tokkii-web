@@ -354,11 +354,11 @@ export default function TierList() {
     const element = document.elementFromPoint(x, y);
     if (!element) return { tierId: null, index: undefined };
     
-    // Check if hovered element is a character card in a tier row
+    // 1. Check if hovered element is a character card in a tier row
     const targetCard = element.closest('.tier-dropzone-normal .character-card, .tier-dropzone-fullscreen .character-card');
     if (targetCard) {
       const dropzone = targetCard.parentElement;
-      const tierRow = targetCard.closest('.tier-row-normal, .tier-row-fullscreen');
+      const tierRow = targetCard.closest('.tier-row-normal, .tier-row-fullscreen, [data-tier-id]');
       if (dropzone && tierRow) {
         const tierId = tierRow.getAttribute('data-tier-id');
         const cards = Array.from(dropzone.querySelectorAll('.character-card'));
@@ -372,7 +372,8 @@ export default function TierList() {
       }
     }
     
-    const tierRow = element.closest('.tier-row');
+    // 2. Check if hovering anywhere over a tier row container
+    const tierRow = element.closest('.tier-row-normal, .tier-row-fullscreen, [data-tier-id]');
     if (tierRow) {
       const tierId = tierRow.getAttribute('data-tier-id');
       const dropzone = tierRow.querySelector('.tier-dropzone-normal, .tier-dropzone-fullscreen');
@@ -403,7 +404,7 @@ export default function TierList() {
       return { tierId, index: undefined };
     }
     
-    const poolSection = element.closest('.pool-section');
+    const poolSection = element.closest('.pool-section, .pool-horizontal-wrapper');
     if (poolSection) {
       return { tierId: 'pool', index: undefined };
     }
@@ -418,24 +419,23 @@ export default function TierList() {
 
       const diffX = e.clientX - g.startX;
       const diffY = e.clientY - g.startY;
+      const dockRect = scrollContainerRef.current.getBoundingClientRect();
+      const isAboveDock = e.clientY < dockRect.top;
 
-      // Determine interaction mode once movement threshold is exceeded
-      if (g.mode === null) {
-        if (Math.abs(diffX) > 4 || Math.abs(diffY) > 4) {
+      // Transition immediately to 'drag' if dragging a character upward toward the tier list
+      if (g.charId && (isAboveDock || diffY < -12)) {
+        if (g.mode !== 'drag') {
+          g.mode = 'drag';
           g.hasMoved = true;
-          // Drag character upward toward tier list rows
-          if (diffY < -15 && Math.abs(diffY) > Math.abs(diffX) && g.charId) {
-            g.mode = 'drag';
-            setActiveDragCharId(g.charId);
-            setDragPosition({ x: e.clientX, y: e.clientY });
-            document.body.classList.add('dragging-active');
-          } else {
-            // Horizontal scroll in pool
-            g.mode = 'scroll';
-            scrollContainerRef.current.style.cursor = 'grabbing';
-            scrollContainerRef.current.style.userSelect = 'none';
-          }
+          setActiveDragCharId(g.charId);
+          scrollContainerRef.current.style.cursor = 'grab';
+          document.body.classList.add('dragging-active');
         }
+      } else if (g.mode === null && (Math.abs(diffX) > 4 || Math.abs(diffY) > 4)) {
+        g.hasMoved = true;
+        g.mode = 'scroll';
+        scrollContainerRef.current.style.cursor = 'grabbing';
+        scrollContainerRef.current.style.userSelect = 'none';
       }
 
       if (g.mode === 'scroll') {
