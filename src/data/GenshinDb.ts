@@ -14,7 +14,7 @@ export const GENSHIN_CHARACTERS: Character[] = [
     "element": "Hydro",
     "weapon": "Claymore",
     "rarity": 4,
-    "imgUrl": "https://static.wikia.nocookie.net/gensin-impact/images/a/a3/Aino_Icon.png/revision/latest/scale-to-width-down/256?cb=20250910025341"
+    "imgUrl": "/Genshin/aino.png"
   },
   {
     "id": "albedo",
@@ -22,7 +22,7 @@ export const GENSHIN_CHARACTERS: Character[] = [
     "element": "Geo",
     "weapon": "Sword",
     "rarity": 5,
-    "imgUrl": "https://static.wikia.nocookie.net/gensin-impact/images/3/30/Albedo_Icon.png/revision/latest/scale-to-width-down/256?cb=20260304040635"
+    "imgUrl": "/Genshin/albedo.png"
   },
   {
     "id": "alhaitham",
@@ -30,7 +30,7 @@ export const GENSHIN_CHARACTERS: Character[] = [
     "element": "Dendro",
     "weapon": "Sword",
     "rarity": 5,
-    "imgUrl": "https://static.wikia.nocookie.net/gensin-impact/images/2/2c/Alhaitham_Icon.png/revision/latest/scale-to-width-down/256?cb=20231215091456"
+    "imgUrl": "/Genshin/alhaitham.png"
   },
   {
     "id": "aloy",
@@ -38,7 +38,7 @@ export const GENSHIN_CHARACTERS: Character[] = [
     "element": "Cryo",
     "weapon": "Bow",
     "rarity": 5,
-    "imgUrl": "https://static.wikia.nocookie.net/gensin-impact/images/e/e5/Aloy_Icon.png/revision/latest/scale-to-width-down/256?cb=20231215091525"
+    "imgUrl": "/Genshin/aloy.png"
   },
   {
     "id": "alyosha",
@@ -54,7 +54,7 @@ export const GENSHIN_CHARACTERS: Character[] = [
     "element": "Pyro",
     "weapon": "Bow",
     "rarity": 4,
-    "imgUrl": "https://static.wikia.nocookie.net/gensin-impact/images/7/75/Amber_Icon.png/revision/latest/scale-to-width-down/256?cb=20210213161233"
+    "imgUrl": "/Genshin/amber.png"
   },
   {
     "id": "aratakiitto",
@@ -62,7 +62,7 @@ export const GENSHIN_CHARACTERS: Character[] = [
     "element": "Geo",
     "weapon": "Claymore",
     "rarity": 5,
-    "imgUrl": "https://static.wikia.nocookie.net/gensin-impact/images/7/7b/Arataki_Itto_Icon.png/revision/latest/scale-to-width-down/256?cb=20231215091612"
+    "imgUrl": "/Genshin/aratakiitto.png"
   },
   {
     "id": "arlecchino",
@@ -70,7 +70,7 @@ export const GENSHIN_CHARACTERS: Character[] = [
     "element": "Pyro",
     "weapon": "Polearm",
     "rarity": 5,
-    "imgUrl": "https://static.wikia.nocookie.net/gensin-impact/images/9/9a/Arlecchino_Icon.png/revision/latest/scale-to-width-down/256?cb=20240424041749"
+    "imgUrl": "/Genshin/arlecchino.png"
   },
   {
     "id": "baizhu",
@@ -78,7 +78,7 @@ export const GENSHIN_CHARACTERS: Character[] = [
     "element": "Dendro",
     "weapon": "Catalyst",
     "rarity": 5,
-    "imgUrl": "https://static.wikia.nocookie.net/gensin-impact/images/c/cb/Baizhu_Icon.png/revision/latest/scale-to-width-down/256?cb=20231215091730"
+    "imgUrl": "/Genshin/baizhu.png"
   },
   {
     "id": "barbara",
@@ -86,7 +86,7 @@ export const GENSHIN_CHARACTERS: Character[] = [
     "element": "Hydro",
     "weapon": "Catalyst",
     "rarity": 4,
-    "imgUrl": "https://static.wikia.nocookie.net/gensin-impact/images/6/6a/Barbara_Icon.png/revision/latest/scale-to-width-down/256?cb=20231215091800"
+    "imgUrl": "/Genshin/barbara.png"
   },
   {
     "id": "beidou",
@@ -94,7 +94,7 @@ export const GENSHIN_CHARACTERS: Character[] = [
     "element": "Electro",
     "weapon": "Claymore",
     "rarity": 4,
-    "imgUrl": "https://static.wikia.nocookie.net/gensin-impact/images/e/e1/Beidou_Icon.png/revision/latest/scale-to-width-down/256?cb=20231215091828"
+    "imgUrl": "/Genshin/beidou.png"
   },
   {
     "id": "bennett",
@@ -102,7 +102,7 @@ export const GENSHIN_CHARACTERS: Character[] = [
     "element": "Pyro",
     "weapon": "Sword",
     "rarity": 4,
-    "imgUrl": "https://static.wikia.nocookie.net/gensin-impact/images/7/79/Bennett_Icon.png/revision/latest/scale-to-width-down/256?cb=20231215091856"
+    "imgUrl": "/Genshin/bennett.png"
   },
   {
     "id": "candace",
@@ -110,7 +110,7 @@ export const GENSHIN_CHARACTERS: Character[] = [
     "element": "Hydro",
     "weapon": "Polearm",
     "rarity": 4,
-    "imgUrl": "https://static.wikia.nocookie.net/gensin-impact/images/d/dd/Candace_Icon.png/revision/latest/scale-to-width-down/256?cb=20231215092140"
+    "imgUrl": "/Genshin/candace.png"
   },
   {
     "id": "charlotte",
@@ -118,7 +118,7 @@ export const GENSHIN_CHARACTERS: Character[] = [
     "element": "Cryo",
     "weapon": "Catalyst",
     "rarity": 4,
-    "imgUrl": "https://static.wikia.nocookie.net/gensin-impact/images/d/d2/Charlotte_Icon.png/revision/latest/scale-to-width-down/256?cb=20231108030544"
+    "imgUrl": "/Genshin/charlotte.png"
   },
   {
     "id": "chasca",
@@ -126,7 +126,7 @@ export const GENSHIN_CHARACTERS: Character[] = [
     "element": "Anemo",
     "weapon": "Bow",
     "rarity": 5,
-    "imgUrl": "https://static.wikia.nocookie.net/gensin-impact/images/0/03/Chasca_Icon.png/revision/latest/scale-to-width-down/256?cb=20241120025626"
+    "imgUrl": "/Genshin/chasca.png"
   },
   {
     "id": "chevreuse",
@@ -134,7 +134,7 @@ export const GENSHIN_CHARACTERS: Character[] = [
     "element": "Pyro",
     "weapon": "Polearm",
     "rarity": 4,
-    "imgUrl": "https://static.wikia.nocookie.net/gensin-impact/images/8/8a/Chevreuse_Icon.png/revision/latest/scale-to-width-down/256?cb=20231225195348"
+    "imgUrl": "/Genshin/chevreuse.png"
   },
   {
     "id": "chiori",
@@ -142,7 +142,7 @@ export const GENSHIN_CHARACTERS: Character[] = [
     "element": "Geo",
     "weapon": "Sword",
     "rarity": 5,
-    "imgUrl": "https://static.wikia.nocookie.net/gensin-impact/images/8/88/Chiori_Icon.png/revision/latest/scale-to-width-down/256?cb=20240313015540"
+    "imgUrl": "/Genshin/chiori.png"
   },
   {
     "id": "chongyun",
@@ -150,7 +150,7 @@ export const GENSHIN_CHARACTERS: Character[] = [
     "element": "Cryo",
     "weapon": "Claymore",
     "rarity": 4,
-    "imgUrl": "https://static.wikia.nocookie.net/gensin-impact/images/3/35/Chongyun_Icon.png/revision/latest/scale-to-width-down/256?cb=20231215092204"
+    "imgUrl": "/Genshin/chongyun.png"
   },
   {
     "id": "citlali",
@@ -158,7 +158,7 @@ export const GENSHIN_CHARACTERS: Character[] = [
     "element": "Cryo",
     "weapon": "Catalyst",
     "rarity": 5,
-    "imgUrl": "https://static.wikia.nocookie.net/gensin-impact/images/d/dd/Citlali_Icon.png/revision/latest/scale-to-width-down/256?cb=20241130080542"
+    "imgUrl": "/Genshin/citlali.png"
   },
   {
     "id": "clorinde",
@@ -166,7 +166,7 @@ export const GENSHIN_CHARACTERS: Character[] = [
     "element": "Electro",
     "weapon": "Sword",
     "rarity": 5,
-    "imgUrl": "https://static.wikia.nocookie.net/gensin-impact/images/5/5b/Clorinde_Icon.png/revision/latest/scale-to-width-down/256?cb=20240605020849"
+    "imgUrl": "/Genshin/clorinde.png"
   },
   {
     "id": "collei",
@@ -174,7 +174,7 @@ export const GENSHIN_CHARACTERS: Character[] = [
     "element": "Dendro",
     "weapon": "Bow",
     "rarity": 4,
-    "imgUrl": "https://static.wikia.nocookie.net/gensin-impact/images/a/a2/Collei_Icon.png/revision/latest/scale-to-width-down/256?cb=20231215092218"
+    "imgUrl": "/Genshin/collei.png"
   },
   {
     "id": "columbina",
@@ -182,7 +182,7 @@ export const GENSHIN_CHARACTERS: Character[] = [
     "element": "Hydro",
     "weapon": "Catalyst",
     "rarity": 5,
-    "imgUrl": "https://static.wikia.nocookie.net/gensin-impact/images/3/35/Columbina_Icon.png/revision/latest/scale-to-width-down/256?cb=20260114031143"
+    "imgUrl": "/Genshin/columbina.png"
   },
   {
     "id": "cyno",
@@ -190,7 +190,7 @@ export const GENSHIN_CHARACTERS: Character[] = [
     "element": "Electro",
     "weapon": "Polearm",
     "rarity": 5,
-    "imgUrl": "https://static.wikia.nocookie.net/gensin-impact/images/3/31/Cyno_Icon.png/revision/latest/scale-to-width-down/256?cb=20231215092240"
+    "imgUrl": "/Genshin/cyno.png"
   },
   {
     "id": "dahlia",
@@ -198,7 +198,7 @@ export const GENSHIN_CHARACTERS: Character[] = [
     "element": "Hydro",
     "weapon": "Sword",
     "rarity": 4,
-    "imgUrl": "https://static.wikia.nocookie.net/gensin-impact/images/6/6d/Dahlia_Icon.png/revision/latest/scale-to-width-down/256?cb=20250618025425"
+    "imgUrl": "/Genshin/dahlia.png"
   },
   {
     "id": "dehya",
@@ -206,7 +206,7 @@ export const GENSHIN_CHARACTERS: Character[] = [
     "element": "Pyro",
     "weapon": "Claymore",
     "rarity": 5,
-    "imgUrl": "https://static.wikia.nocookie.net/gensin-impact/images/3/3f/Dehya_Icon.png/revision/latest/scale-to-width-down/256?cb=20231215092328"
+    "imgUrl": "/Genshin/dehya.png"
   },
   {
     "id": "diluc",
@@ -214,7 +214,7 @@ export const GENSHIN_CHARACTERS: Character[] = [
     "element": "Pyro",
     "weapon": "Claymore",
     "rarity": 5,
-    "imgUrl": "https://static.wikia.nocookie.net/gensin-impact/images/3/3d/Diluc_Icon.png/revision/latest/scale-to-width-down/256?cb=20231215092341"
+    "imgUrl": "/Genshin/diluc.png"
   },
   {
     "id": "diona",
@@ -222,7 +222,7 @@ export const GENSHIN_CHARACTERS: Character[] = [
     "element": "Cryo",
     "weapon": "Bow",
     "rarity": 4,
-    "imgUrl": "https://static.wikia.nocookie.net/gensin-impact/images/4/40/Diona_Icon.png/revision/latest/scale-to-width-down/256?cb=20260304040712"
+    "imgUrl": "/Genshin/diona.png"
   },
   {
     "id": "dori",
@@ -230,7 +230,7 @@ export const GENSHIN_CHARACTERS: Character[] = [
     "element": "Electro",
     "weapon": "Claymore",
     "rarity": 4,
-    "imgUrl": "https://static.wikia.nocookie.net/gensin-impact/images/5/54/Dori_Icon.png/revision/latest/scale-to-width-down/256?cb=20231215092725"
+    "imgUrl": "/Genshin/dori.png"
   },
   {
     "id": "durin",
@@ -238,7 +238,7 @@ export const GENSHIN_CHARACTERS: Character[] = [
     "element": "Pyro",
     "weapon": "Sword",
     "rarity": 5,
-    "imgUrl": "https://static.wikia.nocookie.net/gensin-impact/images/b/ba/Durin_Icon.png/revision/latest/scale-to-width-down/256?cb=20251203043105"
+    "imgUrl": "/Genshin/durin.png"
   },
   {
     "id": "emilie",
@@ -246,7 +246,7 @@ export const GENSHIN_CHARACTERS: Character[] = [
     "element": "Dendro",
     "weapon": "Polearm",
     "rarity": 5,
-    "imgUrl": "https://static.wikia.nocookie.net/gensin-impact/images/a/aa/Emilie_Icon.png/revision/latest/scale-to-width-down/256?cb=20240806102359"
+    "imgUrl": "/Genshin/emilie.png"
   },
   {
     "id": "escoffier",
@@ -254,7 +254,7 @@ export const GENSHIN_CHARACTERS: Character[] = [
     "element": "Cryo",
     "weapon": "Polearm",
     "rarity": 5,
-    "imgUrl": "https://static.wikia.nocookie.net/gensin-impact/images/2/2a/Escoffier_Icon.png/revision/latest/scale-to-width-down/256?cb=20250507052556"
+    "imgUrl": "/Genshin/escoffier.png"
   },
   {
     "id": "eula",
@@ -262,7 +262,7 @@ export const GENSHIN_CHARACTERS: Character[] = [
     "element": "Cryo",
     "weapon": "Claymore",
     "rarity": 5,
-    "imgUrl": "https://static.wikia.nocookie.net/gensin-impact/images/a/af/Eula_Icon.png/revision/latest/scale-to-width-down/256?cb=20231215092858"
+    "imgUrl": "/Genshin/eula.png"
   },
   {
     "id": "faruzan",
@@ -270,7 +270,7 @@ export const GENSHIN_CHARACTERS: Character[] = [
     "element": "Anemo",
     "weapon": "Bow",
     "rarity": 4,
-    "imgUrl": "https://static.wikia.nocookie.net/gensin-impact/images/b/b2/Faruzan_Icon.png/revision/latest/scale-to-width-down/256?cb=20231215092917"
+    "imgUrl": "/Genshin/faruzan.png"
   },
   {
     "id": "fischl",
@@ -278,7 +278,7 @@ export const GENSHIN_CHARACTERS: Character[] = [
     "element": "Electro",
     "weapon": "Bow",
     "rarity": 4,
-    "imgUrl": "https://static.wikia.nocookie.net/gensin-impact/images/9/9a/Fischl_Icon.png/revision/latest/scale-to-width-down/256?cb=20231215092945"
+    "imgUrl": "/Genshin/fischl.png"
   },
   {
     "id": "flins",
@@ -286,7 +286,7 @@ export const GENSHIN_CHARACTERS: Character[] = [
     "element": "Electro",
     "weapon": "Polearm",
     "rarity": 5,
-    "imgUrl": "https://static.wikia.nocookie.net/gensin-impact/images/a/af/Flins_Icon.png/revision/latest/scale-to-width-down/256?cb=20250910175819"
+    "imgUrl": "/Genshin/flins.png"
   },
   {
     "id": "freminet",
@@ -294,7 +294,7 @@ export const GENSHIN_CHARACTERS: Character[] = [
     "element": "Cryo",
     "weapon": "Claymore",
     "rarity": 4,
-    "imgUrl": "https://static.wikia.nocookie.net/gensin-impact/images/e/ee/Freminet_Icon.png/revision/latest/scale-to-width-down/256?cb=20231215093001"
+    "imgUrl": "/Genshin/freminet.png"
   },
   {
     "id": "furina",
@@ -302,7 +302,7 @@ export const GENSHIN_CHARACTERS: Character[] = [
     "element": "Hydro",
     "weapon": "Sword",
     "rarity": 5,
-    "imgUrl": "https://static.wikia.nocookie.net/gensin-impact/images/e/e6/Furina_Icon.png/revision/latest/scale-to-width-down/256?cb=20231108030656"
+    "imgUrl": "/Genshin/furina.png"
   },
   {
     "id": "gaming",
@@ -310,7 +310,7 @@ export const GENSHIN_CHARACTERS: Character[] = [
     "element": "Pyro",
     "weapon": "Claymore",
     "rarity": 4,
-    "imgUrl": "https://static.wikia.nocookie.net/gensin-impact/images/7/77/Gaming_Icon.png/revision/latest/scale-to-width-down/256?cb=20240131020313"
+    "imgUrl": "/Genshin/gaming.png"
   },
   {
     "id": "ganyu",
@@ -318,7 +318,7 @@ export const GENSHIN_CHARACTERS: Character[] = [
     "element": "Cryo",
     "weapon": "Bow",
     "rarity": 5,
-    "imgUrl": "https://static.wikia.nocookie.net/gensin-impact/images/7/79/Ganyu_Icon.png/revision/latest/scale-to-width-down/256?cb=20230519012425"
+    "imgUrl": "/Genshin/ganyu.png"
   },
   {
     "id": "gorou",
@@ -326,7 +326,7 @@ export const GENSHIN_CHARACTERS: Character[] = [
     "element": "Geo",
     "weapon": "Bow",
     "rarity": 4,
-    "imgUrl": "https://static.wikia.nocookie.net/gensin-impact/images/f/fe/Gorou_Icon.png/revision/latest/scale-to-width-down/256?cb=20211126224331"
+    "imgUrl": "/Genshin/gorou.png"
   },
   {
     "id": "hutao",
@@ -334,7 +334,7 @@ export const GENSHIN_CHARACTERS: Character[] = [
     "element": "Pyro",
     "weapon": "Polearm",
     "rarity": 5,
-    "imgUrl": "https://static.wikia.nocookie.net/gensin-impact/images/e/e9/Hu_Tao_Icon.png/revision/latest/scale-to-width-down/256?cb=20260304040745"
+    "imgUrl": "/Genshin/hutao.png"
   },
   {
     "id": "iansan",
@@ -342,7 +342,7 @@ export const GENSHIN_CHARACTERS: Character[] = [
     "element": "Electro",
     "weapon": "Polearm",
     "rarity": 4,
-    "imgUrl": "https://static.wikia.nocookie.net/gensin-impact/images/3/38/Iansan_Icon.png/revision/latest/scale-to-width-down/256?cb=20250326014900"
+    "imgUrl": "/Genshin/iansan.png"
   },
   {
     "id": "ifa",
@@ -350,7 +350,7 @@ export const GENSHIN_CHARACTERS: Character[] = [
     "element": "Anemo",
     "weapon": "Catalyst",
     "rarity": 4,
-    "imgUrl": "https://static.wikia.nocookie.net/gensin-impact/images/5/5f/Ifa_Icon.png/revision/latest/scale-to-width-down/256?cb=20250507052606"
+    "imgUrl": "/Genshin/ifa.png"
   },
   {
     "id": "illuga",
@@ -358,7 +358,7 @@ export const GENSHIN_CHARACTERS: Character[] = [
     "element": "Geo",
     "weapon": "Polearm",
     "rarity": 4,
-    "imgUrl": "https://static.wikia.nocookie.net/gensin-impact/images/9/96/Illuga_Icon.png/revision/latest/scale-to-width-down/256?cb=20260114054020"
+    "imgUrl": "/Genshin/illuga.png"
   },
   {
     "id": "ineffa",
@@ -366,7 +366,7 @@ export const GENSHIN_CHARACTERS: Character[] = [
     "element": "Electro",
     "weapon": "Polearm",
     "rarity": 5,
-    "imgUrl": "https://static.wikia.nocookie.net/gensin-impact/images/0/0b/Ineffa_Icon.png/revision/latest/scale-to-width-down/256?cb=20250730030204"
+    "imgUrl": "/Genshin/ineffa.png"
   },
   {
     "id": "jahoda",
@@ -374,7 +374,7 @@ export const GENSHIN_CHARACTERS: Character[] = [
     "element": "Anemo",
     "weapon": "Bow",
     "rarity": 4,
-    "imgUrl": "https://static.wikia.nocookie.net/gensin-impact/images/b/bf/Jahoda_Icon.png/revision/latest/scale-to-width-down/256?cb=20250911004842"
+    "imgUrl": "/Genshin/jahoda.png"
   },
   {
     "id": "jean",
@@ -382,7 +382,7 @@ export const GENSHIN_CHARACTERS: Character[] = [
     "element": "Anemo",
     "weapon": "Sword",
     "rarity": 5,
-    "imgUrl": "https://static.wikia.nocookie.net/gensin-impact/images/6/64/Jean_Icon.png/revision/latest/scale-to-width-down/256?cb=20260304040810"
+    "imgUrl": "/Genshin/jean.png"
   },
   {
     "id": "kachina",
@@ -390,7 +390,7 @@ export const GENSHIN_CHARACTERS: Character[] = [
     "element": "Geo",
     "weapon": "Polearm",
     "rarity": 4,
-    "imgUrl": "https://static.wikia.nocookie.net/gensin-impact/images/1/1a/Kachina_Icon.png/revision/latest/scale-to-width-down/256?cb=20240828030247"
+    "imgUrl": "/Genshin/kachina.png"
   },
   {
     "id": "kaedeharakazuha",
@@ -398,7 +398,7 @@ export const GENSHIN_CHARACTERS: Character[] = [
     "element": "Anemo",
     "weapon": "Sword",
     "rarity": 5,
-    "imgUrl": "https://static.wikia.nocookie.net/gensin-impact/images/e/e3/Kaedehara_Kazuha_Icon.png/revision/latest/scale-to-width-down/256?cb=20210623063513"
+    "imgUrl": "/Genshin/kaedeharakazuha.png"
   },
   {
     "id": "kaeya",
@@ -406,7 +406,7 @@ export const GENSHIN_CHARACTERS: Character[] = [
     "element": "Cryo",
     "weapon": "Sword",
     "rarity": 4,
-    "imgUrl": "https://static.wikia.nocookie.net/gensin-impact/images/b/b6/Kaeya_Icon.png/revision/latest/scale-to-width-down/256?cb=20260304040842"
+    "imgUrl": "/Genshin/kaeya.png"
   },
   {
     "id": "kamisatoayaka",
@@ -414,7 +414,7 @@ export const GENSHIN_CHARACTERS: Character[] = [
     "element": "Cryo",
     "weapon": "Sword",
     "rarity": 5,
-    "imgUrl": "https://static.wikia.nocookie.net/gensin-impact/images/5/51/Kamisato_Ayaka_Icon.png/revision/latest/scale-to-width-down/256?cb=20211221231648"
+    "imgUrl": "/Genshin/kamisatoayaka.png"
   },
   {
     "id": "kamisatoayato",
@@ -422,7 +422,7 @@ export const GENSHIN_CHARACTERS: Character[] = [
     "element": "Hydro",
     "weapon": "Sword",
     "rarity": 5,
-    "imgUrl": "https://static.wikia.nocookie.net/gensin-impact/images/2/27/Kamisato_Ayato_Icon.png/revision/latest/scale-to-width-down/256?cb=20220601033710"
+    "imgUrl": "/Genshin/kamisatoayato.png"
   },
   {
     "id": "kaveh",
@@ -430,7 +430,7 @@ export const GENSHIN_CHARACTERS: Character[] = [
     "element": "Dendro",
     "weapon": "Claymore",
     "rarity": 4,
-    "imgUrl": "https://static.wikia.nocookie.net/gensin-impact/images/1/1f/Kaveh_Icon.png/revision/latest/scale-to-width-down/256?cb=20230502113258"
+    "imgUrl": "/Genshin/kaveh.png"
   },
   {
     "id": "keqing",
@@ -438,7 +438,7 @@ export const GENSHIN_CHARACTERS: Character[] = [
     "element": "Electro",
     "weapon": "Sword",
     "rarity": 5,
-    "imgUrl": "https://static.wikia.nocookie.net/gensin-impact/images/5/52/Keqing_Icon.png/revision/latest/scale-to-width-down/256?cb=20210213162751"
+    "imgUrl": "/Genshin/keqing.png"
   },
   {
     "id": "kinich",
@@ -446,7 +446,7 @@ export const GENSHIN_CHARACTERS: Character[] = [
     "element": "Dendro",
     "weapon": "Claymore",
     "rarity": 5,
-    "imgUrl": "https://static.wikia.nocookie.net/gensin-impact/images/9/9a/Kinich_Icon.png/revision/latest/scale-to-width-down/256?cb=20240917123836"
+    "imgUrl": "/Genshin/kinich.png"
   },
   {
     "id": "kirara",
@@ -454,7 +454,7 @@ export const GENSHIN_CHARACTERS: Character[] = [
     "element": "Dendro",
     "weapon": "Sword",
     "rarity": 4,
-    "imgUrl": "https://static.wikia.nocookie.net/gensin-impact/images/b/b6/Kirara_Icon.png/revision/latest/scale-to-width-down/256?cb=20230718042457"
+    "imgUrl": "/Genshin/kirara.png"
   },
   {
     "id": "klee",
@@ -462,7 +462,7 @@ export const GENSHIN_CHARACTERS: Character[] = [
     "element": "Pyro",
     "weapon": "Catalyst",
     "rarity": 5,
-    "imgUrl": "https://static.wikia.nocookie.net/gensin-impact/images/9/9c/Klee_Icon.png/revision/latest/scale-to-width-down/256?cb=20210214011911"
+    "imgUrl": "/Genshin/klee.png"
   },
   {
     "id": "kujousara",
@@ -470,7 +470,7 @@ export const GENSHIN_CHARACTERS: Character[] = [
     "element": "Electro",
     "weapon": "Bow",
     "rarity": 4,
-    "imgUrl": "https://static.wikia.nocookie.net/gensin-impact/images/d/df/Kujou_Sara_Icon.png/revision/latest/scale-to-width-down/256?cb=20220210040844"
+    "imgUrl": "/Genshin/kujousara.png"
   },
   {
     "id": "kukishinobu",
@@ -478,7 +478,7 @@ export const GENSHIN_CHARACTERS: Character[] = [
     "element": "Electro",
     "weapon": "Sword",
     "rarity": 4,
-    "imgUrl": "https://static.wikia.nocookie.net/gensin-impact/images/b/b3/Kuki_Shinobu_Icon.png/revision/latest/scale-to-width-down/256?cb=20220605061801"
+    "imgUrl": "/Genshin/kukishinobu.png"
   },
   {
     "id": "lanyan",
@@ -486,7 +486,7 @@ export const GENSHIN_CHARACTERS: Character[] = [
     "element": "Anemo",
     "weapon": "Catalyst",
     "rarity": 4,
-    "imgUrl": "https://static.wikia.nocookie.net/gensin-impact/images/e/e6/Lan_Yan_Icon.png/revision/latest/scale-to-width-down/256?cb=20250128195304"
+    "imgUrl": "/Genshin/lanyan.png"
   },
   {
     "id": "lauma",
@@ -494,7 +494,7 @@ export const GENSHIN_CHARACTERS: Character[] = [
     "element": "Dendro",
     "weapon": "Catalyst",
     "rarity": 5,
-    "imgUrl": "https://static.wikia.nocookie.net/gensin-impact/images/2/27/Lauma_Icon.png/revision/latest/scale-to-width-down/256?cb=20250910024154"
+    "imgUrl": "/Genshin/lauma.png"
   },
   {
     "id": "layla",
@@ -502,7 +502,7 @@ export const GENSHIN_CHARACTERS: Character[] = [
     "element": "Cryo",
     "weapon": "Sword",
     "rarity": 4,
-    "imgUrl": "https://static.wikia.nocookie.net/gensin-impact/images/1/1a/Layla_Icon.png/revision/latest/scale-to-width-down/256?cb=20221118140544"
+    "imgUrl": "/Genshin/layla.png"
   },
   {
     "id": "linnea",
@@ -510,7 +510,7 @@ export const GENSHIN_CHARACTERS: Character[] = [
     "element": "Geo",
     "weapon": "Bow",
     "rarity": 5,
-    "imgUrl": "https://static.wikia.nocookie.net/gensin-impact/images/a/a9/Linnea_Icon.png/revision/latest/scale-to-width-down/256?cb=20260408075838"
+    "imgUrl": "/Genshin/linnea.png"
   },
   {
     "id": "lisa",
@@ -518,7 +518,7 @@ export const GENSHIN_CHARACTERS: Character[] = [
     "element": "Electro",
     "weapon": "Catalyst",
     "rarity": 4,
-    "imgUrl": "https://static.wikia.nocookie.net/gensin-impact/images/6/65/Lisa_Icon.png/revision/latest/scale-to-width-down/256?cb=20240711205456"
+    "imgUrl": "/Genshin/lisa.png"
   },
   {
     "id": "lohen",
@@ -526,7 +526,7 @@ export const GENSHIN_CHARACTERS: Character[] = [
     "element": "Cryo",
     "weapon": "Polearm",
     "rarity": 5,
-    "imgUrl": "https://static.wikia.nocookie.net/gensin-impact/images/8/86/Lohen_Icon.png/revision/latest/scale-to-width-down/256?cb=20260521150129"
+    "imgUrl": "/Genshin/lohen.png"
   },
   {
     "id": "lynette",
@@ -534,7 +534,7 @@ export const GENSHIN_CHARACTERS: Character[] = [
     "element": "Anemo",
     "weapon": "Sword",
     "rarity": 4,
-    "imgUrl": "https://static.wikia.nocookie.net/gensin-impact/images/a/ad/Lynette_Icon.png/revision/latest/scale-to-width-down/256?cb=20230816051019"
+    "imgUrl": "/Genshin/lynette.png"
   },
   {
     "id": "lyney",
@@ -542,7 +542,7 @@ export const GENSHIN_CHARACTERS: Character[] = [
     "element": "Pyro",
     "weapon": "Bow",
     "rarity": 5,
-    "imgUrl": "https://static.wikia.nocookie.net/gensin-impact/images/b/b2/Lyney_Icon.png/revision/latest/scale-to-width-down/256?cb=20230816045203"
+    "imgUrl": "/Genshin/lyney.png"
   },
   {
     "id": "mavuika",
@@ -550,7 +550,7 @@ export const GENSHIN_CHARACTERS: Character[] = [
     "element": "Pyro",
     "weapon": "Claymore",
     "rarity": 5,
-    "imgUrl": "https://static.wikia.nocookie.net/gensin-impact/images/d/da/Mavuika_Icon.png/revision/latest/scale-to-width-down/256?cb=20250101070636"
+    "imgUrl": "/Genshin/mavuika.png"
   },
   {
     "id": "mika",
@@ -558,7 +558,7 @@ export const GENSHIN_CHARACTERS: Character[] = [
     "element": "Cryo",
     "weapon": "Polearm",
     "rarity": 4,
-    "imgUrl": "https://static.wikia.nocookie.net/gensin-impact/images/d/dd/Mika_Icon.png/revision/latest/scale-to-width-down/256?cb=20230321101835"
+    "imgUrl": "/Genshin/mika.png"
   },
   {
     "id": "mona",
@@ -566,7 +566,7 @@ export const GENSHIN_CHARACTERS: Character[] = [
     "element": "Hydro",
     "weapon": "Catalyst",
     "rarity": 5,
-    "imgUrl": "https://static.wikia.nocookie.net/gensin-impact/images/4/41/Mona_Icon.png/revision/latest/scale-to-width-down/256?cb=20260304040909"
+    "imgUrl": "/Genshin/mona.png"
   },
   {
     "id": "mualani",
@@ -574,7 +574,7 @@ export const GENSHIN_CHARACTERS: Character[] = [
     "element": "Hydro",
     "weapon": "Catalyst",
     "rarity": 5,
-    "imgUrl": "https://static.wikia.nocookie.net/gensin-impact/images/0/0b/Mualani_Icon.png/revision/latest/scale-to-width-down/256?cb=20240828030235"
+    "imgUrl": "/Genshin/mualani.png"
   },
   {
     "id": "nahida",
@@ -582,7 +582,7 @@ export const GENSHIN_CHARACTERS: Character[] = [
     "element": "Dendro",
     "weapon": "Catalyst",
     "rarity": 5,
-    "imgUrl": "https://static.wikia.nocookie.net/gensin-impact/images/f/f9/Nahida_Icon.png/revision/latest/scale-to-width-down/256?cb=20221102030809"
+    "imgUrl": "/Genshin/nahida.png"
   },
   {
     "id": "navia",
@@ -590,7 +590,7 @@ export const GENSHIN_CHARACTERS: Character[] = [
     "element": "Geo",
     "weapon": "Claymore",
     "rarity": 5,
-    "imgUrl": "https://static.wikia.nocookie.net/gensin-impact/images/c/c0/Navia_Icon.png/revision/latest/scale-to-width-down/256?cb=20231220022117"
+    "imgUrl": "/Genshin/navia.png"
   },
   {
     "id": "nefer",
@@ -598,7 +598,7 @@ export const GENSHIN_CHARACTERS: Character[] = [
     "element": "Dendro",
     "weapon": "Catalyst",
     "rarity": 5,
-    "imgUrl": "https://static.wikia.nocookie.net/gensin-impact/images/5/5b/Nefer_Icon.png/revision/latest/scale-to-width-down/256?cb=20250911005040"
+    "imgUrl": "/Genshin/nefer.png"
   },
   {
     "id": "neuvillette",
@@ -606,7 +606,7 @@ export const GENSHIN_CHARACTERS: Character[] = [
     "element": "Hydro",
     "weapon": "Catalyst",
     "rarity": 5,
-    "imgUrl": "https://static.wikia.nocookie.net/gensin-impact/images/2/21/Neuvillette_Icon.png/revision/latest/scale-to-width-down/256?cb=20240711205454"
+    "imgUrl": "/Genshin/neuvillette.png"
   },
   {
     "id": "nicole",
@@ -614,7 +614,7 @@ export const GENSHIN_CHARACTERS: Character[] = [
     "element": "Pyro",
     "weapon": "Catalyst",
     "rarity": 5,
-    "imgUrl": "https://static.wikia.nocookie.net/gensin-impact/images/a/a0/Nicole_Icon.png/revision/latest/scale-to-width-down/256?cb=20260120013342"
+    "imgUrl": "/Genshin/nicole.png"
   },
   {
     "id": "nilou",
@@ -622,7 +622,7 @@ export const GENSHIN_CHARACTERS: Character[] = [
     "element": "Hydro",
     "weapon": "Sword",
     "rarity": 5,
-    "imgUrl": "https://static.wikia.nocookie.net/gensin-impact/images/5/58/Nilou_Icon.png/revision/latest/scale-to-width-down/256?cb=20221014102540"
+    "imgUrl": "/Genshin/nilou.png"
   },
   {
     "id": "ningguang",
@@ -630,7 +630,7 @@ export const GENSHIN_CHARACTERS: Character[] = [
     "element": "Geo",
     "weapon": "Catalyst",
     "rarity": 4,
-    "imgUrl": "https://static.wikia.nocookie.net/gensin-impact/images/e/e0/Ningguang_Icon.png/revision/latest/scale-to-width-down/256?cb=20260304040948"
+    "imgUrl": "/Genshin/ningguang.png"
   },
   {
     "id": "noelle",
@@ -638,7 +638,7 @@ export const GENSHIN_CHARACTERS: Character[] = [
     "element": "Geo",
     "weapon": "Claymore",
     "rarity": 4,
-    "imgUrl": "https://static.wikia.nocookie.net/gensin-impact/images/8/8e/Noelle_Icon.png/revision/latest/scale-to-width-down/256?cb=20210214011929"
+    "imgUrl": "/Genshin/noelle.png"
   },
   {
     "id": "odette",
@@ -654,7 +654,7 @@ export const GENSHIN_CHARACTERS: Character[] = [
     "element": "Electro",
     "weapon": "Bow",
     "rarity": 4,
-    "imgUrl": "https://static.wikia.nocookie.net/gensin-impact/images/5/5e/Ororon_Icon.png/revision/latest/scale-to-width-down/256?cb=20241014100711"
+    "imgUrl": "/Genshin/ororon.png"
   },
   {
     "id": "prune",
@@ -662,7 +662,7 @@ export const GENSHIN_CHARACTERS: Character[] = [
     "element": "Anemo",
     "weapon": "Catalyst",
     "rarity": 4,
-    "imgUrl": "https://static.wikia.nocookie.net/gensin-impact/images/9/99/Prune_Icon.png/revision/latest/scale-to-width-down/256?cb=20260520083549"
+    "imgUrl": "/Genshin/prune.png"
   },
   {
     "id": "qiqi",
@@ -670,7 +670,7 @@ export const GENSHIN_CHARACTERS: Character[] = [
     "element": "Cryo",
     "weapon": "Sword",
     "rarity": 5,
-    "imgUrl": "https://static.wikia.nocookie.net/gensin-impact/images/b/b3/Qiqi_Icon.png/revision/latest/scale-to-width-down/256?cb=20220316020612"
+    "imgUrl": "/Genshin/qiqi.png"
   },
   {
     "id": "raidenshogun",
@@ -678,7 +678,7 @@ export const GENSHIN_CHARACTERS: Character[] = [
     "element": "Electro",
     "weapon": "Polearm",
     "rarity": 5,
-    "imgUrl": "https://static.wikia.nocookie.net/gensin-impact/images/2/24/Raiden_Shogun_Icon.png/revision/latest/scale-to-width-down/256?cb=20240717072843"
+    "imgUrl": "/Genshin/raidenshogun.png"
   },
   {
     "id": "razor",
@@ -686,7 +686,7 @@ export const GENSHIN_CHARACTERS: Character[] = [
     "element": "Electro",
     "weapon": "Claymore",
     "rarity": 4,
-    "imgUrl": "https://static.wikia.nocookie.net/gensin-impact/images/b/b8/Razor_Icon.png/revision/latest/scale-to-width-down/256?cb=20210214011936"
+    "imgUrl": "/Genshin/razor.png"
   },
   {
     "id": "rosaria",
@@ -694,7 +694,7 @@ export const GENSHIN_CHARACTERS: Character[] = [
     "element": "Cryo",
     "weapon": "Polearm",
     "rarity": 4,
-    "imgUrl": "https://static.wikia.nocookie.net/gensin-impact/images/3/35/Rosaria_Icon.png/revision/latest/scale-to-width-down/256?cb=20220601032845"
+    "imgUrl": "/Genshin/rosaria.png"
   },
   {
     "id": "sandrone",
@@ -702,7 +702,7 @@ export const GENSHIN_CHARACTERS: Character[] = [
     "element": "Cryo",
     "weapon": "Claymore",
     "rarity": 5,
-    "imgUrl": "https://static.wikia.nocookie.net/gensin-impact/images/c/c8/Sandrone_Icon.png/revision/latest/scale-to-width-down/256?cb=20260701024112"
+    "imgUrl": "/Genshin/sandrone.png"
   },
   {
     "id": "sangonomiyakokomi",
@@ -710,7 +710,7 @@ export const GENSHIN_CHARACTERS: Character[] = [
     "element": "Hydro",
     "weapon": "Catalyst",
     "rarity": 5,
-    "imgUrl": "https://static.wikia.nocookie.net/gensin-impact/images/f/ff/Sangonomiya_Kokomi_Icon.png/revision/latest/scale-to-width-down/256?cb=20210921103819"
+    "imgUrl": "/Genshin/sangonomiyakokomi.png"
   },
   {
     "id": "sayu",
@@ -718,7 +718,7 @@ export const GENSHIN_CHARACTERS: Character[] = [
     "element": "Anemo",
     "weapon": "Claymore",
     "rarity": 4,
-    "imgUrl": "https://static.wikia.nocookie.net/gensin-impact/images/2/22/Sayu_Icon.png/revision/latest/scale-to-width-down/256?cb=20210810101044"
+    "imgUrl": "/Genshin/sayu.png"
   },
   {
     "id": "sethos",
@@ -726,7 +726,7 @@ export const GENSHIN_CHARACTERS: Character[] = [
     "element": "Electro",
     "weapon": "Bow",
     "rarity": 4,
-    "imgUrl": "https://static.wikia.nocookie.net/gensin-impact/images/9/90/Sethos_Icon.png/revision/latest/scale-to-width-down/256?cb=20240605020859"
+    "imgUrl": "/Genshin/sethos.png"
   },
   {
     "id": "shenhe",
@@ -734,7 +734,7 @@ export const GENSHIN_CHARACTERS: Character[] = [
     "element": "Cryo",
     "weapon": "Polearm",
     "rarity": 5,
-    "imgUrl": "https://static.wikia.nocookie.net/gensin-impact/images/a/af/Shenhe_Icon.png/revision/latest/scale-to-width-down/256?cb=20220210034241"
+    "imgUrl": "/Genshin/shenhe.png"
   },
   {
     "id": "shikanoinheizou",
@@ -742,7 +742,7 @@ export const GENSHIN_CHARACTERS: Character[] = [
     "element": "Anemo",
     "weapon": "Catalyst",
     "rarity": 4,
-    "imgUrl": "https://static.wikia.nocookie.net/gensin-impact/images/2/20/Shikanoin_Heizou_Icon.png/revision/latest/scale-to-width-down/256?cb=20240711205453"
+    "imgUrl": "/Genshin/shikanoinheizou.png"
   },
   {
     "id": "sigewinne",
@@ -750,7 +750,7 @@ export const GENSHIN_CHARACTERS: Character[] = [
     "element": "Hydro",
     "weapon": "Bow",
     "rarity": 5,
-    "imgUrl": "https://static.wikia.nocookie.net/gensin-impact/images/3/37/Sigewinne_Icon.png/revision/latest/scale-to-width-down/256?cb=20240625101835"
+    "imgUrl": "/Genshin/sigewinne.png"
   },
   {
     "id": "skirk",
@@ -758,7 +758,7 @@ export const GENSHIN_CHARACTERS: Character[] = [
     "element": "Cryo",
     "weapon": "Sword",
     "rarity": 5,
-    "imgUrl": "https://static.wikia.nocookie.net/gensin-impact/images/0/03/Skirk_Icon.png/revision/latest/scale-to-width-down/256?cb=20250618025127"
+    "imgUrl": "/Genshin/skirk.png"
   },
   {
     "id": "sucrose",
@@ -766,7 +766,7 @@ export const GENSHIN_CHARACTERS: Character[] = [
     "element": "Anemo",
     "weapon": "Catalyst",
     "rarity": 4,
-    "imgUrl": "https://static.wikia.nocookie.net/gensin-impact/images/0/0e/Sucrose_Icon.png/revision/latest/scale-to-width-down/256?cb=20210213163209"
+    "imgUrl": "/Genshin/sucrose.png"
   },
   {
     "id": "tartaglia",
@@ -774,7 +774,7 @@ export const GENSHIN_CHARACTERS: Character[] = [
     "element": "Hydro",
     "weapon": "Bow",
     "rarity": 5,
-    "imgUrl": "https://static.wikia.nocookie.net/gensin-impact/images/8/85/Tartaglia_Icon.png/revision/latest/scale-to-width-down/256?cb=20210213163935"
+    "imgUrl": "/Genshin/tartaglia.png"
   },
   {
     "id": "thoma",
@@ -782,7 +782,7 @@ export const GENSHIN_CHARACTERS: Character[] = [
     "element": "Pyro",
     "weapon": "Polearm",
     "rarity": 4,
-    "imgUrl": "https://static.wikia.nocookie.net/gensin-impact/images/5/5b/Thoma_Icon.png/revision/latest/scale-to-width-down/256?cb=20211014011046"
+    "imgUrl": "/Genshin/thoma.png"
   },
   {
     "id": "tighnari",
@@ -790,7 +790,7 @@ export const GENSHIN_CHARACTERS: Character[] = [
     "element": "Dendro",
     "weapon": "Bow",
     "rarity": 5,
-    "imgUrl": "https://static.wikia.nocookie.net/gensin-impact/images/8/87/Tighnari_Icon.png/revision/latest/scale-to-width-down/256?cb=20220824024817"
+    "imgUrl": "/Genshin/tighnari.png"
   },
   {
     "id": "aether",
@@ -814,7 +814,7 @@ export const GENSHIN_CHARACTERS: Character[] = [
     "element": "Electro",
     "weapon": "Catalyst",
     "rarity": 5,
-    "imgUrl": "https://static.wikia.nocookie.net/gensin-impact/images/d/dd/Varesa_Icon.png/revision/latest/scale-to-width-down/256?cb=20250326014831"
+    "imgUrl": "/Genshin/varesa.png"
   },
   {
     "id": "varka",
@@ -822,7 +822,7 @@ export const GENSHIN_CHARACTERS: Character[] = [
     "element": "Anemo",
     "weapon": "Claymore",
     "rarity": 5,
-    "imgUrl": "https://static.wikia.nocookie.net/gensin-impact/images/9/98/Varka_Icon.png/revision/latest/scale-to-width-down/256?cb=20260119061922"
+    "imgUrl": "/Genshin/varka.png"
   },
   {
     "id": "venti",
@@ -830,7 +830,7 @@ export const GENSHIN_CHARACTERS: Character[] = [
     "element": "Anemo",
     "weapon": "Bow",
     "rarity": 5,
-    "imgUrl": "https://static.wikia.nocookie.net/gensin-impact/images/f/f1/Venti_Icon.png/revision/latest/scale-to-width-down/256?cb=20210214011949"
+    "imgUrl": "/Genshin/venti.png"
   },
   {
     "id": "wanderer",
@@ -838,7 +838,7 @@ export const GENSHIN_CHARACTERS: Character[] = [
     "element": "Anemo",
     "weapon": "Catalyst",
     "rarity": 5,
-    "imgUrl": "https://static.wikia.nocookie.net/gensin-impact/images/f/f8/Wanderer_Icon.png/revision/latest/scale-to-width-down/256?cb=20221207034209"
+    "imgUrl": "/Genshin/wanderer.png"
   },
   {
     "id": "wriothesley",
@@ -846,7 +846,7 @@ export const GENSHIN_CHARACTERS: Character[] = [
     "element": "Cryo",
     "weapon": "Catalyst",
     "rarity": 5,
-    "imgUrl": "https://static.wikia.nocookie.net/gensin-impact/images/b/bb/Wriothesley_Icon.png/revision/latest/scale-to-width-down/256?cb=20231017103145"
+    "imgUrl": "/Genshin/wriothesley.png"
   },
   {
     "id": "xiangling",
@@ -854,7 +854,7 @@ export const GENSHIN_CHARACTERS: Character[] = [
     "element": "Pyro",
     "weapon": "Polearm",
     "rarity": 4,
-    "imgUrl": "https://static.wikia.nocookie.net/gensin-impact/images/3/39/Xiangling_Icon.png/revision/latest/scale-to-width-down/256?cb=20210214011301"
+    "imgUrl": "/Genshin/xiangling.png"
   },
   {
     "id": "xianyun",
@@ -862,7 +862,7 @@ export const GENSHIN_CHARACTERS: Character[] = [
     "element": "Anemo",
     "weapon": "Catalyst",
     "rarity": 5,
-    "imgUrl": "https://static.wikia.nocookie.net/gensin-impact/images/d/d3/Xianyun_Icon.png/revision/latest/scale-to-width-down/256?cb=20240131020302"
+    "imgUrl": "/Genshin/xianyun.png"
   },
   {
     "id": "xiao",
@@ -870,7 +870,7 @@ export const GENSHIN_CHARACTERS: Character[] = [
     "element": "Anemo",
     "weapon": "Polearm",
     "rarity": 5,
-    "imgUrl": "https://static.wikia.nocookie.net/gensin-impact/images/f/fd/Xiao_Icon.png/revision/latest/scale-to-width-down/256?cb=20210214012045"
+    "imgUrl": "/Genshin/xiao.png"
   },
   {
     "id": "xilonen",
@@ -878,7 +878,7 @@ export const GENSHIN_CHARACTERS: Character[] = [
     "element": "Geo",
     "weapon": "Sword",
     "rarity": 5,
-    "imgUrl": "https://static.wikia.nocookie.net/gensin-impact/images/a/ab/Xilonen_Icon.png/revision/latest/scale-to-width-down/256?cb=20241009015637"
+    "imgUrl": "/Genshin/xilonen.png"
   },
   {
     "id": "xingqiu",
@@ -886,7 +886,7 @@ export const GENSHIN_CHARACTERS: Character[] = [
     "element": "Hydro",
     "weapon": "Sword",
     "rarity": 4,
-    "imgUrl": "https://static.wikia.nocookie.net/gensin-impact/images/d/d4/Xingqiu_Icon.png/revision/latest/scale-to-width-down/256?cb=20260304041029"
+    "imgUrl": "/Genshin/xingqiu.png"
   },
   {
     "id": "xinyan",
@@ -894,7 +894,7 @@ export const GENSHIN_CHARACTERS: Character[] = [
     "element": "Pyro",
     "weapon": "Claymore",
     "rarity": 4,
-    "imgUrl": "https://static.wikia.nocookie.net/gensin-impact/images/2/24/Xinyan_Icon.png/revision/latest/scale-to-width-down/256?cb=20260304041110"
+    "imgUrl": "/Genshin/xinyan.png"
   },
   {
     "id": "yaemiko",
@@ -902,7 +902,7 @@ export const GENSHIN_CHARACTERS: Character[] = [
     "element": "Electro",
     "weapon": "Catalyst",
     "rarity": 5,
-    "imgUrl": "https://static.wikia.nocookie.net/gensin-impact/images/b/ba/Yae_Miko_Icon.png/revision/latest/scale-to-width-down/256?cb=20220216025931"
+    "imgUrl": "/Genshin/yaemiko.png"
   },
   {
     "id": "yanfei",
@@ -910,7 +910,7 @@ export const GENSHIN_CHARACTERS: Character[] = [
     "element": "Pyro",
     "weapon": "Catalyst",
     "rarity": 4,
-    "imgUrl": "https://static.wikia.nocookie.net/gensin-impact/images/5/54/Yanfei_Icon.png/revision/latest/scale-to-width-down/256?cb=20260304041151"
+    "imgUrl": "/Genshin/yanfei.png"
   },
   {
     "id": "yaoyao",
@@ -918,7 +918,7 @@ export const GENSHIN_CHARACTERS: Character[] = [
     "element": "Dendro",
     "weapon": "Polearm",
     "rarity": 4,
-    "imgUrl": "https://static.wikia.nocookie.net/gensin-impact/images/8/83/Yaoyao_Icon.png/revision/latest/scale-to-width-down/256?cb=20230123150446"
+    "imgUrl": "/Genshin/yaoyao.png"
   },
   {
     "id": "yelan",
@@ -926,7 +926,7 @@ export const GENSHIN_CHARACTERS: Character[] = [
     "element": "Hydro",
     "weapon": "Bow",
     "rarity": 5,
-    "imgUrl": "https://static.wikia.nocookie.net/gensin-impact/images/d/d3/Yelan_Icon.png/revision/latest/scale-to-width-down/256?cb=20240711205454"
+    "imgUrl": "/Genshin/yelan.png"
   },
   {
     "id": "yoimiya",
@@ -934,7 +934,7 @@ export const GENSHIN_CHARACTERS: Character[] = [
     "element": "Pyro",
     "weapon": "Bow",
     "rarity": 5,
-    "imgUrl": "https://static.wikia.nocookie.net/gensin-impact/images/8/88/Yoimiya_Icon.png/revision/latest/scale-to-width-down/256?cb=20220214235604"
+    "imgUrl": "/Genshin/yoimiya.png"
   },
   {
     "id": "yumemizukimizuki",
@@ -942,7 +942,7 @@ export const GENSHIN_CHARACTERS: Character[] = [
     "element": "Anemo",
     "weapon": "Catalyst",
     "rarity": 5,
-    "imgUrl": "https://static.wikia.nocookie.net/gensin-impact/images/f/f6/Yumemizuki_Mizuki_Icon.png/revision/latest/scale-to-width-down/256?cb=20250212014631"
+    "imgUrl": "/Genshin/yumemizukimizuki.png"
   },
   {
     "id": "yunjin",
@@ -950,7 +950,7 @@ export const GENSHIN_CHARACTERS: Character[] = [
     "element": "Geo",
     "weapon": "Polearm",
     "rarity": 4,
-    "imgUrl": "https://static.wikia.nocookie.net/gensin-impact/images/9/9c/Yun_Jin_Icon.png/revision/latest/scale-to-width-down/256?cb=20220316025919"
+    "imgUrl": "/Genshin/yunjin.png"
   },
   {
     "id": "zhongli",
@@ -958,7 +958,7 @@ export const GENSHIN_CHARACTERS: Character[] = [
     "element": "Geo",
     "weapon": "Polearm",
     "rarity": 5,
-    "imgUrl": "https://static.wikia.nocookie.net/gensin-impact/images/a/a6/Zhongli_Icon.png/revision/latest/scale-to-width-down/256?cb=20240711205450"
+    "imgUrl": "/Genshin/zhongli.png"
   },
   {
     "id": "zibai",
@@ -966,6 +966,6 @@ export const GENSHIN_CHARACTERS: Character[] = [
     "element": "Geo",
     "weapon": "Sword",
     "rarity": 5,
-    "imgUrl": "https://static.wikia.nocookie.net/gensin-impact/images/2/22/Zibai_Icon.png/revision/latest/scale-to-width-down/256?cb=20260203100351"
+    "imgUrl": "/Genshin/zibai.png"
   }
 ];

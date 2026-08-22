@@ -153,16 +153,13 @@ export default function TierList() {
   // Mobile / click accessibility selection
   const [selectedCharId, setSelectedCharId] = useState<string | null>(null);
 
-  // Row currently showing color picker popover
-  const [activeColorPickerRowId, setActiveColorPickerRowId] = useState<string | null>(null);
-
   // Presentation fullscreen modal states
   const [isFullModalOpen, setIsFullModalOpen] = useState(false);
 
 
 
   // Active view state ('home' menu of 4 cards, or 'editor')
-  const [currentView, setCurrentView] = useState<'home' | 'editor'>('home');
+  const [currentView, setCurrentView] = useState<'home' | 'editor'>('editor');
 
   // Active template state
   const [currentTemplateId, setCurrentTemplateId] = useState<'genshin' | 'wuwa' | 'overwatch' | 'dbd'>('genshin');
@@ -273,10 +270,10 @@ export default function TierList() {
     if (!element) return { tierId: null, index: undefined };
     
     // Check if hovered element is a character card in a tier row
-    const targetCard = element.closest('.tier-dropzone .character-card');
+    const targetCard = element.closest('.tier-dropzone-normal .character-card, .tier-dropzone-fullscreen .character-card');
     if (targetCard) {
       const dropzone = targetCard.parentElement;
-      const tierRow = targetCard.closest('.tier-row');
+      const tierRow = targetCard.closest('.tier-row-normal, .tier-row-fullscreen');
       if (dropzone && tierRow) {
         const tierId = tierRow.getAttribute('data-tier-id');
         const cards = Array.from(dropzone.querySelectorAll('.character-card'));
@@ -293,7 +290,7 @@ export default function TierList() {
     const tierRow = element.closest('.tier-row');
     if (tierRow) {
       const tierId = tierRow.getAttribute('data-tier-id');
-      const dropzone = tierRow.querySelector('.tier-dropzone');
+      const dropzone = tierRow.querySelector('.tier-dropzone-normal, .tier-dropzone-fullscreen');
       if (dropzone) {
         const cards = Array.from(dropzone.querySelectorAll('.character-card'));
         if (cards.length > 0) {
@@ -332,8 +329,10 @@ export default function TierList() {
   const handleCharCardPointerDown = (charId: string, e: React.PointerEvent) => {
     if (e.pointerType === 'mouse' && e.button !== 0) return;
     
-    // Prevent default touch scroll and drag behaviors
-    e.preventDefault();
+    // Prevent default touch scroll and drag behaviors only for touch or pen
+if (e.pointerType !== 'mouse') {
+  e.preventDefault();
+}
     
     const initialScroll = scrollContainerRef.current ? scrollContainerRef.current.scrollLeft : 0;
     setPressedCharId(charId);
@@ -468,35 +467,156 @@ export default function TierList() {
 
   // Save state on change
   useEffect(() => {
-    localStorage.setItem('genshin_tierlist_tiers', JSON.stringify(tiers));
-  }, [tiers]);
+    const storageKey = 
+      currentTemplateId === 'genshin' ? 'genshin_tierlist_tiers' : 
+      currentTemplateId === 'wuwa' ? 'wuwa_tierlist_tiers' : 
+      currentTemplateId === 'overwatch' ? 'overwatch_tierlist_tiers' :
+      'dbd_tierlist_tiers';
+    localStorage.setItem(storageKey, JSON.stringify(tiers));
+  }, [tiers, currentTemplateId]);
 
-  // Drag and Drop handlers
+  // Drag and Drop helpers & handlers
+  const calculateDropIndex = (e: React.DragEvent | React.MouseEvent, dropzone: HTMLElement): number => {
+    const cards = Array.from(dropzone.querySelectorAll('.character-card, .fullscreen-char-card'));
+    if (cards.length === 0) return 0;
+    
+    const x = e.clientX;
+    const y = e.clientY;
+
+    // Extract bounding boxes and indices
+    const cardData = cards.map((card, index) => {
+      const rect = card.getBoundingClientRect();
+      return {
+        index,
+        rect,
+        midX: rect.left + rect.width / 2,
+        midY: rect.top + rect.height / 2,
+      };
+    });
+
+    // Group cards into visual lines/rows based on top coordinate
+    const lines: (typeof cardData)[] = [];
+    let currentLine: typeof cardData = [];
+    let currentTop = -Infinity;
+
+    for (const item of cardData) {
+      if (currentLine.length === 0 || Math.abs(item.rect.top - currentTop) < 20) {
+        currentLine.push(item);
+        currentTop = item.rect.top;
+      } else {
+        lines.push(currentLine);
+        currentLine = [item];
+        currentTop = item.rect.top;
+      }
+    }
+    if (currentLine.length > 0) {
+      lines.push(currentLine);
+    }
+
+    const firstLine = lines[0];
+    const lastLine = lines[lines.length - 1];
+    const firstCardOverall = firstLine[0];
+    const lastCardOverall = lastLine[lastLine.length - 1];
+
+    // 1. If cursor is below all lines -> ALWAYS APPEND TO END
+    if (y > lastCardOverall.rect.bottom) {
+      return cards.length;
+    }
+
+    // 2. If cursor is above all lines -> INSERT AT BEGINNING (0)
+    if (y < firstCardOverall.rect.top) {
+      return 0;
+    }
+
+    // 3. Find target visual line
+    let targetLine = lines[0];
+    let minVerticalDist = Infinity;
+    for (const line of lines) {
+      const lineTop = line[0].rect.top;
+      const lineBottom = line[0].rect.bottom;
+      if (y >= lineTop && y <= lineBottom) {
+        targetLine = line;
+        break;
+      }
+      const lineMidY = (lineTop + lineBottom) / 2;
+      const dist = Math.abs(y - lineMidY);
+      if (dist < minVerticalDist) {
+        minVerticalDist = dist;
+        targetLine = line;
+      }
+    }
+
+    // 4. Horizontal position within that line
+    const firstInLine = targetLine[0];
+    const lastInLine = targetLine[targetLine.length - 1];
+
+    // Left of line
+    if (x < firstInLine.rect.left) {
+      return firstInLine.index;
+    }
+
+    // Right of line
+    if (x > lastInLine.rect.right || x > lastInLine.midX) {
+      if (targetLine === lastLine) {
+        return cards.length;
+      }
+      return lastInLine.index + 1;
+    }
+
+    // Over or between cards in line
+    for (let i = 0; i < targetLine.length; i++) {
+      const item = targetLine[i];
+      if (x >= item.rect.left && x <= item.rect.right) {
+        return x > item.midX ? item.index + 1 : item.index;
+      }
+      if (i < targetLine.length - 1) {
+        const nextItem = targetLine[i + 1];
+        if (x > item.rect.right && x < nextItem.rect.left) {
+          return nextItem.index;
+        }
+      }
+    }
+
+    return targetLine === lastLine ? cards.length : lastInLine.index + 1;
+  };
+
   const handleDragStart = (e: React.DragEvent, charId: string) => {
-    setDragMode(null); // Clear custom pointer modes
+    setDragMode(null);
     e.dataTransfer.setData('text/plain', charId);
-    setSelectedCharId(null); // Clear click selection if dragging
-    setActiveDragCharId(charId); // Trigger dock to reappear!
+    e.dataTransfer.effectAllowed = 'move';
+    setActiveDragCharId(charId);
   };
 
   const handleDragEnd = () => {
     setActiveDragCharId(null);
+    setHoveredTierId(null);
+    setHoveredIndex(undefined);
   };
 
   const handleDrop = (e: React.DragEvent, targetTierId: string, targetIndex?: number) => {
     e.preventDefault();
-    const charId = e.dataTransfer.getData('text/plain');
+    e.stopPropagation();
+    const dataId = e.dataTransfer.getData('text/plain');
+    const charId = dataId || activeDragCharId;
     if (!charId) return;
 
     moveCharacter(charId, targetTierId, targetIndex);
+    setActiveDragCharId(null);
+    setHoveredTierId(null);
+    setHoveredIndex(undefined);
   };
 
   const handleDropOnPool = (e: React.DragEvent) => {
     e.preventDefault();
-    const charId = e.dataTransfer.getData('text/plain');
+    e.stopPropagation();
+    const dataId = e.dataTransfer.getData('text/plain');
+    const charId = dataId || activeDragCharId;
     if (!charId) return;
 
     moveToPool(charId);
+    setActiveDragCharId(null);
+    setHoveredTierId(null);
+    setHoveredIndex(undefined);
   };
 
   // Move character logic
@@ -958,9 +1078,25 @@ export default function TierList() {
         {tiers.map((tier, index) => (
           <div 
             key={tier.id} 
-            className={`tier-row ${hoveredTierId === tier.id ? 'drag-over' : ''}`}
+            className={`tier-row-normal ${hoveredTierId === tier.id ? 'drag-over' : ''}`}
             data-tier-id={tier.id}
             onClick={() => handleTierRowClick(tier.id)}
+            onDragOver={(e) => {
+              e.preventDefault();
+              e.dataTransfer.dropEffect = 'move';
+              setHoveredTierId(tier.id);
+              const dropzone = e.currentTarget.querySelector('.tier-dropzone-normal') as HTMLElement;
+              if (dropzone) {
+                const targetIdx = calculateDropIndex(e, dropzone);
+                setHoveredIndex(targetIdx);
+              }
+            }}
+            onDrop={(e) => {
+              e.preventDefault();
+              const dropzone = e.currentTarget.querySelector('.tier-dropzone-normal') as HTMLElement;
+              const targetIdx = dropzone ? calculateDropIndex(e, dropzone) : undefined;
+              handleDrop(e, tier.id, targetIdx);
+            }}
           >
             {/* Tier Label (Left Sidebar) */}
             <div 
@@ -972,7 +1108,6 @@ export default function TierList() {
                 WebkitBackdropFilter: 'blur(12px)'
               }}
               onClick={(e) => {
-                // If selected character exists, move it. Otherwise allow label rename or color click.
                 if (selectedCharId) {
                   e.stopPropagation();
                   handleTierRowClick(tier.id);
@@ -986,7 +1121,7 @@ export default function TierList() {
                 className="tier-label-textarea"
                 rows={1}
                 spellCheck={false}
-                onClick={(e) => e.stopPropagation()} // Prevents select action on input focus
+                onClick={(e) => e.stopPropagation()}
                 onKeyDown={(e) => {
                   if (e.key === 'Enter') e.preventDefault();
                 }}
@@ -995,47 +1130,29 @@ export default function TierList() {
 
             {/* Tier Dropzone (Center Content Area) */}
             <div 
-              className="tier-dropzone"
+              className="tier-dropzone-normal"
               onDragOver={(e) => {
                 e.preventDefault();
+                e.stopPropagation();
+                e.dataTransfer.dropEffect = 'move';
                 e.currentTarget.classList.add('drag-over');
                 setHoveredTierId(tier.id);
-                
-                // Calculate closest card index horizontally
-                const dropzone = e.currentTarget;
-                const cards = Array.from(dropzone.querySelectorAll('.character-card'));
-                if (cards.length > 0) {
-                  const x = e.clientX;
-                  let closestCard = cards[0];
-                  let minDistance = Math.abs(x - (cards[0].getBoundingClientRect().left + cards[0].getBoundingClientRect().width / 2));
-                  
-                  for (let i = 1; i < cards.length; i++) {
-                    const rect = cards[i].getBoundingClientRect();
-                    const distance = Math.abs(x - (rect.left + rect.width / 2));
-                    if (distance < minDistance) {
-                      minDistance = distance;
-                      closestCard = cards[i];
-                    }
-                  }
-                  
-                  const rect = closestCard.getBoundingClientRect();
-                  const isAfter = x > rect.left + rect.width / 2;
-                  const index = cards.indexOf(closestCard);
-                  setHoveredIndex(index !== -1 ? (isAfter ? index + 1 : index) : undefined);
-                } else {
-                  setHoveredIndex(0);
-                }
+                const targetIdx = calculateDropIndex(e, e.currentTarget);
+                setHoveredIndex(targetIdx);
               }}
               onDragLeave={(e) => {
                 e.currentTarget.classList.remove('drag-over');
-                if (e.relatedTarget === null || !(e.relatedTarget as HTMLElement).closest('.tier-dropzone')) {
+                if (e.relatedTarget === null || !(e.relatedTarget as HTMLElement).closest('.tier-dropzone-normal, .tier-dropzone-fullscreen')) {
                   setHoveredTierId(null);
                   setHoveredIndex(undefined);
                 }
               }}
               onDrop={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
                 e.currentTarget.classList.remove('drag-over');
-                handleDrop(e, tier.id, hoveredIndex);
+                const targetIdx = calculateDropIndex(e, e.currentTarget);
+                handleDrop(e, tier.id, targetIdx);
               }}
             >
               {tier.characterIds.map((charId, idx) => {
@@ -1051,6 +1168,7 @@ export default function TierList() {
                     onDragOver={(e) => {
                       e.preventDefault();
                       e.stopPropagation();
+                      e.dataTransfer.dropEffect = 'move';
                       const rect = e.currentTarget.getBoundingClientRect();
                       const isAfter = e.clientX > rect.left + rect.width / 2;
                       const targetIdx = isAfter ? idx + 1 : idx;
@@ -1060,7 +1178,10 @@ export default function TierList() {
                     onDrop={(e) => {
                       e.preventDefault();
                       e.stopPropagation();
-                      handleDrop(e, tier.id, hoveredIndex);
+                      const rect = e.currentTarget.getBoundingClientRect();
+                      const isAfter = e.clientX > rect.left + rect.width / 2;
+                      const targetIdx = isAfter ? idx + 1 : idx;
+                      handleDrop(e, tier.id, targetIdx);
                     }}
                     className={`character-card rarity-${char.rarity}-card element-${char.element.toLowerCase()}-glow ${selectedCharId === char.id ? 'selected' : ''}`}
                     style={{ backgroundImage: `url(${char.imgUrl})` }}
@@ -1089,13 +1210,20 @@ export default function TierList() {
               >
                 <ArrowDown size={14} />
               </button>
-              <button 
-                onClick={() => setActiveColorPickerRowId(activeColorPickerRowId === tier.id ? null : tier.id)} 
-                className="action-btn"
-                title="Cambiar Color"
+              <label 
+                className="action-btn color-picker-action-btn" 
+                title="Elegir color RGB"
+                style={{ borderColor: tier.color }}
               >
-                <Palette size={14} />
-              </button>
+                <input 
+                  type="color" 
+                  value={tier.color.startsWith('#') && (tier.color.length === 7 || tier.color.length === 4) ? tier.color : '#ff7f7f'}
+                  onChange={(e) => handleSetRowColor(tier.id, e.target.value)}
+                  className="tier-color-native-input"
+                  onClick={(e) => e.stopPropagation()}
+                />
+                <Palette size={14} style={{ color: tier.color }} />
+              </label>
               <button 
                 onClick={() => handleRemoveTier(tier.id)} 
                 className="action-btn delete"
@@ -1103,27 +1231,6 @@ export default function TierList() {
               >
                 <Trash2 size={14} />
               </button>
-
-              {/* Color Picker Overlay */}
-              {activeColorPickerRowId === tier.id && (
-                <div className="color-picker-overlay">
-                  {PRESET_COLORS.map(color => (
-                    <div
-                      key={color}
-                      className="color-dot"
-                      style={{ backgroundColor: color, color }}
-                      onClick={() => handleSetRowColor(tier.id, color)}
-                    />
-                  ))}
-                  <button 
-                    onClick={() => setActiveColorPickerRowId(null)}
-                    className="action-btn"
-                    style={{ marginLeft: 8 }}
-                  >
-                    <X size={14} />
-                  </button>
-                </div>
-              )}
             </div>
           </div>
         ))}
@@ -1269,11 +1376,10 @@ export default function TierList() {
                 return (
                   <div
                     key={char.id}
-                    draggable={false}
-                    onDragStart={(e) => e.preventDefault()}
-                    onMouseDown={(e) => e.preventDefault()}
-                    onTouchStart={(e) => e.preventDefault()}
-                    onPointerDown={(e) => handleCharCardPointerDown(char.id, e)}
+                    draggable={true}
+                    onDragStart={(e) => handleDragStart(e, char.id)}
+                    onDragEnd={handleDragEnd}
+                    onClick={(e) => handleCharCardClick(char.id, e)}
                     className={`character-card ${currentTemplateId === 'dbd' ? 'dbd-pool-card' : ''} rarity-${char.rarity}-card element-${char.element.toLowerCase()}-glow ${selectedCharId === char.id ? 'selected' : ''}`}
                     style={{ 
                       backgroundImage: `url(${char.imgUrl})`, 
@@ -1351,15 +1457,31 @@ export default function TierList() {
               {tiers.map((tier) => (
                 <div 
                   key={tier.id} 
-                  className={`tier-row ${hoveredTierId === tier.id ? 'drag-over' : ''}`}
+                  className={`tier-row-fullscreen ${hoveredTierId === tier.id ? 'drag-over' : ''}`}
                   data-tier-id={tier.id}
                   onClick={() => handleTierRowClick(tier.id)}
+                  onDragOver={(e) => {
+                    e.preventDefault();
+                    e.dataTransfer.dropEffect = 'move';
+                    setHoveredTierId(tier.id);
+                    const dropzone = e.currentTarget.querySelector('.tier-dropzone-fullscreen') as HTMLElement;
+                    if (dropzone) {
+                      const targetIdx = calculateDropIndex(e, dropzone);
+                      setHoveredIndex(targetIdx);
+                    }
+                  }}
+                  onDrop={(e) => {
+                    e.preventDefault();
+                    const dropzone = e.currentTarget.querySelector('.tier-dropzone-fullscreen') as HTMLElement;
+                    const targetIdx = dropzone ? calculateDropIndex(e, dropzone) : undefined;
+                    handleDrop(e, tier.id, targetIdx);
+                  }}
                 >
                   <div 
                     className="tier-label-wrapper"
                     style={{ 
                       background: tier.color,
-                      borderLeft: `5px solid rgba(0,0,0,0.25)`,
+                      borderLeft: `5px solid rgba(0,0,0,0.35)`,
                     }}
                     onClick={(e) => {
                       if (selectedCharId) {
@@ -1372,80 +1494,81 @@ export default function TierList() {
                   </div>
 
                   <div 
-                    className="tier-dropzone"
-                    style={{ background: `${tier.color}22` }}
+                    className="tier-dropzone-fullscreen"
+                    style={{ 
+                      background: `${tier.color}28`,
+                      border: `1px solid ${tier.color}45`
+                    }}
                     onDragOver={(e) => {
                       e.preventDefault();
+                      e.stopPropagation();
+                      e.dataTransfer.dropEffect = 'move';
                       e.currentTarget.classList.add('drag-over');
                       setHoveredTierId(tier.id);
-                      
-                      const dropzone = e.currentTarget;
-                      const cards = Array.from(dropzone.querySelectorAll('.character-card'));
-                      if (cards.length > 0) {
-                        const x = e.clientX;
-                        let closestCard = cards[0];
-                        let minDistance = Math.abs(x - (cards[0].getBoundingClientRect().left + cards[0].getBoundingClientRect().width / 2));
-                        
-                        for (let i = 1; i < cards.length; i++) {
-                          const rect = cards[i].getBoundingClientRect();
-                          const distance = Math.abs(x - (rect.left + rect.width / 2));
-                          if (distance < minDistance) {
-                            minDistance = distance;
-                            closestCard = cards[i];
-                          }
-                        }
-                        
-                        const rect = closestCard.getBoundingClientRect();
-                        const isAfter = x > rect.left + rect.width / 2;
-                        const index = cards.indexOf(closestCard);
-                        setHoveredIndex(index !== -1 ? (isAfter ? index + 1 : index) : undefined);
-                      } else {
-                        setHoveredIndex(0);
-                      }
+                      const targetIdx = calculateDropIndex(e, e.currentTarget);
+                      setHoveredIndex(targetIdx);
                     }}
                     onDragLeave={(e) => {
                       e.currentTarget.classList.remove('drag-over');
-                      if (e.relatedTarget === null || !(e.relatedTarget as HTMLElement).closest('.tier-dropzone')) {
+                      if (e.relatedTarget === null || !(e.relatedTarget as HTMLElement).closest('.tier-dropzone-normal, .tier-dropzone-fullscreen')) {
                         setHoveredTierId(null);
                         setHoveredIndex(undefined);
                       }
                     }}
                     onDrop={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
                       e.currentTarget.classList.remove('drag-over');
-                      handleDrop(e, tier.id, hoveredIndex);
+                      const targetIdx = calculateDropIndex(e, e.currentTarget);
+                      handleDrop(e, tier.id, targetIdx);
                     }}
                   >
-                    {tier.characterIds.map((charId, idx) => {
-                      const char = charactersMap.current[charId];
-                      if (!char) return null;
-                      return (
-                        <div
-                          key={char.id}
-                          draggable
-                          onDragStart={(e) => handleDragStart(e, char.id)}
-                          onDragEnd={handleDragEnd}
-                          onClick={(e) => handleCharCardClick(char.id, e)}
-                          onDragOver={(e) => {
-                            e.preventDefault();
-                            e.stopPropagation();
-                            const rect = e.currentTarget.getBoundingClientRect();
-                            const isAfter = e.clientX > rect.left + rect.width / 2;
-                            const targetIdx = isAfter ? idx + 1 : idx;
-                            setHoveredTierId(tier.id);
-                            setHoveredIndex(targetIdx);
-                          }}
-                          onDrop={(e) => {
-                            e.preventDefault();
-                            e.stopPropagation();
-                            handleDrop(e, tier.id, hoveredIndex);
-                          }}
-                          className={`character-card rarity-${char.rarity}-card element-${char.element.toLowerCase()}-glow`}
-                          style={{ backgroundImage: `url(${char.imgUrl})` }}
-                        >
-                          <div className="character-name-overlay">{char.name}</div>
-                        </div>
-                      );
-                    })}
+                      {tier.characterIds.map((charId, idx) => {
+                        const char = charactersMap.current[charId];
+                        if (!char) return null;
+                        const charCount = tier.characterIds.length;
+                        const cardWidthPercent = 100 / Math.max(charCount, 1);
+                        return (
+                          <div
+                            key={char.id}
+                            draggable
+                            onDragStart={(e) => handleDragStart(e, char.id)}
+                            onDragEnd={handleDragEnd}
+                            onClick={(e) => handleCharCardClick(char.id, e)}
+                            onDragOver={(e) => {
+                              e.preventDefault();
+                              e.stopPropagation();
+                              e.dataTransfer.dropEffect = 'move';
+                              const rect = e.currentTarget.getBoundingClientRect();
+                              const isAfter = e.clientX > rect.left + rect.width / 2;
+                              const targetIdx = isAfter ? idx + 1 : idx;
+                              setHoveredTierId(tier.id);
+                              setHoveredIndex(targetIdx);
+                            }}
+                            onDrop={(e) => {
+                              e.preventDefault();
+                              e.stopPropagation();
+                              const rect = e.currentTarget.getBoundingClientRect();
+                              const isAfter = e.clientX > rect.left + rect.width / 2;
+                              const targetIdx = isAfter ? idx + 1 : idx;
+                              handleDrop(e, tier.id, targetIdx);
+                            }}
+                            className={`fullscreen-char-card element-${char.element.toLowerCase()}-glow`}
+                            style={{
+                              backgroundImage: `url(${char.imgUrl})`,
+                              height: '100%',
+                              aspectRatio: '1 / 1',
+                              width: 'auto',
+                              maxWidth: `${cardWidthPercent}%`,
+                              flexShrink: 1,
+                              minWidth: 0,
+                            }}
+                            title={`${char.name} (${char.element})`}
+                          >
+                            <div className="character-name-overlay">{char.name}</div>
+                          </div>
+                        );
+                      })}
                   </div>
                 </div>
               ))}

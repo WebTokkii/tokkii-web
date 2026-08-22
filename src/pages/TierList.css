@@ -267,21 +267,65 @@ h1, h2, h3, h4, h5, h6 {
   box-shadow: var(--shadow);
   border: 1px solid rgba(233, 176, 255, .08);
   background: rgba(255, 255, 255, 0.04);
-  backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
 }
 
-/* Individual Row */
-.tier-row {
+/* Fila de tier (vista normal) */
+.tier-row-normal {
   display: flex;
   align-items: stretch;
   border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-  min-height: 110px;
+   min-height: 84px;
   position: relative;
   transition: var(--transition-normal);
 }
 
-.tier-row:last-child {
+/* Estilos scoped para la vista fullscreen */
+.fullscreen-presenter-overlay .tierlist-board {
+  width: 100%;
+  height: 100vh;
+  overflow-y: auto;
+}
+
+.tier-row-fullscreen {
+  max-width: 1200px;
+  margin: 0 auto;
+  height: auto;
+  min-height: 84px;
+}
+
+.fullscreen-presenter-overlay .tier-dropzone, .tier-dropzone-fullscreen {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+  justify-content: flex-start;
+  flex: 1;
+  min-height: 84px;
+  padding: 8px;
+}
+
+.tier-dropzone-normal {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+  justify-content: flex-start;
+  flex: 1;
+  min-height: 84px;
+  padding: 8px;
+}
+
+.fullscreen-presenter-overlay .character-card {
+  flex: 0 1 auto;
+  width: 72px;
+  height: 72px;
+  background-size: cover;
+}
+
+.tier-row-normal:last-child,
+.tier-row-fullscreen:last-child {
   border-bottom: none;
 }
 
@@ -347,7 +391,10 @@ h1, h2, h3, h4, h5, h6 {
   box-shadow: inset 0 0 20px rgba(255, 255, 255, 0.05);
 }
 
-.tier-row.drag-over {
+.tier-row-normal.drag-over {
+  background: rgba(255, 255, 255, 0.03);
+  box-shadow: inset 0 0 15px rgba(255, 255, 255, 0.03);
+}
   background: rgba(255, 255, 255, 0.03);
   box-shadow: inset 0 0 15px rgba(255, 255, 255, 0.03);
 }
@@ -366,6 +413,7 @@ h1, h2, h3, h4, h5, h6 {
   gap: 0.4rem;
   padding: 0.5rem;
   flex-shrink: 0;
+  margin-left: auto;
   border-left: 1px solid rgba(255, 255, 255, 0.03);
 }
 
@@ -395,35 +443,34 @@ h1, h2, h3, h4, h5, h6 {
   border-color: rgba(236, 74, 51, 0.3);
 }
 
-/* Color picker popover */
-.color-picker-overlay {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.85);
+.color-picker-action-btn {
+  position: relative;
+  cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 0.75rem;
-  z-index: 10;
-  animation: fadeIn 0.15s ease-out;
+  overflow: hidden;
+  transition: all 0.2s ease;
 }
 
-.color-dot {
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
+.color-picker-action-btn:hover {
+  background: rgba(255, 255, 255, 0.12);
+  transform: scale(1.1);
+  box-shadow: 0 0 10px currentColor;
+}
+
+.tier-color-native-input {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
   cursor: pointer;
-  border: 2px solid rgba(255, 255, 255, 0.2);
-  transition: var(--transition-fast);
-}
-
-.color-dot:hover {
-  transform: scale(1.2);
-  border-color: white;
-  box-shadow: 0 0 12px currentColor;
+  padding: 0;
+  margin: 0;
+  border: none;
+  z-index: 2;
 }
 
 /* ==========================================================================
@@ -1016,22 +1063,22 @@ body.dragging-active * {
   }
 }
 
-/* Fullscreen Presenter Modal */
+/* Presentation Board adjustments */
 .fullscreen-presenter-overlay {
   position: fixed;
   top: 0;
   left: 0;
   width: 100vw;
   height: 100vh;
-  background: rgba(11, 14, 22, 0.85); /* Translucent background overlay */
-  backdrop-filter: blur(12px); /* Soft blur of underlying page */
-  -webkit-backdrop-filter: blur(12px);
+  background: rgba(11, 14, 22, 0.92);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
   z-index: 2000;
-  overflow: hidden; /* Hide vertical scrollbar completely to force 100% viewport fit */
-  padding: 2rem;
+  overflow: hidden;
+  padding: 1.75rem 3.5rem;
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  box-sizing: border-box;
   animation: fadeInPresenter 0.3s ease-out;
 }
 
@@ -1050,18 +1097,18 @@ body.dragging-active * {
 .presenter-floating-actions {
   position: fixed;
   top: 16px;
-  right: 24px;
+  right: 28px;
   display: flex;
   gap: 0.5rem;
   z-index: 2050;
 }
 
 .presenter-icon-btn {
-  width: 40px;
-  height: 40px;
+  width: 38px;
+  height: 38px;
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
   color: var(--text-muted);
   cursor: pointer;
   display: flex;
@@ -1071,100 +1118,144 @@ body.dragging-active * {
 }
 
 .presenter-icon-btn:hover {
-  background: rgba(255, 255, 255, 0.12);
-  color: white;
-  border-color: rgba(255, 255, 255, 0.3);
-  transform: scale(1.08);
-}
-
-.presenter-icon-btn.active {
-  background: rgba(34, 197, 94, 0.15);
-  border-color: rgba(34, 197, 94, 0.4);
-  color: #4ade80;
-}
-
-.presenter-icon-btn.close-btn:hover {
-  background: rgba(239, 68, 68, 0.15);
-  border-color: rgba(239, 68, 68, 0.45);
-  color: #f87171;
+  background: rgba(239, 68, 68, 0.25);
+  color: #fff;
+  border-color: rgba(239, 68, 68, 0.6);
+  transform: scale(1.1);
 }
 
 .presenter-board-container {
   flex: 1;
-  max-width: 1200px;
-  width: 100%;
-  margin: 0 auto;
-}
-
-/* Presentation Board adjustments ( macOS / iOS presenter layout ) */
-.clean-board {
   height: 100%;
+  width: 100%;
+  max-width: 1450px;
+  margin: 0 auto;
   display: flex;
   flex-direction: column;
-  gap: 0.35rem;
-  background: rgba(0, 0, 0, 0.2);
-  border: 1px solid rgba(255, 255, 255, 0.03);
+  min-height: 0;
+}
+
+.clean-board {
+  flex: 1;
+  height: 100%;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: clamp(4px, 0.8vh, 8px);
+  background: rgba(0, 0, 0, 0.25);
+  border: 1px solid rgba(255, 255, 255, 0.06);
   border-radius: 16px;
   overflow: hidden;
   justify-content: stretch;
+  padding: 4px;
 }
 
-.clean-board .tier-row {
-  flex: 1; /* Make rows distribute height equally */
-  min-height: 0; /* Let it shrink below content height */
-  display: grid;
-  grid-template-columns: 140px 1fr; /* No action controls */
+.tier-row-fullscreen {
+  flex: 1 1 0%;
+  min-height: 0;
+  display: flex;
   align-items: stretch;
+  width: 100%;
+  max-width: 100%;
+  border-radius: 8px;
+  overflow: hidden;
+  position: relative;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-.clean-board .tier-dropzone {
+.tier-row-fullscreen.drag-over {
+  box-shadow: 0 0 16px var(--accent);
+}
+
+.tier-row-fullscreen .tier-label-wrapper {
+  width: 120px;
+  min-width: 90px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.25rem 0.5rem;
+  flex-shrink: 0;
+  text-align: center;
+  height: 100%;
+}
+
+.tier-row-fullscreen .tier-label-text {
+  font-size: clamp(0.8rem, 2.2vh, 1.25rem);
+  font-weight: 900;
+  color: #111;
+  text-shadow: 0 1px 2px rgba(255,255,255,0.4);
+  word-break: break-word;
+  line-height: 1.1;
+}
+
+.tier-dropzone-fullscreen {
   display: flex;
   flex-direction: row;
-  flex-wrap: nowrap;
-  overflow-x: auto;
-  overflow-y: hidden;
-  align-items: stretch; /* Cards fill the full row height */
+  align-items: stretch;
+  justify-content: flex-start;
+  flex: 1;
+  height: 100%;
+  min-height: 0;
   padding: 0;
   gap: 0;
+  overflow: hidden;
+  width: 100%;
+  position: relative;
+}
+
+.tier-dropzone-fullscreen.drag-over {
+  filter: brightness(1.2);
+}
+
+.tier-dropzone-fullscreen .fullscreen-char-card {
   height: 100%;
-  scrollbar-width: none;
-}
-
-/* Hide horizontal scrollbar in presentation row for Webkit browsers */
-.clean-board .tier-dropzone::-webkit-scrollbar {
-  display: none;
-}
-
-/* Presentation-mode cards: borderless, full-height, auto-width from aspect ratio */
-.clean-board .character-card {
-  width: auto !important;
-  height: 100% !important;
-  aspect-ratio: 3 / 4;
-  border-radius: 0 !important;
-  border: none !important;
-  box-shadow: none !important;
-  outline: none !important;
+  aspect-ratio: 1 / 1;
+  width: auto;
+  min-height: 0;
+  min-width: 0;
+  position: relative;
   background-size: cover;
   background-position: center top;
-  flex-shrink: 0;
-  position: relative;
-  overflow: hidden;
+  background-repeat: no-repeat;
+  border: none !important;
+  border-right: none !important;
+  box-shadow: none !important;
+  outline: none !important;
+  border-radius: 0 !important;
+  cursor: grab;
+  transition: filter 0.15s ease, transform 0.15s ease;
 }
 
-.tier-label-text {
-  font-size: 1.15rem;
-  font-weight: 700;
-  color: rgba(0, 0, 0, 0.85);
-  text-align: center;
-  padding: 0.5rem;
-  width: 100%;
-  word-break: break-word;
-  user-select: none;
+.tier-dropzone-fullscreen .fullscreen-char-card:last-child {
+  border: none !important;
 }
 
-.clean-board .tier-label-text {
+.tier-dropzone-fullscreen .fullscreen-char-card:hover {
+  filter: brightness(1.15);
+  z-index: 5;
+}
+
+.tier-dropzone-fullscreen .fullscreen-char-card .character-name-overlay {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: linear-gradient(to top, rgba(0,0,0,0.85), transparent);
   color: #fff;
-  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.6);
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-align: center;
+  padding: 6px 4px 2px;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  pointer-events: none;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.tier-dropzone-fullscreen .fullscreen-char-card:hover .character-name-overlay {
+  opacity: 1;
 }
 
 /* Save Toast notification style */

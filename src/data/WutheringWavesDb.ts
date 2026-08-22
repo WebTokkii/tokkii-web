@@ -14,7 +14,7 @@ export const WUTHERING_WAVES_CHARACTERS: Character[] = [
     "element": "Aero",
     "weapon": "Pistols",
     "rarity": 4,
-    "imgUrl": "https://static.wikia.nocookie.net/wutheringwaves/images/1/1c/Resonator_Aalto.png/revision/latest/scale-to-width-down/256"
+    "imgUrl": "/Wuwa/aalto.png"
   },
   {
     "id": "aemeath",
@@ -22,7 +22,7 @@ export const WUTHERING_WAVES_CHARACTERS: Character[] = [
     "element": "Fusion",
     "weapon": "Sword",
     "rarity": 5,
-    "imgUrl": "https://static.wikia.nocookie.net/wutheringwaves/images/e/e8/Resonator_Aemeath.png/revision/latest/scale-to-width-down/256"
+    "imgUrl": "/Wuwa/aemeath.png"
   },
   {
     "id": "baizhi",
@@ -30,7 +30,7 @@ export const WUTHERING_WAVES_CHARACTERS: Character[] = [
     "element": "Glacio",
     "weapon": "Rectifier",
     "rarity": 4,
-    "imgUrl": "https://static.wikia.nocookie.net/wutheringwaves/images/2/2a/Resonator_Baizhi.png/revision/latest/scale-to-width-down/256"
+    "imgUrl": "/Wuwa/baizhi.png"
   },
   {
     "id": "brant",
@@ -38,7 +38,7 @@ export const WUTHERING_WAVES_CHARACTERS: Character[] = [
     "element": "Fusion",
     "weapon": "Gauntlets",
     "rarity": 5,
-    "imgUrl": "https://static.wikia.nocookie.net/wutheringwaves/images/d/df/Resonator_Brant.png/revision/latest/scale-to-width-down/256"
+    "imgUrl": "/Wuwa/brant.png"
   },
   {
     "id": "buling",
@@ -46,7 +46,7 @@ export const WUTHERING_WAVES_CHARACTERS: Character[] = [
     "element": "Electro",
     "weapon": "Broadblade",
     "rarity": 5,
-    "imgUrl": "https://static.wikia.nocookie.net/wutheringwaves/images/7/70/Resonator_Buling.png/revision/latest/scale-to-width-down/256"
+    "imgUrl": "/Wuwa/buling.png"
   },
   {
     "id": "camellya",
@@ -54,7 +54,7 @@ export const WUTHERING_WAVES_CHARACTERS: Character[] = [
     "element": "Havoc",
     "weapon": "Sword",
     "rarity": 5,
-    "imgUrl": "https://static.wikia.nocookie.net/wutheringwaves/images/9/9f/Resonator_Camellya.png/revision/latest/scale-to-width-down/256"
+    "imgUrl": "/Wuwa/camellya.png"
   },
   {
     "id": "cantarella",
@@ -62,7 +62,7 @@ export const WUTHERING_WAVES_CHARACTERS: Character[] = [
     "element": "Havoc",
     "weapon": "Pistols",
     "rarity": 5,
-    "imgUrl": "https://static.wikia.nocookie.net/wutheringwaves/images/c/cd/Resonator_Cantarella.png/revision/latest/scale-to-width-down/256"
+    "imgUrl": "/Wuwa/cantarella.png"
   },
   {
     "id": "carlotta",
@@ -70,7 +70,7 @@ export const WUTHERING_WAVES_CHARACTERS: Character[] = [
     "element": "Glacio",
     "weapon": "Pistols",
     "rarity": 5,
-    "imgUrl": "https://static.wikia.nocookie.net/wutheringwaves/images/d/d6/Resonator_Carlotta.png/revision/latest/scale-to-width-down/256"
+    "imgUrl": "/Wuwa/carlotta.png"
   },
   {
     "id": "cartethyia",
@@ -78,7 +78,7 @@ export const WUTHERING_WAVES_CHARACTERS: Character[] = [
     "element": "Aero",
     "weapon": "Broadblade",
     "rarity": 5,
-    "imgUrl": "https://static.wikia.nocookie.net/wutheringwaves/images/d/d6/Resonator_Cartethyia.png/revision/latest/scale-to-width-down/256"
+    "imgUrl": "/Wuwa/cartethyia.png"
   },
   {
     "id": "changli",
@@ -86,7 +86,7 @@ export const WUTHERING_WAVES_CHARACTERS: Character[] = [
     "element": "Fusion",
     "weapon": "Sword",
     "rarity": 5,
-    "imgUrl": "https://static.wikia.nocookie.net/wutheringwaves/images/1/11/Resonator_Changli.png/revision/latest/scale-to-width-down/256"
+    "imgUrl": "/Wuwa/changli.png"
   },
   {
     "id": "chisa",
@@ -94,7 +94,7 @@ export const WUTHERING_WAVES_CHARACTERS: Character[] = [
     "element": "Havoc",
     "weapon": "Broadblade",
     "rarity": 5,
-    "imgUrl": "https://static.wikia.nocookie.net/wutheringwaves/images/d/d7/Resonator_Chisa.png/revision/latest/scale-to-width-down/256"
+    "imgUrl": "/Wuwa/chisa.png"
   },
   {
     "id": "chixia",
@@ -102,7 +102,7 @@ export const WUTHERING_WAVES_CHARACTERS: Character[] = [
     "element": "Fusion",
     "weapon": "Pistols",
     "rarity": 4,
-    "imgUrl": "https://static.wikia.nocookie.net/wutheringwaves/images/1/10/Resonator_Chixia.png/revision/latest/scale-to-width-down/256"
+    "imgUrl": "/Wuwa/chixia.png"
   },
   {
     "id": "danjin",
@@ -110,7 +110,7 @@ export const WUTHERING_WAVES_CHARACTERS: Character[] = [
     "element": "Havoc",
     "weapon": "Sword",
     "rarity": 4,
-    "imgUrl": "https://static.wikia.nocookie.net/wutheringwaves/images/1/1f/Resonator_Danjin.png/revision/latest/scale-to-width-down/256"
+    "imgUrl": "/Wuwa/danjin.png"
   },
   {
     "id": "denia",
@@ -118,7 +118,7 @@ export const WUTHERING_WAVES_CHARACTERS: Character[] = [
     "element": "Fusion",
     "weapon": "Rectifier",
     "rarity": 5,
-    "imgUrl": "https://static.wikia.nocookie.net/wutheringwaves/images/c/cc/Resonator_Denia.png/revision/latest/scale-to-width-down/256"
+    "imgUrl": "/Wuwa/denia.png"
   },
   {
     "id": "galbrena",
@@ -126,7 +126,7 @@ export const WUTHERING_WAVES_CHARACTERS: Character[] = [
     "element": "Fusion",
     "weapon": "Gauntlets",
     "rarity": 5,
-    "imgUrl": "https://static.wikia.nocookie.net/wutheringwaves/images/5/57/Resonator_Galbrena.png/revision/latest/scale-to-width-down/256"
+    "imgUrl": "/Wuwa/galbrena.png"
   },
   {
     "id": "hiyuki",
@@ -134,7 +134,7 @@ export const WUTHERING_WAVES_CHARACTERS: Character[] = [
     "element": "Glacio",
     "weapon": "Gauntlets",
     "rarity": 5,
-    "imgUrl": "https://static.wikia.nocookie.net/wutheringwaves/images/8/8e/Resonator_Hiyuki.png/revision/latest/scale-to-width-down/256"
+    "imgUrl": "/Wuwa/hiyuki.png"
   },
   {
     "id": "iuno",
@@ -142,7 +142,7 @@ export const WUTHERING_WAVES_CHARACTERS: Character[] = [
     "element": "Aero",
     "weapon": "Rectifier",
     "rarity": 5,
-    "imgUrl": "https://static.wikia.nocookie.net/wutheringwaves/images/8/8c/Resonator_Iuno.png/revision/latest/scale-to-width-down/256"
+    "imgUrl": "/Wuwa/iuno.png"
   },
   {
     "id": "jianxin",
@@ -150,7 +150,7 @@ export const WUTHERING_WAVES_CHARACTERS: Character[] = [
     "element": "Aero",
     "weapon": "Gauntlets",
     "rarity": 5,
-    "imgUrl": "https://static.wikia.nocookie.net/wutheringwaves/images/0/00/Resonator_Jianxin.png/revision/latest/scale-to-width-down/256"
+    "imgUrl": "/Wuwa/jianxin.png"
   },
   {
     "id": "jinhsi",
@@ -158,7 +158,7 @@ export const WUTHERING_WAVES_CHARACTERS: Character[] = [
     "element": "Spectro",
     "weapon": "Broadblade",
     "rarity": 5,
-    "imgUrl": "https://static.wikia.nocookie.net/wutheringwaves/images/f/f5/Resonator_Jinhsi.png/revision/latest/scale-to-width-down/256"
+    "imgUrl": "/Wuwa/jinhsi.png"
   },
   {
     "id": "jiyan",
@@ -166,7 +166,7 @@ export const WUTHERING_WAVES_CHARACTERS: Character[] = [
     "element": "Aero",
     "weapon": "Broadblade",
     "rarity": 5,
-    "imgUrl": "https://static.wikia.nocookie.net/wutheringwaves/images/d/da/Resonator_Jiyan.png/revision/latest/scale-to-width-down/256"
+    "imgUrl": "/Wuwa/jiyan.png"
   },
   {
     "id": "lingyang",
@@ -174,7 +174,7 @@ export const WUTHERING_WAVES_CHARACTERS: Character[] = [
     "element": "Glacio",
     "weapon": "Gauntlets",
     "rarity": 5,
-    "imgUrl": "https://static.wikia.nocookie.net/wutheringwaves/images/3/39/Resonator_Lingyang.png/revision/latest/scale-to-width-down/256"
+    "imgUrl": "/Wuwa/lingyang.png"
   },
   {
     "id": "lucilla",
@@ -182,7 +182,7 @@ export const WUTHERING_WAVES_CHARACTERS: Character[] = [
     "element": "Glacio",
     "weapon": "Sword",
     "rarity": 5,
-    "imgUrl": "https://static.wikia.nocookie.net/wutheringwaves/images/a/a0/Resonator_Lucilla.png/revision/latest/scale-to-width-down/256"
+    "imgUrl": "/Wuwa/lucilla.png"
   },
   {
     "id": "lucy",
@@ -190,7 +190,7 @@ export const WUTHERING_WAVES_CHARACTERS: Character[] = [
     "element": "Spectro",
     "weapon": "Sword",
     "rarity": 5,
-    "imgUrl": "https://static.wikia.nocookie.net/wutheringwaves/images/5/57/Resonator_Lucy.png/revision/latest/scale-to-width-down/256"
+    "imgUrl": "/Wuwa/lucy.png"
   },
   {
     "id": "lumi",
@@ -198,7 +198,7 @@ export const WUTHERING_WAVES_CHARACTERS: Character[] = [
     "element": "Electro",
     "weapon": "Broadblade",
     "rarity": 4,
-    "imgUrl": "https://static.wikia.nocookie.net/wutheringwaves/images/f/f3/Resonator_Lumi.png/revision/latest/scale-to-width-down/256"
+    "imgUrl": "/Wuwa/lumi.png"
   },
   {
     "id": "lupa",
@@ -206,7 +206,7 @@ export const WUTHERING_WAVES_CHARACTERS: Character[] = [
     "element": "Fusion",
     "weapon": "Sword",
     "rarity": 5,
-    "imgUrl": "https://static.wikia.nocookie.net/wutheringwaves/images/d/d1/Resonator_Lupa.png/revision/latest/scale-to-width-down/256"
+    "imgUrl": "/Wuwa/lupa.png"
   },
   {
     "id": "luuk",
@@ -214,7 +214,7 @@ export const WUTHERING_WAVES_CHARACTERS: Character[] = [
     "element": "Spectro",
     "weapon": "Sword",
     "rarity": 5,
-    "imgUrl": "https://static.wikia.nocookie.net/wutheringwaves/images/e/eb/Resonator_Luuk_Herssen.png/revision/latest/scale-to-width-down/256"
+    "imgUrl": "/Wuwa/luuk.png"
   },
   {
     "id": "lynae",
@@ -222,7 +222,7 @@ export const WUTHERING_WAVES_CHARACTERS: Character[] = [
     "element": "Spectro",
     "weapon": "Rectifier",
     "rarity": 5,
-    "imgUrl": "https://static.wikia.nocookie.net/wutheringwaves/images/3/34/Resonator_Lynae.png/revision/latest/scale-to-width-down/256"
+    "imgUrl": "/Wuwa/lynae.png"
   },
   {
     "id": "mornye",
@@ -230,7 +230,7 @@ export const WUTHERING_WAVES_CHARACTERS: Character[] = [
     "element": "Fusion",
     "weapon": "Gauntlets",
     "rarity": 5,
-    "imgUrl": "https://static.wikia.nocookie.net/wutheringwaves/images/2/25/Resonator_Mornye.png/revision/latest/scale-to-width-down/256"
+    "imgUrl": "/Wuwa/mornye.png"
   },
   {
     "id": "mortefi",
@@ -238,7 +238,7 @@ export const WUTHERING_WAVES_CHARACTERS: Character[] = [
     "element": "Fusion",
     "weapon": "Pistols",
     "rarity": 4,
-    "imgUrl": "https://static.wikia.nocookie.net/wutheringwaves/images/4/4f/Resonator_Mortefi.png/revision/latest/scale-to-width-down/256"
+    "imgUrl": "/Wuwa/mortefi.png"
   },
   {
     "id": "phoebe",
@@ -246,7 +246,7 @@ export const WUTHERING_WAVES_CHARACTERS: Character[] = [
     "element": "Spectro",
     "weapon": "Gauntlets",
     "rarity": 5,
-    "imgUrl": "https://static.wikia.nocookie.net/wutheringwaves/images/b/b7/Resonator_Phoebe.png/revision/latest/scale-to-width-down/256"
+    "imgUrl": "/Wuwa/phoebe.png"
   },
   {
     "id": "phrolova",
@@ -254,7 +254,7 @@ export const WUTHERING_WAVES_CHARACTERS: Character[] = [
     "element": "Havoc",
     "weapon": "Rectifier",
     "rarity": 5,
-    "imgUrl": "https://static.wikia.nocookie.net/wutheringwaves/images/a/a2/Resonator_Phrolova.png/revision/latest/scale-to-width-down/256"
+    "imgUrl": "/Wuwa/phrolova.png"
   },
   {
     "id": "qiuyuan",
@@ -262,7 +262,7 @@ export const WUTHERING_WAVES_CHARACTERS: Character[] = [
     "element": "Spectro",
     "weapon": "Sword",
     "rarity": 5,
-    "imgUrl": "https://static.wikia.nocookie.net/wutheringwaves/images/d/da/Resonator_Qiuyuan.png/revision/latest/scale-to-width-down/256"
+    "imgUrl": "/Wuwa/qiuyuan.png"
   },
   {
     "id": "rebecca",
@@ -270,7 +270,7 @@ export const WUTHERING_WAVES_CHARACTERS: Character[] = [
     "element": "Havoc",
     "weapon": "Rectifier",
     "rarity": 5,
-    "imgUrl": "https://static.wikia.nocookie.net/wutheringwaves/images/b/bd/Resonator_Rebecca.png/revision/latest/scale-to-width-down/256"
+    "imgUrl": "/Wuwa/rebecca.png"
   },
   {
     "id": "roccia",
@@ -278,7 +278,7 @@ export const WUTHERING_WAVES_CHARACTERS: Character[] = [
     "element": "Havoc",
     "weapon": "Gauntlets",
     "rarity": 5,
-    "imgUrl": "https://static.wikia.nocookie.net/wutheringwaves/images/1/1a/Resonator_Roccia.png/revision/latest/scale-to-width-down/256"
+    "imgUrl": "/Wuwa/roccia.png"
   },
   {
     "id": "rover_electro",
@@ -286,7 +286,7 @@ export const WUTHERING_WAVES_CHARACTERS: Character[] = [
     "element": "Electro",
     "weapon": "Sword",
     "rarity": 5,
-    "imgUrl": "https://static.wikia.nocookie.net/wutheringwaves/images/4/47/Resonator_Rover.png/revision/latest/scale-to-width-down/256"
+    "imgUrl": "/Wuwa/rover_electro.png"
   },
   {
     "id": "rover_havoc",
@@ -294,7 +294,7 @@ export const WUTHERING_WAVES_CHARACTERS: Character[] = [
     "element": "Havoc",
     "weapon": "Sword",
     "rarity": 5,
-    "imgUrl": "https://static.wikia.nocookie.net/wutheringwaves/images/4/47/Resonator_Rover.png/revision/latest/scale-to-width-down/256"
+    "imgUrl": "/Wuwa/rover_spectro.png"
   },
   {
     "id": "rover_spectro",
@@ -302,7 +302,7 @@ export const WUTHERING_WAVES_CHARACTERS: Character[] = [
     "element": "Spectro",
     "weapon": "Sword",
     "rarity": 5,
-    "imgUrl": "https://static.wikia.nocookie.net/wutheringwaves/images/4/47/Resonator_Rover.png/revision/latest/scale-to-width-down/256"
+    "imgUrl": "/Wuwa/rover_havoc.png"
   },
   {
     "id": "sanhua",
@@ -310,7 +310,7 @@ export const WUTHERING_WAVES_CHARACTERS: Character[] = [
     "element": "Glacio",
     "weapon": "Sword",
     "rarity": 4,
-    "imgUrl": "https://static.wikia.nocookie.net/wutheringwaves/images/d/d4/Resonator_Sanhua.png/revision/latest/scale-to-width-down/256"
+    "imgUrl": "/Wuwa/sanhua.png"
   },
   {
     "id": "shorekeeper",
@@ -318,7 +318,7 @@ export const WUTHERING_WAVES_CHARACTERS: Character[] = [
     "element": "Spectro",
     "weapon": "Rectifier",
     "rarity": 5,
-    "imgUrl": "https://static.wikia.nocookie.net/wutheringwaves/images/d/da/Resonator_Shorekeeper.png/revision/latest/scale-to-width-down/256"
+    "imgUrl": "/Wuwa/shorekeeper.png"
   },
   {
     "id": "sigrika",
@@ -326,7 +326,7 @@ export const WUTHERING_WAVES_CHARACTERS: Character[] = [
     "element": "Fusion",
     "weapon": "Broadblade",
     "rarity": 5,
-    "imgUrl": "https://static.wikia.nocookie.net/wutheringwaves/images/6/67/Resonator_Sigrika.png/revision/latest/scale-to-width-down/256"
+    "imgUrl": "/Wuwa/sigrika.png"
   },
   {
     "id": "suisui",
@@ -334,7 +334,7 @@ export const WUTHERING_WAVES_CHARACTERS: Character[] = [
     "element": "Glacio",
     "weapon": "Rectifier",
     "rarity": 5,
-    "imgUrl": "https://static.wikia.nocookie.net/wutheringwaves/images/7/78/Resonator_Suisui.png/revision/latest/scale-to-width-down/256"
+    "imgUrl": "/Wuwa/suisui.png"
   },
   {
     "id": "taoqi",
@@ -342,7 +342,7 @@ export const WUTHERING_WAVES_CHARACTERS: Character[] = [
     "element": "Havoc",
     "weapon": "Broadblade",
     "rarity": 4,
-    "imgUrl": "https://static.wikia.nocookie.net/wutheringwaves/images/6/66/Resonator_Taoqi.png/revision/latest/scale-to-width-down/256"
+    "imgUrl": "/Wuwa/taoqi.png"
   },
   {
     "id": "xiangli_yao",
@@ -350,7 +350,7 @@ export const WUTHERING_WAVES_CHARACTERS: Character[] = [
     "element": "Electro",
     "weapon": "Gauntlets",
     "rarity": 5,
-    "imgUrl": "https://static.wikia.nocookie.net/wutheringwaves/images/1/16/Resonator_Xiangli_Yao.png/revision/latest/scale-to-width-down/256"
+    "imgUrl": "/Wuwa/xiangli_yao.png"
   },
   {
     "id": "yangyang",
@@ -358,7 +358,7 @@ export const WUTHERING_WAVES_CHARACTERS: Character[] = [
     "element": "Aero",
     "weapon": "Sword",
     "rarity": 4,
-    "imgUrl": "https://static.wikia.nocookie.net/wutheringwaves/images/c/cf/Resonator_Yangyang.png/revision/latest/scale-to-width-down/256"
+    "imgUrl": "/Wuwa/yangyang.png"
   },
   {
     "id": "yangyang_xuanling",
@@ -366,7 +366,7 @@ export const WUTHERING_WAVES_CHARACTERS: Character[] = [
     "element": "Havoc",
     "weapon": "Sword",
     "rarity": 5,
-    "imgUrl": "https://static.wikia.nocookie.net/wutheringwaves/images/0/0b/Resonator_Yangyang_Xuanling.png/revision/latest/scale-to-width-down/256"
+    "imgUrl": "/Wuwa/yangyang_xuanling.png"
   },
   {
     "id": "youhu",
@@ -374,7 +374,7 @@ export const WUTHERING_WAVES_CHARACTERS: Character[] = [
     "element": "Glacio",
     "weapon": "Gauntlets",
     "rarity": 4,
-    "imgUrl": "https://static.wikia.nocookie.net/wutheringwaves/images/9/93/Resonator_Youhu.png/revision/latest/scale-to-width-down/256"
+    "imgUrl": "/Wuwa/youhu.png"
   },
   {
     "id": "yuanwu",
@@ -382,7 +382,7 @@ export const WUTHERING_WAVES_CHARACTERS: Character[] = [
     "element": "Electro",
     "weapon": "Gauntlets",
     "rarity": 4,
-    "imgUrl": "https://static.wikia.nocookie.net/wutheringwaves/images/d/d6/Resonator_Yuanwu.png/revision/latest/scale-to-width-down/256"
+    "imgUrl": "/Wuwa/yuanwu.png"
   },
   {
     "id": "zani",
@@ -390,7 +390,7 @@ export const WUTHERING_WAVES_CHARACTERS: Character[] = [
     "element": "Spectro",
     "weapon": "Gauntlets",
     "rarity": 5,
-    "imgUrl": "https://static.wikia.nocookie.net/wutheringwaves/images/1/12/Resonator_Zani.png/revision/latest/scale-to-width-down/256"
+    "imgUrl": "/Wuwa/zani.png"
   },
   {
     "id": "zhezhi",
@@ -398,6 +398,6 @@ export const WUTHERING_WAVES_CHARACTERS: Character[] = [
     "element": "Glacio",
     "weapon": "Rectifier",
     "rarity": 5,
-    "imgUrl": "https://static.wikia.nocookie.net/wutheringwaves/images/a/a0/Resonator_Zhezhi.png/revision/latest/scale-to-width-down/256"
+    "imgUrl": "/Wuwa/zhezhi.png"
   }
 ];

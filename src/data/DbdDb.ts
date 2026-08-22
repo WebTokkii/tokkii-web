@@ -14,7 +14,7 @@ export const DBD_CHARACTERS: Character[] = [
     "element": "Survivor",
     "weapon": "Original",
     "rarity": 4,
-    "imgUrl": "https://static.wikia.nocookie.net/deadbydaylight_gamepedia_en/images/b/b9/S07_AceVisconti_Portrait.png/revision/latest/scale-to-width-down/256"
+    "imgUrl": "/Dbd/acevisconti.png"
   },
   {
     "id": "adawong",
@@ -22,7 +22,7 @@ export const DBD_CHARACTERS: Character[] = [
     "element": "Survivor",
     "weapon": "Licenciado",
     "rarity": 5,
-    "imgUrl": "https://static.wikia.nocookie.net/deadbydaylight_gamepedia_en/images/5/5e/S32_AdaWong_Portrait.png/revision/latest/scale-to-width-down/256"
+    "imgUrl": "/Dbd/adawong.png"
   },
   {
     "id": "adamfrancis",
@@ -30,7 +30,7 @@ export const DBD_CHARACTERS: Character[] = [
     "element": "Survivor",
     "weapon": "Original",
     "rarity": 4,
-    "imgUrl": "https://static.wikia.nocookie.net/deadbydaylight_gamepedia_en/images/a/a5/S14_AdamFrancis_Portrait.png/revision/latest/scale-to-width-down/256"
+    "imgUrl": "/Dbd/adamfrancis.png"
   },
   {
     "id": "aestriyazar",
@@ -38,7 +38,7 @@ export const DBD_CHARACTERS: Character[] = [
     "element": "Survivor",
     "weapon": "Licenciado",
     "rarity": 5,
-    "imgUrl": "https://static.wikia.nocookie.net/deadbydaylight_gamepedia_en/images/e/e0/S42_TheTroupe_Portrait.png/revision/latest/scale-to-width-down/256"
+    "imgUrl": "/Dbd/baermaruraz.png"
   },
   {
     "id": "alanwake",
@@ -46,7 +46,7 @@ export const DBD_CHARACTERS: Character[] = [
     "element": "Survivor",
     "weapon": "Licenciado",
     "rarity": 5,
-    "imgUrl": "https://static.wikia.nocookie.net/deadbydaylight_gamepedia_en/images/4/43/S40_AlanWake_Portrait.png/revision/latest/scale-to-width-down/256"
+    "imgUrl": "/Dbd/alanwake.png"
   },
   {
     "id": "ashwilliams",
@@ -54,7 +54,7 @@ export const DBD_CHARACTERS: Character[] = [
     "element": "Survivor",
     "weapon": "Licenciado",
     "rarity": 5,
-    "imgUrl": "https://static.wikia.nocookie.net/deadbydaylight_gamepedia_en/images/9/91/S17_AshWilliams_Portrait.png/revision/latest/scale-to-width-down/256"
+    "imgUrl": "/Dbd/ashwilliams.png"
   },
   {
     "id": "baermaruraz",
@@ -62,7 +62,7 @@ export const DBD_CHARACTERS: Character[] = [
     "element": "Survivor",
     "weapon": "Licenciado",
     "rarity": 5,
-    "imgUrl": "https://static.wikia.nocookie.net/deadbydaylight_gamepedia_en/images/e/e0/S42_TheTroupe_Portrait.png/revision/latest/scale-to-width-down/256"
+    "imgUrl": "/Dbd/aestriyazar.png"
   },
   {
     "id": "billoverbeck",
@@ -70,7 +70,7 @@ export const DBD_CHARACTERS: Character[] = [
     "element": "Survivor",
     "weapon": "Licenciado",
     "rarity": 5,
-    "imgUrl": "https://static.wikia.nocookie.net/deadbydaylight_gamepedia_en/images/9/9c/S08_BillOverbeck_Portrait.png/revision/latest/scale-to-width-down/256"
+    "imgUrl": "/Dbd/billoverbeck.png"
   },
   {
     "id": "cherylmason",
@@ -78,7 +78,7 @@ export const DBD_CHARACTERS: Character[] = [
     "element": "Survivor",
     "weapon": "Licenciado",
     "rarity": 5,
-    "imgUrl": "https://static.wikia.nocookie.net/deadbydaylight_gamepedia_en/images/1/1d/S22_CherylMason_Portrait.png/revision/latest/scale-to-width-down/256"
+    "imgUrl": "/Dbd/cherylmason.png"
   },
   {
     "id": "claudettemorel",
@@ -86,7 +86,7 @@ export const DBD_CHARACTERS: Character[] = [
     "element": "Survivor",
     "weapon": "Original",
     "rarity": 4,
-    "imgUrl": "https://static.wikia.nocookie.net/deadbydaylight_gamepedia_en/images/c/c2/S03_ClaudetteMorel_Portrait.png/revision/latest/scale-to-width-down/256"
+    "imgUrl": "/Dbd/claudettemorel.png"
   },
   {
     "id": "davidking",
@@ -94,7 +94,7 @@ export const DBD_CHARACTERS: Character[] = [
     "element": "Survivor",
     "weapon": "Original",
     "rarity": 4,
-    "imgUrl": "https://static.wikia.nocookie.net/deadbydaylight_gamepedia_en/images/2/2a/S10_DavidKing_Portrait.png/revision/latest/scale-to-width-down/256"
+    "imgUrl": "/Dbd/davidking.png"
   },
   {
     "id": "davidtapp",
@@ -102,7 +102,7 @@ export const DBD_CHARACTERS: Character[] = [
     "element": "Survivor",
     "weapon": "Licenciado",
     "rarity": 5,
-    "imgUrl": "https://static.wikia.nocookie.net/deadbydaylight_gamepedia_en/images/d/d2/S12_DavidTapp_Portrait.png/revision/latest/scale-to-width-down/256"
+    "imgUrl": "/Dbd/davidtapp.png"
   },
   {
     "id": "dustinhenderson",
@@ -110,7 +110,7 @@ export const DBD_CHARACTERS: Character[] = [
     "element": "Survivor",
     "weapon": "Licenciado",
     "rarity": 5,
-    "imgUrl": "https://static.wikia.nocookie.net/deadbydaylight_gamepedia_en/images/e/e8/S19_SteveHarrington_Portrait.png/revision/latest/scale-to-width-down/256"
+    "imgUrl": "/Dbd/dustinhenderson.png"
   },
   {
     "id": "dwightfairfield",
@@ -118,7 +118,7 @@ export const DBD_CHARACTERS: Character[] = [
     "element": "Survivor",
     "weapon": "Original",
     "rarity": 4,
-    "imgUrl": "https://static.wikia.nocookie.net/deadbydaylight_gamepedia_en/images/3/3d/S01_DwightFairfield_Portrait.png/revision/latest/scale-to-width-down/256"
+    "imgUrl": "/Dbd/dwightfairfield.png"
   },
   {
     "id": "eleven",
@@ -126,7 +126,7 @@ export const DBD_CHARACTERS: Character[] = [
     "element": "Survivor",
     "weapon": "Licenciado",
     "rarity": 5,
-    "imgUrl": "https://static.wikia.nocookie.net/deadbydaylight_gamepedia_en/images/7/70/S18_NancyWheeler_Portrait.png/revision/latest/scale-to-width-down/256"
+    "imgUrl": "/Dbd/eleven.png"
   },
   {
     "id": "ellenripley",
@@ -134,7 +134,7 @@ export const DBD_CHARACTERS: Character[] = [
     "element": "Survivor",
     "weapon": "Licenciado",
     "rarity": 5,
-    "imgUrl": "https://static.wikia.nocookie.net/deadbydaylight_gamepedia_en/images/1/15/S39_EllenRipley_Portrait.png/revision/latest/scale-to-width-down/256"
+    "imgUrl": "/Dbd/ellenripley.png"
   },
   {
     "id": "elodierakoto",
@@ -142,7 +142,7 @@ export const DBD_CHARACTERS: Character[] = [
     "element": "Survivor",
     "weapon": "Original",
     "rarity": 4,
-    "imgUrl": "https://static.wikia.nocookie.net/deadbydaylight_gamepedia_en/images/d/de/S24_ElodieRakoto_Portrait.png/revision/latest/scale-to-width-down/256"
+    "imgUrl": "/Dbd/elodierakoto.png"
   },
   {
     "id": "felixrichter",
@@ -150,7 +150,7 @@ export const DBD_CHARACTERS: Character[] = [
     "element": "Survivor",
     "weapon": "Original",
     "rarity": 4,
-    "imgUrl": "https://static.wikia.nocookie.net/deadbydaylight_gamepedia_en/images/9/9e/S23_FelixRichter_Portrait.png/revision/latest/scale-to-width-down/256"
+    "imgUrl": "/Dbd/felixrichter.png"
   },
   {
     "id": "fengmin",
@@ -158,7 +158,7 @@ export const DBD_CHARACTERS: Character[] = [
     "element": "Survivor",
     "weapon": "Original",
     "rarity": 4,
-    "imgUrl": "https://static.wikia.nocookie.net/deadbydaylight_gamepedia_en/images/a/a3/S09_FengMin_Portrait.png/revision/latest/scale-to-width-down/256"
+    "imgUrl": "/Dbd/fengmin.png"
   },
   {
     "id": "gabrielsoma",
@@ -166,7 +166,7 @@ export const DBD_CHARACTERS: Character[] = [
     "element": "Survivor",
     "weapon": "Original",
     "rarity": 4,
-    "imgUrl": "https://static.wikia.nocookie.net/deadbydaylight_gamepedia_en/images/6/64/S37_GabrielSoma_Portrait.png/revision/latest/scale-to-width-down/256"
+    "imgUrl": "/Dbd/gabrielsoma.png"
   },
   {
     "id": "haddiekaur",
@@ -174,7 +174,7 @@ export const DBD_CHARACTERS: Character[] = [
     "element": "Survivor",
     "weapon": "Original",
     "rarity": 4,
-    "imgUrl": "https://static.wikia.nocookie.net/deadbydaylight_gamepedia_en/images/e/e7/S31_HaddieKaur_Portrait.png/revision/latest/scale-to-width-down/256"
+    "imgUrl": "/Dbd/haddiekaur.png"
   },
   {
     "id": "jakepark",
@@ -182,7 +182,7 @@ export const DBD_CHARACTERS: Character[] = [
     "element": "Survivor",
     "weapon": "Original",
     "rarity": 4,
-    "imgUrl": "https://static.wikia.nocookie.net/deadbydaylight_gamepedia_en/images/1/18/S04_JakePark_Portrait.png/revision/latest/scale-to-width-down/256"
+    "imgUrl": "/Dbd/jakepark.png"
   },
   {
     "id": "janeromero",
@@ -190,7 +190,7 @@ export const DBD_CHARACTERS: Character[] = [
     "element": "Survivor",
     "weapon": "Original",
     "rarity": 4,
-    "imgUrl": "https://static.wikia.nocookie.net/deadbydaylight_gamepedia_en/images/8/80/S16_JaneRomero_Portrait.png/revision/latest/scale-to-width-down/256"
+    "imgUrl": "/Dbd/janeromero.png"
   },
   {
     "id": "jeffjohansen",
@@ -198,7 +198,7 @@ export const DBD_CHARACTERS: Character[] = [
     "element": "Survivor",
     "weapon": "Original",
     "rarity": 4,
-    "imgUrl": "https://static.wikia.nocookie.net/deadbydaylight_gamepedia_en/images/8/81/S15_JeffJohansen_Portrait.png/revision/latest/scale-to-width-down/256"
+    "imgUrl": "/Dbd/jeffjohansen.png"
   },
   {
     "id": "jillvalentine",
@@ -206,7 +206,7 @@ export const DBD_CHARACTERS: Character[] = [
     "element": "Survivor",
     "weapon": "Licenciado",
     "rarity": 5,
-    "imgUrl": "https://static.wikia.nocookie.net/deadbydaylight_gamepedia_en/images/d/db/S26_JillValentine_Portrait.png/revision/latest/scale-to-width-down/256"
+    "imgUrl": "/Dbd/jillvalentine.png"
   },
   {
     "id": "jonahvasquez",
@@ -214,7 +214,7 @@ export const DBD_CHARACTERS: Character[] = [
     "element": "Survivor",
     "weapon": "Original",
     "rarity": 4,
-    "imgUrl": "https://static.wikia.nocookie.net/deadbydaylight_gamepedia_en/images/3/37/S29_JonahVasquez_Portrait.png/revision/latest/scale-to-width-down/256"
+    "imgUrl": "/Dbd/jonahvasquez.png"
   },
   {
     "id": "katedenson",
@@ -222,7 +222,7 @@ export const DBD_CHARACTERS: Character[] = [
     "element": "Survivor",
     "weapon": "Original",
     "rarity": 4,
-    "imgUrl": "https://static.wikia.nocookie.net/deadbydaylight_gamepedia_en/images/9/9c/S13_KateDenson_Portrait.png/revision/latest/scale-to-width-down/256"
+    "imgUrl": "/Dbd/katedenson.png"
   },
   {
     "id": "kwontaeyoung",
@@ -238,7 +238,7 @@ export const DBD_CHARACTERS: Character[] = [
     "element": "Survivor",
     "weapon": "Licenciado",
     "rarity": 5,
-    "imgUrl": "https://static.wikia.nocookie.net/deadbydaylight_gamepedia_en/images/6/63/S43_LaraCroft_Portrait.png/revision/latest/scale-to-width-down/256"
+    "imgUrl": "/Dbd/laracroft.png"
   },
   {
     "id": "lauriestrode",
@@ -246,7 +246,7 @@ export const DBD_CHARACTERS: Character[] = [
     "element": "Survivor",
     "weapon": "Licenciado",
     "rarity": 5,
-    "imgUrl": "https://static.wikia.nocookie.net/deadbydaylight_gamepedia_en/images/0/04/S06_LaurieStrode_Portrait.png/revision/latest/scale-to-width-down/256"
+    "imgUrl": "/Dbd/lauriestrode.png"
   },
   {
     "id": "leonskennedy",
@@ -254,7 +254,7 @@ export const DBD_CHARACTERS: Character[] = [
     "element": "Survivor",
     "weapon": "Licenciado",
     "rarity": 5,
-    "imgUrl": "https://static.wikia.nocookie.net/deadbydaylight_gamepedia_en/images/7/7d/S27_LeonScottKennedy_Portrait.png/revision/latest/scale-to-width-down/256"
+    "imgUrl": "/Dbd/leonskennedy.png"
   },
   {
     "id": "megthomas",
@@ -262,7 +262,7 @@ export const DBD_CHARACTERS: Character[] = [
     "element": "Survivor",
     "weapon": "Original",
     "rarity": 4,
-    "imgUrl": "https://static.wikia.nocookie.net/deadbydaylight_gamepedia_en/images/3/35/S02_MegThomas_Portrait.png/revision/latest/scale-to-width-down/256"
+    "imgUrl": "/Dbd/megthomas.png"
   },
   {
     "id": "michonnegrimes",
@@ -270,7 +270,7 @@ export const DBD_CHARACTERS: Character[] = [
     "element": "Survivor",
     "weapon": "Licenciado",
     "rarity": 5,
-    "imgUrl": "https://static.wikia.nocookie.net/deadbydaylight_gamepedia_en/images/a/aa/S47_MichonneGrimes_Portrait.png/revision/latest/scale-to-width-down/256"
+    "imgUrl": "/Dbd/michonnegrimes.png"
   },
   {
     "id": "mikaelareid",
@@ -278,7 +278,7 @@ export const DBD_CHARACTERS: Character[] = [
     "element": "Survivor",
     "weapon": "Original",
     "rarity": 4,
-    "imgUrl": "https://static.wikia.nocookie.net/deadbydaylight_gamepedia_en/images/3/3f/S28_MikaelaReid_Portrait.png/revision/latest/scale-to-width-down/256"
+    "imgUrl": "/Dbd/mikaelareid.png"
   },
   {
     "id": "nancywheeler",
@@ -286,7 +286,7 @@ export const DBD_CHARACTERS: Character[] = [
     "element": "Survivor",
     "weapon": "Licenciado",
     "rarity": 5,
-    "imgUrl": "https://static.wikia.nocookie.net/deadbydaylight_gamepedia_en/images/7/70/S18_NancyWheeler_Portrait.png/revision/latest/scale-to-width-down/256"
+    "imgUrl": "/Dbd/nancywheeler.png"
   },
   {
     "id": "neakarlsson",
@@ -294,7 +294,7 @@ export const DBD_CHARACTERS: Character[] = [
     "element": "Survivor",
     "weapon": "Original",
     "rarity": 4,
-    "imgUrl": "https://static.wikia.nocookie.net/deadbydaylight_gamepedia_en/images/e/e6/S05_NeaKarlsson_Portrait.png/revision/latest/scale-to-width-down/256"
+    "imgUrl": "/Dbd/neakarlsson.png"
   },
   {
     "id": "nicolascage",
@@ -302,7 +302,7 @@ export const DBD_CHARACTERS: Character[] = [
     "element": "Survivor",
     "weapon": "Licenciado",
     "rarity": 5,
-    "imgUrl": "https://static.wikia.nocookie.net/deadbydaylight_gamepedia_en/images/b/b7/S38_NicolasCage_Portrait.png/revision/latest/scale-to-width-down/256"
+    "imgUrl": "/Dbd/nicolascage.png"
   },
   {
     "id": "orelarose",
@@ -310,7 +310,7 @@ export const DBD_CHARACTERS: Character[] = [
     "element": "Survivor",
     "weapon": "Original",
     "rarity": 4,
-    "imgUrl": "https://static.wikia.nocookie.net/deadbydaylight_gamepedia_en/images/3/38/S46_OrelaRose_Portrait.webp/revision/latest/scale-to-width-down/256"
+    "imgUrl": "/Dbd/orelarose.png"
   },
   {
     "id": "quentinsmith",
@@ -318,7 +318,7 @@ export const DBD_CHARACTERS: Character[] = [
     "element": "Survivor",
     "weapon": "Licenciado",
     "rarity": 5,
-    "imgUrl": "https://static.wikia.nocookie.net/deadbydaylight_gamepedia_en/images/4/40/S11_QuentinSmith_Portrait.png/revision/latest/scale-to-width-down/256"
+    "imgUrl": "/Dbd/quentinsmith.png"
   },
   {
     "id": "rebeccachambers",
@@ -326,7 +326,7 @@ export const DBD_CHARACTERS: Character[] = [
     "element": "Survivor",
     "weapon": "Licenciado",
     "rarity": 5,
-    "imgUrl": "https://static.wikia.nocookie.net/deadbydaylight_gamepedia_en/images/f/fd/S33_RebeccaChambers_Portrait.png/revision/latest/scale-to-width-down/256"
+    "imgUrl": "/Dbd/rebeccachambers.png"
   },
   {
     "id": "renatolyra",
@@ -334,7 +334,7 @@ export const DBD_CHARACTERS: Character[] = [
     "element": "Survivor",
     "weapon": "Original",
     "rarity": 4,
-    "imgUrl": "https://static.wikia.nocookie.net/deadbydaylight_gamepedia_en/images/6/69/S36_RenatoLyra_Portrait.png/revision/latest/scale-to-width-down/256"
+    "imgUrl": "/Dbd/renatolyra.png"
   },
   {
     "id": "rickgrimes",
@@ -342,7 +342,7 @@ export const DBD_CHARACTERS: Character[] = [
     "element": "Survivor",
     "weapon": "Licenciado",
     "rarity": 5,
-    "imgUrl": "https://static.wikia.nocookie.net/deadbydaylight_gamepedia_en/images/4/4f/S46_RickGrimes_Portrait.png/revision/latest/scale-to-width-down/256"
+    "imgUrl": "/Dbd/rickgrimes.png"
   },
   {
     "id": "sableward",
@@ -350,7 +350,7 @@ export const DBD_CHARACTERS: Character[] = [
     "element": "Survivor",
     "weapon": "Original",
     "rarity": 4,
-    "imgUrl": "https://static.wikia.nocookie.net/deadbydaylight_gamepedia_en/images/9/9c/S41_SableWard_Portrait.png/revision/latest/scale-to-width-down/256"
+    "imgUrl": "/Dbd/sableward.png"
   },
   {
     "id": "shanewiigwaas",
@@ -366,7 +366,7 @@ export const DBD_CHARACTERS: Character[] = [
     "element": "Survivor",
     "weapon": "Licenciado",
     "rarity": 5,
-    "imgUrl": "https://static.wikia.nocookie.net/deadbydaylight_gamepedia_en/images/e/e8/S19_SteveHarrington_Portrait.png/revision/latest/scale-to-width-down/256"
+    "imgUrl": "/Dbd/steveharrington.png"
   },
   {
     "id": "tauriecain",
@@ -374,7 +374,7 @@ export const DBD_CHARACTERS: Character[] = [
     "element": "Survivor",
     "weapon": "Original",
     "rarity": 4,
-    "imgUrl": "https://static.wikia.nocookie.net/deadbydaylight_gamepedia_en/images/7/72/S45_TaurieCain_Portrait.png/revision/latest/scale-to-width-down/256"
+    "imgUrl": "/Dbd/tauriecain.png"
   },
   {
     "id": "thalitalyra",
@@ -382,7 +382,7 @@ export const DBD_CHARACTERS: Character[] = [
     "element": "Survivor",
     "weapon": "Original",
     "rarity": 4,
-    "imgUrl": "https://static.wikia.nocookie.net/deadbydaylight_gamepedia_en/images/9/96/S35_ThalitaLyra_Portrait.png/revision/latest/scale-to-width-down/256"
+    "imgUrl": "/Dbd/thalitalyra.png"
   },
   {
     "id": "theartist",
@@ -390,7 +390,7 @@ export const DBD_CHARACTERS: Character[] = [
     "element": "Killer",
     "weapon": "Original",
     "rarity": 4,
-    "imgUrl": "https://static.wikia.nocookie.net/deadbydaylight_gamepedia_en/images/0/01/K26_TheArtist_Portrait.png/revision/latest/scale-to-width-down/256"
+    "imgUrl": "/Dbd/theartist.png"
   },
   {
     "id": "theblight",
@@ -398,7 +398,7 @@ export const DBD_CHARACTERS: Character[] = [
     "element": "Killer",
     "weapon": "Original",
     "rarity": 4,
-    "imgUrl": "https://static.wikia.nocookie.net/deadbydaylight_gamepedia_en/images/1/1f/K21_TheBlight_Portrait.png/revision/latest/scale-to-width-down/256"
+    "imgUrl": "/Dbd/theblight.png"
   },
   {
     "id": "thecannibal",
@@ -406,7 +406,7 @@ export const DBD_CHARACTERS: Character[] = [
     "element": "Killer",
     "weapon": "Licenciado",
     "rarity": 5,
-    "imgUrl": "https://static.wikia.nocookie.net/deadbydaylight_gamepedia_en/images/6/6f/K09_TheCannibal_Portrait.png/revision/latest/scale-to-width-down/256"
+    "imgUrl": "/Dbd/thecannibal.png"
   },
   {
     "id": "thecenobite",
@@ -414,7 +414,7 @@ export const DBD_CHARACTERS: Character[] = [
     "element": "Killer",
     "weapon": "Licenciado",
     "rarity": 5,
-    "imgUrl": "https://static.wikia.nocookie.net/deadbydaylight_gamepedia_en/images/3/3b/K25_TheCenobite_Portrait.png/revision/latest/scale-to-width-down/256"
+    "imgUrl": "/Dbd/thecenobite.png"
   },
   {
     "id": "theclown",
@@ -422,7 +422,7 @@ export const DBD_CHARACTERS: Character[] = [
     "element": "Killer",
     "weapon": "Original",
     "rarity": 4,
-    "imgUrl": "https://static.wikia.nocookie.net/deadbydaylight_gamepedia_en/images/d/d1/K12_TheClown_Portrait.png/revision/latest/scale-to-width-down/256"
+    "imgUrl": "/Dbd/theclown.png"
   },
   {
     "id": "thedarklord",
@@ -430,7 +430,7 @@ export const DBD_CHARACTERS: Character[] = [
     "element": "Killer",
     "weapon": "Licenciado",
     "rarity": 5,
-    "imgUrl": "https://static.wikia.nocookie.net/deadbydaylight_gamepedia_en/images/6/62/K37_TheDarkLord_Portrait.png/revision/latest/scale-to-width-down/256"
+    "imgUrl": "/Dbd/thedarklord.png"
   },
   {
     "id": "thedeathslinger",
@@ -438,7 +438,7 @@ export const DBD_CHARACTERS: Character[] = [
     "element": "Killer",
     "weapon": "Original",
     "rarity": 4,
-    "imgUrl": "https://static.wikia.nocookie.net/deadbydaylight_gamepedia_en/images/a/ac/K19_TheDeathslinger_Portrait.png/revision/latest/scale-to-width-down/256"
+    "imgUrl": "/Dbd/thedeathslinger.png"
   },
   {
     "id": "thedemogorgon",
@@ -446,7 +446,7 @@ export const DBD_CHARACTERS: Character[] = [
     "element": "Killer",
     "weapon": "Licenciado",
     "rarity": 5,
-    "imgUrl": "https://static.wikia.nocookie.net/deadbydaylight_gamepedia_en/images/7/75/K17_TheDemogorgon_Portrait.png/revision/latest/scale-to-width-down/256"
+    "imgUrl": "/Dbd/thedemogorgon.png"
   },
   {
     "id": "thedoctor",
@@ -454,7 +454,7 @@ export const DBD_CHARACTERS: Character[] = [
     "element": "Killer",
     "weapon": "Original",
     "rarity": 4,
-    "imgUrl": "https://static.wikia.nocookie.net/deadbydaylight_gamepedia_en/images/5/58/K07_TheDoctor_Portrait.png/revision/latest/scale-to-width-down/256"
+    "imgUrl": "/Dbd/thedoctor.png"
   },
   {
     "id": "thedredge",
@@ -462,7 +462,7 @@ export const DBD_CHARACTERS: Character[] = [
     "element": "Killer",
     "weapon": "Original",
     "rarity": 4,
-    "imgUrl": "https://static.wikia.nocookie.net/deadbydaylight_gamepedia_en/images/7/7e/K28_TheDredge_Portrait.png/revision/latest/scale-to-width-down/256"
+    "imgUrl": "/Dbd/thedredge.png"
   },
   {
     "id": "theexecutioner",
@@ -470,7 +470,7 @@ export const DBD_CHARACTERS: Character[] = [
     "element": "Killer",
     "weapon": "Licenciado",
     "rarity": 5,
-    "imgUrl": "https://static.wikia.nocookie.net/deadbydaylight_gamepedia_en/images/c/c9/K20_TheExecutioner_Portrait.png/revision/latest/scale-to-width-down/256"
+    "imgUrl": "/Dbd/theexecutioner.png"
   },
   {
     "id": "thefirst",
@@ -486,7 +486,7 @@ export const DBD_CHARACTERS: Character[] = [
     "element": "Killer",
     "weapon": "Licenciado",
     "rarity": 5,
-    "imgUrl": "https://static.wikia.nocookie.net/deadbydaylight_gamepedia_en/images/d/d1/K16_TheGhostFace_Portrait.png/revision/latest/scale-to-width-down/256"
+    "imgUrl": "/Dbd/theghostface.png"
   },
   {
     "id": "theghoul",
@@ -494,7 +494,7 @@ export const DBD_CHARACTERS: Character[] = [
     "element": "Killer",
     "weapon": "Original",
     "rarity": 4,
-    "imgUrl": "https://static.wikia.nocookie.net/deadbydaylight_gamepedia_en/images/c/c9/K39_TheGhoul_Portrait.png/revision/latest/scale-to-width-down/256"
+    "imgUrl": "/Dbd/theghoul.png"
   },
   {
     "id": "thegoodguy",
@@ -502,7 +502,7 @@ export const DBD_CHARACTERS: Character[] = [
     "element": "Killer",
     "weapon": "Licenciado",
     "rarity": 5,
-    "imgUrl": "https://static.wikia.nocookie.net/deadbydaylight_gamepedia_en/images/8/81/K34_TheGoodGuy_Portrait.png/revision/latest/scale-to-width-down/256"
+    "imgUrl": "/Dbd/thegoodguy.png"
   },
   {
     "id": "thehag",
@@ -510,7 +510,7 @@ export const DBD_CHARACTERS: Character[] = [
     "element": "Killer",
     "weapon": "Original",
     "rarity": 4,
-    "imgUrl": "https://static.wikia.nocookie.net/deadbydaylight_gamepedia_en/images/c/c7/K06_TheHag_Portrait.png/revision/latest/scale-to-width-down/256"
+    "imgUrl": "/Dbd/thehag.png"
   },
   {
     "id": "thehillbilly",
@@ -518,7 +518,7 @@ export const DBD_CHARACTERS: Character[] = [
     "element": "Killer",
     "weapon": "Original",
     "rarity": 4,
-    "imgUrl": "https://static.wikia.nocookie.net/deadbydaylight_gamepedia_en/images/2/24/K03_TheHillbilly_Portrait.png/revision/latest/scale-to-width-down/256"
+    "imgUrl": "/Dbd/thehillbilly.png"
   },
   {
     "id": "thehoundmaster",
@@ -526,7 +526,7 @@ export const DBD_CHARACTERS: Character[] = [
     "element": "Killer",
     "weapon": "Original",
     "rarity": 4,
-    "imgUrl": "https://static.wikia.nocookie.net/deadbydaylight_gamepedia_en/images/9/96/K38_TheHoundmaster_Portrait.png/revision/latest/scale-to-width-down/256"
+    "imgUrl": "/Dbd/thehoundmaster.png"
   },
   {
     "id": "thehuntress",
@@ -534,7 +534,7 @@ export const DBD_CHARACTERS: Character[] = [
     "element": "Killer",
     "weapon": "Original",
     "rarity": 4,
-    "imgUrl": "https://static.wikia.nocookie.net/deadbydaylight_gamepedia_en/images/f/f1/K08_TheHuntress_Portrait.png/revision/latest/scale-to-width-down/256"
+    "imgUrl": "/Dbd/thehuntress.png"
   },
   {
     "id": "theknight",
@@ -542,7 +542,7 @@ export const DBD_CHARACTERS: Character[] = [
     "element": "Killer",
     "weapon": "Original",
     "rarity": 4,
-    "imgUrl": "https://static.wikia.nocookie.net/deadbydaylight_gamepedia_en/images/6/69/K30_TheKnight_Portrait.png/revision/latest/scale-to-width-down/256"
+    "imgUrl": "/Dbd/theknight.png"
   },
   {
     "id": "thelegion",
@@ -550,7 +550,7 @@ export const DBD_CHARACTERS: Character[] = [
     "element": "Killer",
     "weapon": "Original",
     "rarity": 4,
-    "imgUrl": "https://static.wikia.nocookie.net/deadbydaylight_gamepedia_en/images/5/53/K14_TheLegion_Portrait.png/revision/latest/scale-to-width-down/256"
+    "imgUrl": "/Dbd/thelegion.png"
   },
   {
     "id": "thelich",
@@ -558,7 +558,7 @@ export const DBD_CHARACTERS: Character[] = [
     "element": "Killer",
     "weapon": "Licenciado",
     "rarity": 5,
-    "imgUrl": "https://static.wikia.nocookie.net/deadbydaylight_gamepedia_en/images/f/f0/K36_TheLich_Portrait.png/revision/latest/scale-to-width-down/256"
+    "imgUrl": "/Dbd/thelich.png"
   },
   {
     "id": "themastermind",
@@ -566,7 +566,7 @@ export const DBD_CHARACTERS: Character[] = [
     "element": "Killer",
     "weapon": "Licenciado",
     "rarity": 5,
-    "imgUrl": "https://static.wikia.nocookie.net/deadbydaylight_gamepedia_en/images/e/ec/K29_TheMastermind_Portrait.png/revision/latest/scale-to-width-down/256"
+    "imgUrl": "/Dbd/themastermind.png"
   },
   {
     "id": "thenemesis",
@@ -574,7 +574,7 @@ export const DBD_CHARACTERS: Character[] = [
     "element": "Killer",
     "weapon": "Licenciado",
     "rarity": 5,
-    "imgUrl": "https://static.wikia.nocookie.net/deadbydaylight_gamepedia_en/images/6/67/K24_TheNemesis_Portrait.png/revision/latest/scale-to-width-down/256"
+    "imgUrl": "/Dbd/thenemesis.png"
   },
   {
     "id": "thenightmare",
@@ -582,7 +582,7 @@ export const DBD_CHARACTERS: Character[] = [
     "element": "Killer",
     "weapon": "Licenciado",
     "rarity": 5,
-    "imgUrl": "https://static.wikia.nocookie.net/deadbydaylight_gamepedia_en/images/d/d5/K10_TheNightmare_Portrait.png/revision/latest/scale-to-width-down/256"
+    "imgUrl": "/Dbd/thenightmare.png"
   },
   {
     "id": "thenurse",
@@ -590,7 +590,7 @@ export const DBD_CHARACTERS: Character[] = [
     "element": "Killer",
     "weapon": "Original",
     "rarity": 4,
-    "imgUrl": "https://static.wikia.nocookie.net/deadbydaylight_gamepedia_en/images/3/3b/K04_TheNurse_Portrait.png/revision/latest/scale-to-width-down/256"
+    "imgUrl": "/Dbd/thenurse.png"
   },
   {
     "id": "theoni",
@@ -598,7 +598,7 @@ export const DBD_CHARACTERS: Character[] = [
     "element": "Killer",
     "weapon": "Original",
     "rarity": 4,
-    "imgUrl": "https://static.wikia.nocookie.net/deadbydaylight_gamepedia_en/images/8/80/K18_TheOni_Portrait.png/revision/latest/scale-to-width-down/256"
+    "imgUrl": "/Dbd/theoni.png"
   },
   {
     "id": "theonryo",
@@ -606,7 +606,7 @@ export const DBD_CHARACTERS: Character[] = [
     "element": "Killer",
     "weapon": "Licenciado",
     "rarity": 5,
-    "imgUrl": "https://static.wikia.nocookie.net/deadbydaylight_gamepedia_en/images/5/5f/K27_TheOnryo_Portrait.png/revision/latest/scale-to-width-down/256"
+    "imgUrl": "/Dbd/theonryo.png"
   },
   {
     "id": "thepig",
@@ -614,7 +614,7 @@ export const DBD_CHARACTERS: Character[] = [
     "element": "Killer",
     "weapon": "Licenciado",
     "rarity": 5,
-    "imgUrl": "https://static.wikia.nocookie.net/deadbydaylight_gamepedia_en/images/5/5c/K11_ThePig_Portrait.png/revision/latest/scale-to-width-down/256"
+    "imgUrl": "/Dbd/thepig.png"
   },
   {
     "id": "theplague",
@@ -622,7 +622,7 @@ export const DBD_CHARACTERS: Character[] = [
     "element": "Killer",
     "weapon": "Original",
     "rarity": 4,
-    "imgUrl": "https://static.wikia.nocookie.net/deadbydaylight_gamepedia_en/images/f/fe/K15_ThePlague_Portrait.png/revision/latest/scale-to-width-down/256"
+    "imgUrl": "/Dbd/theplague.png"
   },
   {
     "id": "theshape",
@@ -630,7 +630,7 @@ export const DBD_CHARACTERS: Character[] = [
     "element": "Killer",
     "weapon": "Licenciado",
     "rarity": 5,
-    "imgUrl": "https://static.wikia.nocookie.net/deadbydaylight_gamepedia_en/images/b/b5/K05_TheShape_Portrait.png/revision/latest/scale-to-width-down/256"
+    "imgUrl": "/Dbd/theshape.png"
   },
   {
     "id": "thesingularity",
@@ -638,7 +638,7 @@ export const DBD_CHARACTERS: Character[] = [
     "element": "Killer",
     "weapon": "Original",
     "rarity": 4,
-    "imgUrl": "https://static.wikia.nocookie.net/deadbydaylight_gamepedia_en/images/2/24/K32_TheSingularity_Portrait.png/revision/latest/scale-to-width-down/256"
+    "imgUrl": "/Dbd/thesingularity.png"
   },
   {
     "id": "theskullmerchant",
@@ -646,7 +646,7 @@ export const DBD_CHARACTERS: Character[] = [
     "element": "Killer",
     "weapon": "Original",
     "rarity": 4,
-    "imgUrl": "https://static.wikia.nocookie.net/deadbydaylight_gamepedia_en/images/6/64/K31_TheSkullMerchant_Portrait.png/revision/latest/scale-to-width-down/256"
+    "imgUrl": "/Dbd/theskullmerchant.png"
   },
   {
     "id": "theslasher",
@@ -662,7 +662,7 @@ export const DBD_CHARACTERS: Character[] = [
     "element": "Killer",
     "weapon": "Original",
     "rarity": 4,
-    "imgUrl": "https://static.wikia.nocookie.net/deadbydaylight_gamepedia_en/images/f/f1/K13_TheSpirit_Portrait.png/revision/latest/scale-to-width-down/256"
+    "imgUrl": "/Dbd/thespirit.png"
   },
   {
     "id": "thetrapper",
@@ -670,7 +670,7 @@ export const DBD_CHARACTERS: Character[] = [
     "element": "Killer",
     "weapon": "Original",
     "rarity": 4,
-    "imgUrl": "https://static.wikia.nocookie.net/deadbydaylight_gamepedia_en/images/8/81/K01_TheTrapper_Portrait.png/revision/latest/scale-to-width-down/256"
+    "imgUrl": "/Dbd/thetrapper.png"
   },
   {
     "id": "thetrickster",
@@ -678,7 +678,7 @@ export const DBD_CHARACTERS: Character[] = [
     "element": "Killer",
     "weapon": "Original",
     "rarity": 4,
-    "imgUrl": "https://static.wikia.nocookie.net/deadbydaylight_gamepedia_en/images/c/c9/K23_TheTrickster_Portrait.png/revision/latest/scale-to-width-down/256"
+    "imgUrl": "/Dbd/thetrickster.png"
   },
   {
     "id": "thetwins",
@@ -686,7 +686,7 @@ export const DBD_CHARACTERS: Character[] = [
     "element": "Killer",
     "weapon": "Original",
     "rarity": 4,
-    "imgUrl": "https://static.wikia.nocookie.net/deadbydaylight_gamepedia_en/images/1/17/K22_TheTwins_Portrait.png/revision/latest/scale-to-width-down/256"
+    "imgUrl": "/Dbd/thetwins.png"
   },
   {
     "id": "theunknown",
@@ -694,7 +694,7 @@ export const DBD_CHARACTERS: Character[] = [
     "element": "Killer",
     "weapon": "Original",
     "rarity": 4,
-    "imgUrl": "https://static.wikia.nocookie.net/deadbydaylight_gamepedia_en/images/5/51/K35_TheUnknown_Portrait.png/revision/latest/scale-to-width-down/256"
+    "imgUrl": "/Dbd/theunknown.png"
   },
   {
     "id": "thewraith",
@@ -702,7 +702,7 @@ export const DBD_CHARACTERS: Character[] = [
     "element": "Killer",
     "weapon": "Original",
     "rarity": 4,
-    "imgUrl": "https://static.wikia.nocookie.net/deadbydaylight_gamepedia_en/images/c/c2/K02_TheWraith_Portrait.png/revision/latest/scale-to-width-down/256"
+    "imgUrl": "/Dbd/thewraith.png"
   },
   {
     "id": "thexenomorph",
@@ -710,7 +710,7 @@ export const DBD_CHARACTERS: Character[] = [
     "element": "Killer",
     "weapon": "Licenciado",
     "rarity": 5,
-    "imgUrl": "https://static.wikia.nocookie.net/deadbydaylight_gamepedia_en/images/6/64/K33_TheXenomorph_Portrait.png/revision/latest/scale-to-width-down/256"
+    "imgUrl": "/Dbd/thexenomorph.png"
   },
   {
     "id": "trevorbelmont",
@@ -718,7 +718,7 @@ export const DBD_CHARACTERS: Character[] = [
     "element": "Survivor",
     "weapon": "Licenciado",
     "rarity": 5,
-    "imgUrl": "https://static.wikia.nocookie.net/deadbydaylight_gamepedia_en/images/f/f8/S44_TrevorBelmont_Portrait.png/revision/latest/scale-to-width-down/256"
+    "imgUrl": "/Dbd/trevorbelmont.png"
   },
   {
     "id": "veeboonyasak",
@@ -726,7 +726,7 @@ export const DBD_CHARACTERS: Character[] = [
     "element": "Survivor",
     "weapon": "Original",
     "rarity": 4,
-    "imgUrl": "https://static.wikia.nocookie.net/deadbydaylight_gamepedia_en/images/c/ce/S48_VeeBoonyasak_Portrait.png/revision/latest/scale-to-width-down/256"
+    "imgUrl": "/Dbd/veeboonyasak.png"
   },
   {
     "id": "vittoriotoscano",
@@ -734,7 +734,7 @@ export const DBD_CHARACTERS: Character[] = [
     "element": "Survivor",
     "weapon": "Original",
     "rarity": 4,
-    "imgUrl": "https://static.wikia.nocookie.net/deadbydaylight_gamepedia_en/images/3/39/S34_VittorioToscano_Portrait.png/revision/latest/scale-to-width-down/256"
+    "imgUrl": "/Dbd/vittoriotoscano.png"
   },
   {
     "id": "yoichiasakawa",
@@ -742,7 +742,7 @@ export const DBD_CHARACTERS: Character[] = [
     "element": "Survivor",
     "weapon": "Licenciado",
     "rarity": 5,
-    "imgUrl": "https://static.wikia.nocookie.net/deadbydaylight_gamepedia_en/images/a/af/S30_YoichiAsakawa_Portrait.png/revision/latest/scale-to-width-down/256"
+    "imgUrl": "/Dbd/yoichiasakawa.png"
   },
   {
     "id": "yuikimura",
@@ -750,7 +750,7 @@ export const DBD_CHARACTERS: Character[] = [
     "element": "Survivor",
     "weapon": "Original",
     "rarity": 4,
-    "imgUrl": "https://static.wikia.nocookie.net/deadbydaylight_gamepedia_en/images/1/13/S20_YuiKimura_Portrait.png/revision/latest/scale-to-width-down/256"
+    "imgUrl": "/Dbd/yuikimura.png"
   },
   {
     "id": "yunjinlee",
@@ -758,7 +758,7 @@ export const DBD_CHARACTERS: Character[] = [
     "element": "Survivor",
     "weapon": "Original",
     "rarity": 4,
-    "imgUrl": "https://static.wikia.nocookie.net/deadbydaylight_gamepedia_en/images/f/f7/S25_Yun-JinLee_Portrait.png/revision/latest/scale-to-width-down/256"
+    "imgUrl": "/Dbd/yunjinlee.png"
   },
   {
     "id": "zarinakassir",
@@ -766,6 +766,6 @@ export const DBD_CHARACTERS: Character[] = [
     "element": "Survivor",
     "weapon": "Original",
     "rarity": 4,
-    "imgUrl": "https://static.wikia.nocookie.net/deadbydaylight_gamepedia_en/images/d/d9/S21_ZarinaKassir_Portrait.png/revision/latest/scale-to-width-down/256"
+    "imgUrl": "/Dbd/zarinakassir.png"
   }
 ];
