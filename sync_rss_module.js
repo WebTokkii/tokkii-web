@@ -51,33 +51,6 @@ function extractTagValue(xml, tagName) {
     return regularMatch?.[1] || '';
 }
 
-function getCategoryFallbackImage(category) {
-    return category === 'ANIME'
-        ? 'https://images.unsplash.com/photo-1578632767115-351597cf2477?w=1200&auto=format&fit=crop&q=80'
-        : 'https://images.unsplash.com/photo-1542751371-adc38448a05e?w=1200&auto=format&fit=crop&q=80';
-}
-
-// Helper to translate text to Spanish using Google Translate public API
-async function translateText(text) {
-    if (!text) return '';
-    try {
-        const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=es&dt=t&q=${encodeURIComponent(text)}`;
-        const response = await axios.get(url);
-        const sentences = response.data[0];
-        let translatedText = '';
-        for (const sentence of sentences) {
-            if (sentence[0]) {
-                translatedText += sentence[0];
-            }
-        }
-        return translatedText;
-    } catch (e) {
-        console.error("Translation error:", e.message);
-        return text; // Fallback to English on error
-    }
-}
-
-// Helper to decode HTML entities
 function decodeHtmlEntities(text) {
     if (!text) return '';
     return text
@@ -91,7 +64,6 @@ function decodeHtmlEntities(text) {
         .replace(/&nbsp;/g, ' ');
 }
 
-// Generate slugs
 function generateSlug(title) {
     return title
         .toString()
@@ -100,7 +72,7 @@ function generateSlug(title) {
         .replace(/[\u0300-\u036f]/g, '')
         .replace(/\s+/g, '-')
         .replace(/[^\w\-]+/g, '')
-        .replace(/\-\-+/g, '-')
+        .replace(/\-\-/g, '-')
         .replace(/^-+/, '')
         .replace(/-+$/, '');
 }
@@ -109,7 +81,6 @@ function cleanDescription(html) {
     if (!html) return '';
     let clean = decodeHtmlEntities(html);
     clean = clean.replace(/<img[^>]*>/gi, '').replace(/<iframe[^>]*>[\s\S]*?<\/iframe>/gi, '');
-    // Replace structural block tags with newlines to preserve separation
     clean = clean.replace(/<\/p>|<br\s*\/?>|<\/div>|<\/li>|<\/h[1-6]>/gi, '\n');
     clean = clean.replace(/<[^>]*>/g, '').trim();
     return clean;
@@ -117,15 +88,12 @@ function cleanDescription(html) {
 
 function formatParagraphs(text) {
     if (!text) return '';
-    // Split by newlines first
     const lines = text.split(/\r?\n+/);
     const paragraphs = [];
     
     for (const line of lines) {
         const trimmed = line.trim();
         if (!trimmed) continue;
-        
-        // If a line is very long (over 400 chars), split by sentences to make it readable
         if (trimmed.length > 400) {
             const sentences = trimmed.match(/[^.!?]+[.!?]+(\s|$)/g) || [trimmed];
             let currentParagraph = '';
@@ -144,34 +112,18 @@ function formatParagraphs(text) {
         }
     }
     
-    // Wrap each block in a paragraph tag with readable styling
     return paragraphs
         .map(p => `<p style="margin-bottom: 1.5rem; text-align: justify; line-height: 1.8;">${p}</p>`)
         .join('\n');
 }
 
-const ANIME_KEYWORDS = [
-    'anime', 'manga', 'otaku', 'crunchyroll', 'animacion', 'animación',
-    'temporada', 'doblaje', 'doblaje latino', 'pelicula', 'película',
-    'demon slayer', 'kimetsu', 'jujutsu', 'dragon ball', 'naruto', 'one piece',
-    'chainsaw man', 'bleach', 'toei', 'mappa', 'ufotable', 'aniplex', 'boku no hero',
-    'my hero academia', 'spy x family', 'solo leveling', 'frieren', 'mononoke',
-    'dan da dan', 'dandadan', 'blue lock', 'kaiju', 'isekai', 'shingeki',
-    'attack on titan', 'gundam', 'evangelion', 'romance', 'manhwa', 'webtoon'
-];
-
-function isStrictCategory(category, title, description, sourceCategory) {
+function isStrictCategory(category, title, description) {
     const text = `${title} ${description}`.toLowerCase();
     
     if (category === 'ANIME') {
         const isPureGaming = (text.includes('gta 6') || text.includes('gta vi') || text.includes('playstation 5') || text.includes('xbox series') || text.includes('tarjeta gráfica') || text.includes('rtx 40') || text.includes('gameplay trailer') || text.includes('nintendo switch 2')) && !text.includes('anime') && !text.includes('manga');
         if (isPureGaming) return false;
-
-        if (sourceCategory === 'ANIME') {
-            const hasAnimeMatch = ANIME_KEYWORDS.some(k => text.includes(k));
-            return hasAnimeMatch || !isPureGaming;
-        }
-        return ANIME_KEYWORDS.some(k => text.includes(k));
+        return true;
     }
 
     if (category === 'VIDEOJUEGOS') {
@@ -183,422 +135,278 @@ function isStrictCategory(category, title, description, sourceCategory) {
     return true;
 }
 
+async function fetchSourceItems(src) {
+    if (src.type === 'mmobomb') {
+        try {
+            const res = await axios.get('https://www.mmobomb.com/api1/latestnews', { timeout: 8000 });
+            if (Array.isArray(res.data) && res.data.length > 0) {
+                return res.data.map(item => ({
+                    title: item.title,
+                    link: item.article_url,
+                    description: item.short_description || item.article_content,
+                    image: item.main_image || item.thumbnail,
+                    date: new Date().toISOString(),
+                    sourceName: src.name
+                }));
+            }
+        } catch (e) {
+            console.warn('MMOBomb API error:', e.message);
+        }
+        return [];
+    }
+
+    // 1. Intentar con rss2json
+    try {
+        const r2jUrl = `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(src.url)}`;
+        const res = await axios.get(r2jUrl, { timeout: 8000 });
+        if (res.data?.status === 'ok' && Array.isArray(res.data?.items) && res.data.items.length > 0) {
+            return res.data.items.map(item => {
+                let img = item.thumbnail || item.enclosure?.link || '';
+                if (!img && item.description) {
+                    const match = item.description.match(/<img[^>]*src=["']([^"']*)["']/i);
+                    if (match) img = match[1];
+                }
+                return {
+                    title: item.title,
+                    link: item.link,
+                    description: item.description || item.content,
+                    image: img,
+                    date: item.pubDate || new Date().toISOString(),
+                    sourceName: src.name
+                };
+            });
+        }
+    } catch (e) {
+        // Fallback to direct axios
+    }
+
+    // 2. Fallback axios directo
+    try {
+        const res = await axios.get(src.url, {
+            headers: {
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36'
+            },
+            timeout: 8000
+        });
+        const xml = String(res.data || '');
+        const itemBlocks = xml.includes('<item>') ? xml.split('<item>') : xml.split('<entry>');
+        itemBlocks.shift();
+
+        const parsed = [];
+        for (const itemXml of itemBlocks) {
+            const rawTitle = extractTagValue(itemXml, 'title');
+            const rawTitleClean = decodeHtmlEntities(rawTitle.trim());
+            let rawLink = extractTagValue(itemXml, 'link').trim();
+            if (!rawLink || rawLink.startsWith('<')) {
+                rawLink = itemXml.match(/<link[^>]*href=["']([^"']*)["']/i)?.[1] || '';
+            }
+            const guid = extractTagValue(itemXml, 'guid').trim() || extractTagValue(itemXml, 'id').trim();
+            const link = ensureAbsoluteUrl(rawLink || (guid.startsWith('http') ? guid : ''), src.url);
+
+            if (!rawTitleClean || !link || !link.startsWith('http')) continue;
+
+            const contentEncoded = extractTagValue(itemXml, 'content:encoded') || extractTagValue(itemXml, 'summary') || extractTagValue(itemXml, 'description');
+            
+            let header_image = '';
+            const encMatch = itemXml.match(/<enclosure[^>]*url=["']([^"']*)["']/i);
+            const medMatch = itemXml.match(/<media:content[^>]*url=["']([^"']*)["']/i) || itemXml.match(/<media:thumbnail[^>]*url=["']([^"']*)["']/i);
+            if (encMatch) header_image = encMatch[1];
+            else if (medMatch) header_image = medMatch[1];
+            else {
+                const imgMatch = itemXml.match(/<img[^>]*src=["']([^"']*)["']/i);
+                if (imgMatch) header_image = ensureAbsoluteUrl(imgMatch[1], link);
+            }
+
+            const pubDateStr = extractTagValue(itemXml, 'pubDate') || extractTagValue(itemXml, 'dc:date') || extractTagValue(itemXml, 'updated');
+
+            parsed.push({
+                title: rawTitleClean,
+                link,
+                description: contentEncoded,
+                image: header_image,
+                date: pubDateStr || new Date().toISOString(),
+                sourceName: src.name
+            });
+        }
+        if (parsed.length > 0) return parsed;
+    } catch (err) {
+        console.error(`Failed to fetch direct feed from ${src.name}:`, err.message);
+    }
+
+    return [];
+}
+
 export async function syncRssFeeds(limit = DAILY_CATEGORY_LIMIT) {
-    const vgFeeds = [
-        { url: 'https://www.3djuegos.com/universo/rss/rss.php', name: '3DJuegos', category: 'VIDEOJUEGOS', lang: 'es' },
-        { url: 'https://es.ign.com/feed.xml', name: 'IGN España', category: 'VIDEOJUEGOS', lang: 'es' },
-        { url: 'https://www.gamespot.com/feeds/news/', name: 'GameSpot', category: 'VIDEOJUEGOS', lang: 'en' }
+    const vgSources = [
+        { name: '3DJuegos', type: 'rss', url: 'https://www.3djuegos.com/universo/rss/rss.php' },
+        { name: 'MMOBomb', type: 'mmobomb' },
+        { name: 'IGN', type: 'rss', url: 'https://feeds.feedburner.com/ign/news' }
     ];
 
-    const animeFeeds = [
-        { url: 'https://ramenparados.com/feed/', name: 'Ramen Para Dos', category: 'ANIME', lang: 'es' },
-        { url: 'https://areajugones.sport.es/anime/feed/', name: 'Areajugones', category: 'ANIME', lang: 'es' },
-        { url: 'https://www.crunchyroll.com/news/rss?lang=esES', name: 'Crunchyroll', category: 'ANIME', lang: 'es' }
+    const animeSources = [
+        { name: 'Ramen Para Dos', type: 'rss', url: 'https://ramenparados.com/feed/' },
+        { name: 'Areajugones', type: 'rss', url: 'https://areajugones.sport.es/anime/feed/' },
+        { name: 'Crunchyroll', type: 'rss', url: 'https://www.crunchyroll.com/news/rss?lang=esES' }
     ];
 
     const targetDateStr = getLocalDateStr();
-    console.log(`Starting RSS Feed Sync (Limit: ${limit} new articles per category for ${targetDateStr})...`);
+    console.log(`Starting Daily News Sync (Target: ${limit} Videojuegos + ${limit} Anime for ${targetDateStr})...`);
     let countVideojuegos = 0;
     let countAnime = 0;
 
-    // 1. Sincronizar exactamente 3 de VIDEOJUEGOS
-    for (const feed of vgFeeds) {
+    // 1. Videojuegos
+    for (const src of vgSources) {
         if (countVideojuegos >= limit) break;
+        console.log(`Fetching Videojuegos from: ${src.name}...`);
 
-        try {
-            console.log(`Fetching feed from: ${feed.name} (${feed.category}) [${feed.lang}]...`);
-            const response = await axios.get(feed.url, {
-                headers: {
-                    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36',
-                    'Accept': 'application/rss+xml, application/xml, text/xml, */*'
-                },
-                timeout: 10000
-            });
-            const xml = String(response.data || '');
-            const itemBlocks = xml.includes('<item>') ? xml.split('<item>') : xml.split('<entry>');
-            itemBlocks.shift();
+        const items = await fetchSourceItems(src);
+        for (const item of items) {
+            if (countVideojuegos >= limit) break;
 
-            for (const itemXml of itemBlocks) {
-                if (countVideojuegos >= limit) break;
+            const titleClean = decodeHtmlEntities(item.title || '').trim();
+            const link = (item.link || '').trim();
+            if (!titleClean || !link || !link.startsWith('http')) continue;
 
-                const rawTitle = extractTagValue(itemXml, 'title');
-                const rawTitleClean = decodeHtmlEntities(rawTitle.trim());
-                let rawLink = extractTagValue(itemXml, 'link').trim();
-                if (!rawLink || rawLink.startsWith('<')) {
-                    rawLink = itemXml.match(/<link[^>]*href=["']([^"']*)["']/i)?.[1] || '';
-                }
-                const guid = extractTagValue(itemXml, 'guid').trim() || extractTagValue(itemXml, 'id').trim();
-                const link = ensureAbsoluteUrl(rawLink || (guid.startsWith('http') ? guid : ''), feed.url);
+            let fullDesc = cleanDescription(item.description || '');
+            if (!isStrictCategory('VIDEOJUEGOS', titleClean, fullDesc)) continue;
 
-                if (!rawTitleClean || !link || !link.startsWith('http')) continue;
+            const hash = getHash(link || `${src.name}-${titleClean}`);
+            const baseSlug = generateSlug(titleClean || `${src.name}-${hash}`);
+            const slug = `${baseSlug}-${hash}`;
 
-                const contentEncoded = extractTagValue(itemXml, 'content:encoded') || extractTagValue(itemXml, 'summary') || extractTagValue(itemXml, 'description');
-                let subtitleEnglish = cleanDescription(contentEncoded);
+            const { data: existing } = await supabase
+                .from('news_articles')
+                .select('id')
+                .eq('slug', slug)
+                .maybeSingle();
 
-                if (!isStrictCategory('VIDEOJUEGOS', rawTitleClean, subtitleEnglish, 'VIDEOJUEGOS')) {
-                    continue;
-                }
+            if (existing) continue;
 
-                const hash = getHash(link || `${feed.name}-${rawTitleClean}`);
-                const baseSlug = generateSlug(rawTitleClean || `${feed.name}-${hash}`);
-                const slug = `${baseSlug}-${hash}`;
+            console.log(`Found new article [Videojuegos ${countVideojuegos + 1}/${limit}]: "${titleClean}" from ${src.name}...`);
 
-                const { data: existing } = await supabase
-                    .from('news_articles')
-                    .select('id')
-                    .eq('slug', slug)
-                    .maybeSingle();
-
-                if (existing) continue;
-
-                console.log(`Found new article: "${rawTitleClean}" for category VIDEOJUEGOS from ${feed.name}...`);
-
-                let title = rawTitleClean;
-                if (feed.lang === 'en') {
-                    title = await translateText(rawTitleClean);
-                }
-                
-                let subtitleEnglish = '';
-
-                // Try content:encoded first (typically has full paragraphs)
-                const contentEncoded = extractTagValue(itemXml, 'content:encoded') || extractTagValue(itemXml, 'summary') || extractTagValue(itemXml, 'description');
-                let cleanedContent = cleanDescription(contentEncoded);
-                
-                if (cleanedContent && cleanedContent.trim().length >= 100) {
-                    subtitleEnglish = cleanedContent;
-                } else {
-                    // Try description
-                    const rawDesc = extractTagValue(itemXml, 'description');
-                    const cleanedDesc = cleanDescription(rawDesc);
-                    if (cleanedDesc && cleanedDesc.trim().length >= 50) {
-                        subtitleEnglish = cleanedDesc;
-                    } else {
-                        // Try summary
-                        const summary = extractTagValue(itemXml, 'summary');
-                        const cleanedSummary = cleanDescription(summary);
-                        if (cleanedSummary && cleanedSummary.trim().length >= 50) {
-                            subtitleEnglish = cleanedSummary;
-                        }
-                    }
-                }
-
-                subtitleEnglish = subtitleEnglish.trim();
-                
-                // Limit to 1500 characters to avoid overwhelming the user
-                if (subtitleEnglish.length > 1500) {
-                    subtitleEnglish = subtitleEnglish.substring(0, 1500);
-                }                
-                let subtitle = '';
-                let fullDescriptionSpanish = '';
-
-                if (feed.lang === 'es') {
-                    // Source is natively in Spanish -> No translation needed, avoids 429
-                    fullDescriptionSpanish = subtitleEnglish;
-                    subtitle = fullDescriptionSpanish.length > 200 ? fullDescriptionSpanish.substring(0, 197) + '...' : fullDescriptionSpanish;
-                } else if (subtitleEnglish && subtitleEnglish.length >= 10) {
-                    subtitle = await translateText(subtitleEnglish.length > 200 ? subtitleEnglish.substring(0, 197) + '...' : subtitleEnglish);
-                    fullDescriptionSpanish = await translateText(subtitleEnglish);
-                }
-
-                // If description is short (less than 400 chars), add thematic complementary paragraphs
-                if (fullDescriptionSpanish && fullDescriptionSpanish.length < 400) {
-                    const extraFallbacks = feed.category === 'ANIME' ? [
-                        [
-                            `¡No te pierdas ningún detalle de este estreno! Te mantendremos informado sobre las últimas novedades del mundo del anime, manga y la cultura otaku. Haz clic en el botón de abajo para explorar el artículo completo y ver todo el contenido oficial disponible.`,
-                            `La comunidad otaku y los amantes de la animación japonesa están muy atentos a estos nuevos desarrollos. Te invitamos a profundizar más y consultar opiniones de expertos accediendo directamente a la nota original.`
-                        ],
-                        [
-                            `Esta producción promete ser de lo más comentado de la temporada. Puedes conocer todos los pormenores, detalles del staff de animación y fechas clave visitando el enlace al sitio oficial que te dejamos abajo.`,
-                            `El mundo del anime se expande constantemente con lanzamientos y producciones cada semana. Accede a la cobertura completa y detallada de este estreno directo de la fuente oficial.`
-                        ]
-                    ] : [
-                        [
-                            `¡No te pierdas ningún detalle de esta noticia! Te mantendremos informado sobre las últimas novedades del mundo de los videojuegos y la cultura geek. Haz clic en el botón de abajo para explorar el artículo completo y ver todo el contenido oficial disponible.`,
-                            `La comunidad gamer está atenta a estos nuevos desarrollos. Te invitamos a profundizar más y consultar todos los detalles técnicos y opiniones de los expertos accediendo directamente a la nota de prensa original a continuación.`
-                        ],
-                        [
-                            `Esta actualización promete cambiar las cosas para los jugadores. Puedes conocer todos los pormenores, imágenes y videos relacionados visitando el enlace al sitio oficial que te dejamos en la parte inferior.`,
-                            `El gaming evoluciona constantemente y esta es solo una de las muchas novedades de la semana. Accede a la cobertura completa y detallada de este lanzamiento directamente desde la fuente original.`
-                        ]
-                    ];
-                    const idx = title.length % extraFallbacks.length;
-                    const chosenParagraphs = extraFallbacks[idx];
-                    fullDescriptionSpanish = fullDescriptionSpanish + "\n\n" + chosenParagraphs.join("\n\n");
-                } else if (!fullDescriptionSpanish) {
-                    // Complete fallback text with structured paragraphs
-                    const fallbacks = feed.category === 'ANIME' ? [
-                        `¡El universo del anime y el manga continúa sorprendiéndonos con noticias de impacto!\n\nNo te pierdas ningún detalle de esta historia haciendo clic en el enlace oficial a continuación para acceder al reporte completo.`,
-                        `¡Grandes novedades para los fans de la animación japonesa! Mantente al día con todos los anuncios, trailers y fechas clave.\n\nPuedes consultar todos los pormenores accediendo directamente a la fuente original de la noticia.`
-                    ] : [
-                        `¡Mantente al día con las últimas novedades del mundo de los videojuegos! Hay grandes noticias sucediendo en este momento en la industria.\n\nHaz clic en el botón de abajo para leer el artículo completo con todos los detalles directamente en la fuente oficial.`,
-                        `El universo del gaming no se detiene y hoy nos trae anuncios y detalles que todo jugador debe conocer.\n\nTe invitamos a leer la cobertura completa y detallada haciendo clic en el enlace oficial que se encuentra a continuación.`
-                    ];
-                    const index = title.length % fallbacks.length;
-                    fullDescriptionSpanish = fallbacks[index];
-                    subtitle = fullDescriptionSpanish.split('\n')[0];
-                }
-
-                const pubDateStr = extractTagValue(itemXml, 'pubDate') || extractTagValue(itemXml, 'dc:date') || extractTagValue(itemXml, 'updated');
-                const parsedDate = pubDateStr ? new Date(pubDateStr) : new Date();
-                const published_at = Number.isNaN(parsedDate.getTime()) ? new Date().toISOString() : parsedDate.toISOString();
-                
-                const author = pickAuthor(link);
-
-                // Find image url
-                let header_image = '';
-                const encMatch = itemXml.match(/<enclosure[^>]*url=["']([^"']*)["']/i);
-                const medMatch = itemXml.match(/<media:content[^>]*url=["']([^"']*)["']/i) || 
-                                 itemXml.match(/<media:thumbnail[^>]*url=["']([^"']*)["']/i);
-                
-                if (encMatch) {
-                    header_image = encMatch[1];
-                } else if (medMatch) {
-                    header_image = medMatch[1];
-                } else {
-                    const rawDesc = extractTagValue(itemXml, 'description') || extractTagValue(itemXml, 'content:encoded');
-                    const decodedDesc = decodeHtmlEntities(rawDesc);
-                    const imgMatch = decodedDesc.match(/<img[^>]*src=["']([^"']*)["']/i);
-                    if (imgMatch) {
-                        header_image = ensureAbsoluteUrl(imgMatch[1], link);
-                    }
-                }
-
-                // If Blogger/Google thumbnail, upgrade to original high-res size
-                if (header_image && (header_image.includes('blogger.googleusercontent.com') || header_image.includes('bp.blogspot.com'))) {
-                    header_image = header_image.replace(/\/s[0-9]+(-c)?\//i, '/s1600/').replace(/\/w[0-9]+-h[0-9]+[^/]*\//i, '/s1600/');
-                }
-
-                // If still empty, scrape the page for og:image/twitter:image
-                if (!header_image && link) {
-                    try {
-                        console.log(`Scraping page for cover image: ${link}...`);
-                        const pageRes = await axios.get(link, {
-                            headers: { 
-                                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/122.0.0.0' 
-                            },
-                            timeout: 6000
-                        });
-                        const html = pageRes.data;
-                        const ogImageMatch = html.match(/<meta[^>]*property=["']og:image["'][^>]*content=["']([^"']*)["']/i) || 
-                                             html.match(/<meta[^>]*content=["']([^"']*)["'][^>]*property=["']og:image["']/i) ||
-                                             html.match(/<meta[^>]*name=["']twitter:image["'][^>]*content=["']([^"']*)["']/i);
-                        if (ogImageMatch) {
-                            header_image = ogImageMatch[1];
-                            console.log(`Found og:image: ${header_image}`);
-                        }
-                    } catch (err) {
-                        console.error(`Failed to scrape cover image from ${link}:`, err.message);
-                    }
-                }
-
-                if (!header_image) {
-                    header_image = getCategoryFallbackImage(feed.category);
-                }
-
-                const paragraphsHtml = formatParagraphs(fullDescriptionSpanish);
-                const articleHtml = `
-                    ${paragraphsHtml}
-                    <p style="margin-top: 2rem; text-align: center;">
-                        <a href="${link}" target="_blank" rel="noopener noreferrer" class="games-join-btn" style="display: inline-flex; text-decoration: none; padding: 1rem 2.5rem; background: var(--primary); color: white; border-radius: 30px; font-weight: bold; box-shadow: 0 5px 15px rgba(157, 78, 221, 0.4);">
-                            LEER ARTÍCULO COMPLETO EN ${feed.name.toUpperCase()} (EN INGLÉS)
-                        </a>
-                    </p>
-                `;
-
-                // Tag category in metadata block inside content_blocks JSON
-                const content_blocks = [
-                    { type: 'metadata', category: feed.category, source: feed.name, source_url: link, source_hash: hash, imported_date: targetDateStr },
-                    { type: 'text', content: articleHtml }
-                ];
-
-                const articlePayload = {
-                    title,
-                    subtitle,
-                    slug,
-                    header_image,
-                    content_blocks,
-                    author,
-                    published_at,
-                    category: feed.category
-                };
-
-                // Insert into Supabase
-                let { error: insertError } = await supabase
-                    .from('news_articles')
-                    .upsert(articlePayload, { onConflict: 'slug' });
-
-                if (insertError && insertError.message?.includes('category')) {
-                    const { category, ...payloadWithoutCategory } = articlePayload;
-                    const retry = await supabase
-                        .from('news_articles')
-                        .upsert(payloadWithoutCategory, { onConflict: 'slug' });
-                    insertError = retry.error;
-                }
-
-                if (insertError) {
-                    console.error(`Error inserting article "${title}":`, insertError.message);
-                } else {
-                    console.log(`Successfully imported in Spanish: "${title}" [VIDEOJUEGOS] by ${author}`);
-                    countVideojuegos++;
-                }
+            if (!fullDesc || fullDesc.length < 50) {
+                fullDesc = '¡Mantente al día con las últimas novedades del mundo de los videojuegos! Hay grandes noticias sucediendo en este momento en la industria.\n\nHaz clic en el botón de abajo para leer el artículo completo con todos los detalles directamente en la fuente oficial.';
             }
-        } catch (e) {
-            console.error(`Error syncing feed ${feed.name}:`, e.message);
+
+            const subtitle = fullDesc.length > 200 ? fullDesc.substring(0, 197) + '...' : fullDesc;
+            let header_image = item.image || 'https://images.unsplash.com/photo-1542751371-adc38448a05e?w=1200&auto=format&fit=crop&q=80';
+
+            const paragraphsHtml = formatParagraphs(fullDesc);
+            const articleHtml = `
+                ${paragraphsHtml}
+                <p style="margin-top: 2rem; text-align: center;">
+                    <a href="${link}" target="_blank" rel="noopener noreferrer" class="games-join-btn" style="display: inline-flex; text-decoration: none; padding: 1rem 2.5rem; background: var(--primary); color: white; border-radius: 30px; font-weight: bold; box-shadow: 0 5px 15px rgba(157, 78, 221, 0.4);">
+                        LEER ARTÍCULO COMPLETO EN ${src.name.toUpperCase()}
+                    </a>
+                </p>
+            `;
+
+            const author = pickAuthor(link);
+            const parsedDate = item.date ? new Date(item.date) : new Date();
+            const published_at = Number.isNaN(parsedDate.getTime()) ? new Date().toISOString() : parsedDate.toISOString();
+
+            const payload = {
+                title: titleClean,
+                subtitle,
+                slug,
+                header_image,
+                content_blocks: [
+                    { type: 'metadata', category: 'VIDEOJUEGOS', source: src.name, source_url: link, source_hash: hash, imported_date: targetDateStr },
+                    { type: 'text', content: articleHtml }
+                ],
+                author,
+                published_at,
+                category: 'VIDEOJUEGOS'
+            };
+
+            const { error: insErr } = await supabase
+                .from('news_articles')
+                .upsert(payload, { onConflict: 'slug' });
+
+            if (!insErr) {
+                countVideojuegos++;
+                console.log(`Successfully saved: "${titleClean}" [VIDEOJUEGOS]`);
+            }
         }
     }
 
-    // 2. Sincronizar exactamente 3 de ANIME
-    for (const feed of animeFeeds) {
+    // 2. Anime
+    for (const src of animeSources) {
         if (countAnime >= limit) break;
+        console.log(`Fetching Anime from: ${src.name}...`);
 
-        try {
-            console.log(`Fetching feed from: ${feed.name} (${feed.category}) [${feed.lang}]...`);
-            const response = await axios.get(feed.url, {
-                headers: {
-                    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36',
-                    'Accept': 'application/rss+xml, application/xml, text/xml, */*'
-                },
-                timeout: 10000
-            });
-            const xml = String(response.data || '');
-            const itemBlocks = xml.includes('<item>') ? xml.split('<item>') : xml.split('<entry>');
-            itemBlocks.shift();
+        const items = await fetchSourceItems(src);
+        for (const item of items) {
+            if (countAnime >= limit) break;
 
-            for (const itemXml of itemBlocks) {
-                if (countAnime >= limit) break;
+            const titleClean = decodeHtmlEntities(item.title || '').trim();
+            const link = (item.link || '').trim();
+            if (!titleClean || !link || !link.startsWith('http')) continue;
 
-                const rawTitle = extractTagValue(itemXml, 'title');
-                const rawTitleClean = decodeHtmlEntities(rawTitle.trim());
-                let rawLink = extractTagValue(itemXml, 'link').trim();
-                if (!rawLink || rawLink.startsWith('<')) {
-                    rawLink = itemXml.match(/<link[^>]*href=["']([^"']*)["']/i)?.[1] || '';
-                }
-                const guid = extractTagValue(itemXml, 'guid').trim() || extractTagValue(itemXml, 'id').trim();
-                const link = ensureAbsoluteUrl(rawLink || (guid.startsWith('http') ? guid : ''), feed.url);
+            let fullDesc = cleanDescription(item.description || '');
+            if (!isStrictCategory('ANIME', titleClean, fullDesc)) continue;
 
-                if (!rawTitleClean || !link || !link.startsWith('http')) continue;
+            const hash = getHash(link || `${src.name}-${titleClean}`);
+            const baseSlug = generateSlug(titleClean || `${src.name}-${hash}`);
+            const slug = `${baseSlug}-${hash}`;
 
-                const contentEncoded = extractTagValue(itemXml, 'content:encoded') || extractTagValue(itemXml, 'summary') || extractTagValue(itemXml, 'description');
-                let subtitleEnglish = cleanDescription(contentEncoded);
+            const { data: existing } = await supabase
+                .from('news_articles')
+                .select('id')
+                .eq('slug', slug)
+                .maybeSingle();
 
-                if (!isStrictCategory('ANIME', rawTitleClean, subtitleEnglish, feed.category)) {
-                    continue;
-                }
+            if (existing) continue;
 
-                const hash = getHash(link || `${feed.name}-${rawTitleClean}`);
-                const baseSlug = generateSlug(rawTitleClean || `${feed.name}-${hash}`);
-                const slug = `${baseSlug}-${hash}`;
+            console.log(`Found new article [Anime ${countAnime + 1}/${limit}]: "${titleClean}" from ${src.name}...`);
 
-                const { data: existing } = await supabase
-                    .from('news_articles')
-                    .select('id')
-                    .eq('slug', slug)
-                    .maybeSingle();
-
-                if (existing) continue;
-
-                console.log(`Found new article: "${rawTitleClean}" for category ANIME from ${feed.name}...`);
-
-                let title = rawTitleClean;
-                if (feed.lang === 'en') {
-                    title = await translateText(rawTitleClean);
-                }
-
-                subtitleEnglish = subtitleEnglish.trim();
-                if (subtitleEnglish.length > 1500) {
-                    subtitleEnglish = subtitleEnglish.substring(0, 1500);
-                }
-
-                let subtitle = '';
-                let fullDescriptionSpanish = '';
-
-                if (feed.lang === 'es') {
-                    fullDescriptionSpanish = subtitleEnglish;
-                    subtitle = fullDescriptionSpanish.length > 200 ? fullDescriptionSpanish.substring(0, 197) + '...' : fullDescriptionSpanish;
-                } else if (subtitleEnglish && subtitleEnglish.length >= 10) {
-                    subtitle = await translateText(subtitleEnglish.length > 200 ? subtitleEnglish.substring(0, 197) + '...' : subtitleEnglish);
-                    fullDescriptionSpanish = await translateText(subtitleEnglish);
-                }
-
-                if (!fullDescriptionSpanish || fullDescriptionSpanish.length < 50) {
-                    fullDescriptionSpanish = '¡Grandes novedades para los fans de la animación japonesa! Mantente al día con todos los anuncios, trailers y fechas clave de esta producción.\n\nPuedes consultar todos los pormenores accediendo directamente a la fuente original de la noticia.';
-                    subtitle = fullDescriptionSpanish.split('\n')[0];
-                }
-
-                const pubDateStr = extractTagValue(itemXml, 'pubDate') || extractTagValue(itemXml, 'dc:date') || extractTagValue(itemXml, 'updated');
-                const parsedDate = pubDateStr ? new Date(pubDateStr) : new Date();
-                const published_at = Number.isNaN(parsedDate.getTime()) ? new Date().toISOString() : parsedDate.toISOString();
-                const author = pickAuthor(link);
-
-                let header_image = '';
-                const encMatch = itemXml.match(/<enclosure[^>]*url=["']([^"']*)["']/i);
-                const medMatch = itemXml.match(/<media:content[^>]*url=["']([^"']*)["']/i) || itemXml.match(/<media:thumbnail[^>]*url=["']([^"']*)["']/i);
-                if (encMatch) header_image = encMatch[1];
-                else if (medMatch) header_image = medMatch[1];
-                else {
-                    const imgMatch = itemXml.match(/<img[^>]*src=["']([^"']*)["']/i);
-                    if (imgMatch) header_image = ensureAbsoluteUrl(imgMatch[1], link);
-                }
-
-                if (header_image && (header_image.includes('blogger.googleusercontent.com') || header_image.includes('bp.blogspot.com'))) {
-                    header_image = header_image.replace(/\/s[0-9]+(-c)?\//i, '/s1600/').replace(/\/w[0-9]+-h[0-9]+[^/]*\//i, '/s1600/');
-                }
-
-                if (!header_image) {
-                    header_image = 'https://images.unsplash.com/photo-1578632767115-351597cf2477?w=1200&auto=format&fit=crop&q=80';
-                }
-
-                const paragraphsHtml = formatParagraphs(fullDescriptionSpanish);
-                const articleHtml = `
-                    ${paragraphsHtml}
-                    <p style="margin-top: 2rem; text-align: center;">
-                        <a href="${link}" target="_blank" rel="noopener noreferrer" class="games-join-btn" style="display: inline-flex; text-decoration: none; padding: 1rem 2.5rem; background: var(--primary); color: white; border-radius: 30px; font-weight: bold; box-shadow: 0 5px 15px rgba(157, 78, 221, 0.4);">
-                            LEER ARTÍCULO COMPLETO EN ${feed.name.toUpperCase()}
-                        </a>
-                    </p>
-                `;
-
-                const content_blocks = [
-                    { type: 'metadata', category: 'ANIME', source: feed.name, source_url: link, source_hash: hash, imported_date: targetDateStr },
-                    { type: 'text', content: articleHtml }
-                ];
-
-                const articlePayload = {
-                    title,
-                    subtitle,
-                    slug,
-                    header_image,
-                    content_blocks,
-                    author,
-                    published_at,
-                    category: 'ANIME'
-                };
-
-                let { error: insertError } = await supabase
-                    .from('news_articles')
-                    .upsert(articlePayload, { onConflict: 'slug' });
-
-                if (insertError && insertError.message?.includes('category')) {
-                    const { category, ...payloadWithoutCategory } = articlePayload;
-                    const retry = await supabase
-                        .from('news_articles')
-                        .upsert(payloadWithoutCategory, { onConflict: 'slug' });
-                    insertError = retry.error;
-                }
-
-                if (insertError) {
-                    console.error(`Error inserting article "${title}":`, insertError.message);
-                } else {
-                    console.log(`Successfully imported in Spanish: "${title}" [ANIME] by ${author}`);
-                    countAnime++;
-                }
+            if (!fullDesc || fullDesc.length < 50) {
+                fullDesc = '¡Grandes novedades para los fans del anime y el manga! Mantente al día con todos los anuncios, trailers y fechas clave de esta producción.\n\nPuedes consultar todos los pormenores accediendo directamente a la fuente original de la noticia.';
             }
-        } catch (e) {
-            console.error(`Error syncing feed ${feed.name}:`, e.message);
+
+            const subtitle = fullDesc.length > 200 ? fullDesc.substring(0, 197) + '...' : fullDesc;
+            let header_image = item.image || 'https://images.unsplash.com/photo-1578632767115-351597cf2477?w=1200&auto=format&fit=crop&q=80';
+
+            const paragraphsHtml = formatParagraphs(fullDesc);
+            const articleHtml = `
+                ${paragraphsHtml}
+                <p style="margin-top: 2rem; text-align: center;">
+                    <a href="${link}" target="_blank" rel="noopener noreferrer" class="games-join-btn" style="display: inline-flex; text-decoration: none; padding: 1rem 2.5rem; background: var(--primary); color: white; border-radius: 30px; font-weight: bold; box-shadow: 0 5px 15px rgba(157, 78, 221, 0.4);">
+                        LEER ARTÍCULO COMPLETO EN ${src.name.toUpperCase()}
+                    </a>
+                </p>
+            `;
+
+            const author = pickAuthor(link);
+            const parsedDate = item.date ? new Date(item.date) : new Date();
+            const published_at = Number.isNaN(parsedDate.getTime()) ? new Date().toISOString() : parsedDate.toISOString();
+
+            const payload = {
+                title: titleClean,
+                subtitle,
+                slug,
+                header_image,
+                content_blocks: [
+                    { type: 'metadata', category: 'ANIME', source: src.name, source_url: link, source_hash: hash, imported_date: targetDateStr },
+                    { type: 'text', content: articleHtml }
+                ],
+                author,
+                published_at,
+                category: 'ANIME'
+            };
+
+            const { error: insErr } = await supabase
+                .from('news_articles')
+                .upsert(payload, { onConflict: 'slug' });
+
+            if (!insErr) {
+                countAnime++;
+                console.log(`Successfully saved: "${titleClean}" [ANIME]`);
+            }
         }
     }
 
-    console.log(`RSS Feed Sync Completed! Synced ${countVideojuegos} Videojuegos and ${countAnime} Anime new articles.`);
+    console.log(`Sync Completed! Total synced: ${countVideojuegos} Videojuegos and ${countAnime} Anime.`);
     await checkMonthlyLeaderboardRotation();
 }
 
@@ -632,14 +440,12 @@ async function checkMonthlyLeaderboardRotation() {
             if (error) {
                 console.warn(`Monthly rotation RPC error (${error.message}). Running JS fallback rotation...`);
 
-                // Fetch top 10 profiles by points
                 const { data: topProfiles } = await supabase
                     .from('profiles')
                     .select('username, avatar_url, points, role')
                     .order('points', { ascending: false })
                     .limit(10);
 
-                // Insert snapshot to monthly_leaderboards
                 const { error: insErr } = await supabase
                     .from('monthly_leaderboards')
                     .insert({
@@ -653,7 +459,6 @@ async function checkMonthlyLeaderboardRotation() {
                     console.log(`JS Fallback snapshot saved successfully for ${targetMonthStr}!`);
                 }
 
-                // Reset all user points to 0
                 const { error: resetErr } = await supabase
                     .from('profiles')
                     .update({ points: 0 })

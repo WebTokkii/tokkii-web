@@ -309,15 +309,23 @@ const NoticiaDetalle = () => {
 
                 .noticia-hero-image {
                     width: 100%;
-                    max-height: 600px;
-                    border-radius: 0;
+                    border-radius: 18px;
                     overflow: hidden;
                     margin-bottom: 3rem;
+                    background: rgba(0, 0, 0, 0.35);
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    border: 1px solid rgba(255, 255, 255, 0.08);
+                    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
                 }
                 .noticia-hero-image img {
                     width: 100%;
                     height: auto;
+                    max-height: 580px;
+                    object-fit: contain;
                     display: block;
+                    margin: 0 auto;
                 }
 
                 .noticia-content {
@@ -350,6 +358,31 @@ const NoticiaDetalle = () => {
                 }
                 
                 /* Override source/external link button inside news content to turquoise glass */
+                .image-block {
+                    margin: 2.5rem 0;
+                    text-align: center;
+                    background: rgba(0, 0, 0, 0.25);
+                    border-radius: 14px;
+                    overflow: hidden;
+                    padding: 8px;
+                    border: 1px solid rgba(255, 255, 255, 0.06);
+                }
+                .image-block img {
+                    width: 100%;
+                    height: auto;
+                    max-height: 550px;
+                    object-fit: contain;
+                    border-radius: 10px;
+                    display: block;
+                    margin: 0 auto;
+                }
+                .image-block figcaption {
+                    font-size: 0.9rem;
+                    color: var(--text-muted);
+                    margin-top: 8px;
+                    font-style: italic;
+                }
+
                 .noticia-content a[style*="display"], 
                 .noticia-content a[style*="border-radius"],
                 .noticia-content a[class*="btn"] {

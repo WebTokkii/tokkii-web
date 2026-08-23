@@ -613,16 +613,19 @@ h1 {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  object-position: top center;
-  transform: scale(1.08);
-  transform-origin: top center;
+  object-position: center;
   transition: transform 0.3s ease;
+}
+
+.featured:hover img, .side:hover img {
+  transform: scale(1.03);
 }
 
 .featured .img {
   aspect-ratio: 16/9;
   border-bottom: 1px solid rgba(233, 176, 255, .08);
   overflow: hidden;
+  background: #111;
 }
 
 .content {
