@@ -86,35 +86,43 @@ function cleanDescription(html) {
     return clean;
 }
 
-function formatParagraphs(text) {
-    if (!text) return '';
-    const lines = text.split(/\r?\n+/);
-    const paragraphs = [];
+function buildRobustArticleContent(title, cleanDesc, category, sourceName, sourceUrl) {
+    const isAnime = category === 'ANIME';
     
-    for (const line of lines) {
-        const trimmed = line.trim();
-        if (!trimmed) continue;
-        if (trimmed.length > 400) {
-            const sentences = trimmed.match(/[^.!?]+[.!?]+(\s|$)/g) || [trimmed];
-            let currentParagraph = '';
-            for (let i = 0; i < sentences.length; i++) {
-                currentParagraph += sentences[i];
-                if ((i + 1) % 3 === 0 || currentParagraph.length > 300) {
-                    paragraphs.push(currentParagraph.trim());
-                    currentParagraph = '';
-                }
-            }
-            if (currentParagraph.trim()) {
-                paragraphs.push(currentParagraph.trim());
-            }
-        } else {
-            paragraphs.push(trimmed);
-        }
-    }
-    
-    return paragraphs
-        .map(p => `<p style="margin-bottom: 1.5rem; text-align: justify; line-height: 1.8;">${p}</p>`)
-        .join('\n');
+    const rawSentences = (cleanDesc || '').split(/[.!?]+/).map(s => s.trim()).filter(s => s.length > 25);
+    const mainCore = rawSentences.slice(0, 3).join('. ') + (rawSentences.length > 0 ? '.' : '');
+
+    const p1 = mainCore.length > 100 
+        ? mainCore 
+        : (isAnime 
+            ? `${title}. Grandes novedades han salido a la luz en las últimas horas para la comunidad del anime y el manga con este nuevo anuncio oficial.`
+            : `${title}. Una de las noticias más destacadas del momento en la industria del videojuego, trayendo importantes novedades y anuncios que han capturado la atención de la comunidad gamer.`);
+
+    const p2 = rawSentences.length > 3 
+        ? rawSentences.slice(3, 7).join('. ') + '.'
+        : (isAnime
+            ? 'Entre los detalles más relevantes compartidos por la producción, se destacan las fechas clave de estreno, el equipo creativo a cargo de la animación y los avances mostrados en los materiales promocionales. Esta entrega promete mantener el estándar visual y narrativo que los seguidores de la franquicia han estado esperando con gran expectativa.'
+            : 'El informe detalla los aspectos técnicos y jugables más relevantes de este lanzamiento, incluyendo mejoras en la experiencia de juego, novedades en su contenido y la disponibilidad confirmada para las principales plataformas del mercado. Los desarrolladores han puesto especial énfasis en optimizar el rendimiento y la inmersión para los usuarios.');
+
+    const p3 = isAnime
+        ? 'La reacción de los fanáticos no se ha hecho esperar en redes sociales y foros especializados, donde se debaten las implicaciones de este estreno dentro de la temporada actual. Con un calendario repleto de lanzamientos de alto perfil, esta producción se posiciona como una de las más seguidas y comentadas por los aficionados a la cultura otaku.'
+        : 'La comunidad de jugadores ha recibido estos anuncios con gran entusiasmo, generando amplios debates sobre el futuro de la saga y las expectativas depositadas en este proyecto. En un año repleto de grandes estrenos y competencia en el sector, este movimiento refuerza la posición del título dentro del panorama internacional.';
+
+    const p4 = isAnime
+        ? 'Desde EvilTokkii continuaremos dándole cobertura a todas las actualizaciones, trailers y anuncios oficiales que surjan al respecto. Te invitamos a leer el reporte original y todos los pormenores accediendo directamente a la fuente oficial a través del enlace a continuación.'
+        : 'Desde EvilTokkii continuaremos siguiendo muy de cerca todos los avances, parches y novedades que se presenten sobre este título en nuestros directos y notas de actualidad. Puedes consultar el artículo completo y los detalles oficiales haciendo clic en el botón de abajo.';
+
+    return `
+        <p style="margin-bottom: 1.5rem; text-align: justify; line-height: 1.8;">${p1}</p>
+        <p style="margin-bottom: 1.5rem; text-align: justify; line-height: 1.8;">${p2}</p>
+        <p style="margin-bottom: 1.5rem; text-align: justify; line-height: 1.8;">${p3}</p>
+        <p style="margin-bottom: 1.5rem; text-align: justify; line-height: 1.8;">${p4}</p>
+        <p style="margin-top: 2.5rem; text-align: center;">
+            <a href="${sourceUrl}" target="_blank" rel="noopener noreferrer" class="games-join-btn" style="display: inline-flex; text-decoration: none; padding: 1rem 2.5rem; background: var(--primary); color: white; border-radius: 30px; font-weight: bold; box-shadow: 0 5px 15px rgba(157, 78, 221, 0.4);">
+                LEER ARTÍCULO COMPLETO EN ${sourceName.toUpperCase()}
+            </a>
+        </p>
+    `;
 }
 
 function isStrictCategory(category, title, description) {
@@ -136,25 +144,6 @@ function isStrictCategory(category, title, description) {
 }
 
 async function fetchSourceItems(src) {
-    if (src.type === 'mmobomb') {
-        try {
-            const res = await axios.get('https://www.mmobomb.com/api1/latestnews', { timeout: 8000 });
-            if (Array.isArray(res.data) && res.data.length > 0) {
-                return res.data.map(item => ({
-                    title: item.title,
-                    link: item.article_url,
-                    description: item.short_description || item.article_content,
-                    image: item.main_image || item.thumbnail,
-                    date: new Date().toISOString(),
-                    sourceName: src.name
-                }));
-            }
-        } catch (e) {
-            console.warn('MMOBomb API error:', e.message);
-        }
-        return [];
-    }
-
     // 1. Intentar con rss2json
     try {
         const r2jUrl = `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(src.url)}`;
@@ -238,23 +227,24 @@ async function fetchSourceItems(src) {
 
 export async function syncRssFeeds(limit = DAILY_CATEGORY_LIMIT) {
     const vgSources = [
-        { name: '3DJuegos', type: 'rss', url: 'https://www.3djuegos.com/universo/rss/rss.php' },
-        { name: 'MMOBomb', type: 'mmobomb' },
-        { name: 'IGN', type: 'rss', url: 'https://feeds.feedburner.com/ign/news' }
+        { name: '3DJuegos', url: 'https://www.3djuegos.com/universo/rss/rss.php' },
+        { name: 'Areajugones', url: 'https://areajugones.sport.es/videojuegos/feed/' },
+        { name: 'GeneracionXbox', url: 'https://generacionxbox.com/feed/' },
+        { name: 'Nintenderos', url: 'https://www.nintenderos.com/feed/' }
     ];
 
     const animeSources = [
-        { name: 'Ramen Para Dos', type: 'rss', url: 'https://ramenparados.com/feed/' },
-        { name: 'Areajugones', type: 'rss', url: 'https://areajugones.sport.es/anime/feed/' },
-        { name: 'Crunchyroll', type: 'rss', url: 'https://www.crunchyroll.com/news/rss?lang=esES' }
+        { name: 'Ramen Para Dos', url: 'https://ramenparados.com/feed/' },
+        { name: 'Areajugones', url: 'https://areajugones.sport.es/anime/feed/' },
+        { name: 'Crunchyroll', url: 'https://www.crunchyroll.com/news/rss?lang=esES' }
     ];
 
     const targetDateStr = getLocalDateStr();
-    console.log(`Starting Daily News Sync (Target: ${limit} Videojuegos + ${limit} Anime for ${targetDateStr})...`);
+    console.log(`Starting Daily News Sync (Target: ${limit} Videojuegos + ${limit} Anime in Spanish for ${targetDateStr})...`);
     let countVideojuegos = 0;
     let countAnime = 0;
 
-    // 1. Videojuegos
+    // 1. Videojuegos en Español
     for (const src of vgSources) {
         if (countVideojuegos >= limit) break;
         console.log(`Fetching Videojuegos from: ${src.name}...`);
@@ -284,23 +274,10 @@ export async function syncRssFeeds(limit = DAILY_CATEGORY_LIMIT) {
 
             console.log(`Found new article [Videojuegos ${countVideojuegos + 1}/${limit}]: "${titleClean}" from ${src.name}...`);
 
-            if (!fullDesc || fullDesc.length < 50) {
-                fullDesc = '¡Mantente al día con las últimas novedades del mundo de los videojuegos! Hay grandes noticias sucediendo en este momento en la industria.\n\nHaz clic en el botón de abajo para leer el artículo completo con todos los detalles directamente en la fuente oficial.';
-            }
-
-            const subtitle = fullDesc.length > 200 ? fullDesc.substring(0, 197) + '...' : fullDesc;
+            const subtitle = fullDesc.length > 200 ? fullDesc.substring(0, 197) + '...' : (fullDesc || titleClean);
             let header_image = item.image || 'https://images.unsplash.com/photo-1542751371-adc38448a05e?w=1200&auto=format&fit=crop&q=80';
 
-            const paragraphsHtml = formatParagraphs(fullDesc);
-            const articleHtml = `
-                ${paragraphsHtml}
-                <p style="margin-top: 2rem; text-align: center;">
-                    <a href="${link}" target="_blank" rel="noopener noreferrer" class="games-join-btn" style="display: inline-flex; text-decoration: none; padding: 1rem 2.5rem; background: var(--primary); color: white; border-radius: 30px; font-weight: bold; box-shadow: 0 5px 15px rgba(157, 78, 221, 0.4);">
-                        LEER ARTÍCULO COMPLETO EN ${src.name.toUpperCase()}
-                    </a>
-                </p>
-            `;
-
+            const articleHtml = buildRobustArticleContent(titleClean, fullDesc, 'VIDEOJUEGOS', src.name, link);
             const author = pickAuthor(link);
             const parsedDate = item.date ? new Date(item.date) : new Date();
             const published_at = Number.isNaN(parsedDate.getTime()) ? new Date().toISOString() : parsedDate.toISOString();
@@ -330,7 +307,7 @@ export async function syncRssFeeds(limit = DAILY_CATEGORY_LIMIT) {
         }
     }
 
-    // 2. Anime
+    // 2. Anime en Español
     for (const src of animeSources) {
         if (countAnime >= limit) break;
         console.log(`Fetching Anime from: ${src.name}...`);
@@ -360,23 +337,10 @@ export async function syncRssFeeds(limit = DAILY_CATEGORY_LIMIT) {
 
             console.log(`Found new article [Anime ${countAnime + 1}/${limit}]: "${titleClean}" from ${src.name}...`);
 
-            if (!fullDesc || fullDesc.length < 50) {
-                fullDesc = '¡Grandes novedades para los fans del anime y el manga! Mantente al día con todos los anuncios, trailers y fechas clave de esta producción.\n\nPuedes consultar todos los pormenores accediendo directamente a la fuente original de la noticia.';
-            }
-
-            const subtitle = fullDesc.length > 200 ? fullDesc.substring(0, 197) + '...' : fullDesc;
+            const subtitle = fullDesc.length > 200 ? fullDesc.substring(0, 197) + '...' : (fullDesc || titleClean);
             let header_image = item.image || 'https://images.unsplash.com/photo-1578632767115-351597cf2477?w=1200&auto=format&fit=crop&q=80';
 
-            const paragraphsHtml = formatParagraphs(fullDesc);
-            const articleHtml = `
-                ${paragraphsHtml}
-                <p style="margin-top: 2rem; text-align: center;">
-                    <a href="${link}" target="_blank" rel="noopener noreferrer" class="games-join-btn" style="display: inline-flex; text-decoration: none; padding: 1rem 2.5rem; background: var(--primary); color: white; border-radius: 30px; font-weight: bold; box-shadow: 0 5px 15px rgba(157, 78, 221, 0.4);">
-                        LEER ARTÍCULO COMPLETO EN ${src.name.toUpperCase()}
-                    </a>
-                </p>
-            `;
-
+            const articleHtml = buildRobustArticleContent(titleClean, fullDesc, 'ANIME', src.name, link);
             const author = pickAuthor(link);
             const parsedDate = item.date ? new Date(item.date) : new Date();
             const published_at = Number.isNaN(parsedDate.getTime()) ? new Date().toISOString() : parsedDate.toISOString();
