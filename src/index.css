@@ -1009,17 +1009,17 @@ h1 {
 }
 
 .streamed-card-thumb {
-  width: 68px !important;
-  min-width: 68px !important;
-  max-width: 68px !important;
-  height: 98px !important;
-  max-height: 98px !important;
+  width: 88px !important;
+  min-width: 88px !important;
+  max-width: 88px !important;
+  height: 125px !important;
+  max-height: 125px !important;
   aspect-ratio: 2/3;
-  border-radius: 10px;
+  border-radius: 12px;
   overflow: hidden;
   background: #0d0714;
   border: 1px solid rgba(233, 176, 255, 0.2);
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.35);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
   flex-shrink: 0;
 }
 

@@ -65,11 +65,11 @@ const MostStreamed: React.FC<MostStreamedProps> = ({ hideHeader = false, onGames
             )}
 
             <div 
-                className="streamed-horizontal-grid"
+                className="streamed-vertical-list"
                 style={{
-                    display: 'grid',
-                    gridTemplateColumns: 'repeat(auto-fill, minmax(340px, 1fr))',
-                    gap: '20px',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: '16px',
                     width: '100%',
                     marginTop: '10px'
                 }}
@@ -81,31 +81,32 @@ const MostStreamed: React.FC<MostStreamedProps> = ({ hideHeader = false, onGames
                         style={{
                             display: 'flex',
                             flexDirection: 'row',
-                            alignItems: 'flex-start',
-                            gap: '16px',
+                            alignItems: 'center',
+                            gap: '20px',
                             background: 'linear-gradient(180deg, rgba(255, 255, 255, 0.04), rgba(111, 0, 219, 0.08))',
                             backdropFilter: 'blur(14px)',
                             WebkitBackdropFilter: 'blur(14px)',
                             border: '1px solid var(--line, rgba(233, 176, 255, 0.15))',
                             borderRadius: '20px',
-                            padding: '16px 18px',
+                            padding: '16px 22px',
                             boxShadow: 'var(--shadow, 0 10px 30px rgba(0, 0, 0, 0.35))',
                             overflow: 'hidden'
                         }}
                     >
-                        {/* Miniatura Izquierda Compacta */}
+                        {/* Miniatura Izquierda (Un poco más grande: 88px x 125px) */}
                         <div 
                             className="streamed-card-thumb"
                             style={{
-                                width: '68px',
-                                minWidth: '68px',
-                                maxWidth: '68px',
-                                height: '98px',
-                                maxHeight: '98px',
-                                borderRadius: '10px',
+                                width: '88px',
+                                minWidth: '88px',
+                                maxWidth: '88px',
+                                height: '125px',
+                                maxHeight: '125px',
+                                borderRadius: '12px',
                                 overflow: 'hidden',
                                 background: '#0d0714',
                                 border: '1px solid rgba(233, 176, 255, 0.2)',
+                                boxShadow: '0 4px 15px rgba(0, 0, 0, 0.4)',
                                 flexShrink: 0,
                                 display: 'flex',
                                 alignItems: 'center',
@@ -134,7 +135,7 @@ const MostStreamed: React.FC<MostStreamedProps> = ({ hideHeader = false, onGames
                             style={{
                                 display: 'flex',
                                 flexDirection: 'column',
-                                gap: '6px',
+                                gap: '8px',
                                 flex: 1,
                                 minWidth: 0
                             }}
@@ -143,7 +144,7 @@ const MostStreamed: React.FC<MostStreamedProps> = ({ hideHeader = false, onGames
                                 className="streamed-card-title"
                                 style={{
                                     margin: 0,
-                                    fontSize: '1.12rem',
+                                    fontSize: '1.25rem',
                                     fontWeight: 800,
                                     color: '#ffffff',
                                     lineHeight: 1.25,
@@ -158,9 +159,9 @@ const MostStreamed: React.FC<MostStreamedProps> = ({ hideHeader = false, onGames
                                     className="streamed-card-desc"
                                     style={{
                                         margin: 0,
-                                        fontSize: '0.88rem',
+                                        fontSize: '0.92rem',
                                         color: '#cbd5e1',
-                                        lineHeight: 1.55,
+                                        lineHeight: 1.6,
                                         wordBreak: 'break-word',
                                         whiteSpace: 'pre-line'
                                     }}
@@ -172,7 +173,7 @@ const MostStreamed: React.FC<MostStreamedProps> = ({ hideHeader = false, onGames
                                     className="streamed-card-desc placeholder"
                                     style={{
                                         margin: 0,
-                                        fontSize: '0.85rem',
+                                        fontSize: '0.88rem',
                                         color: 'var(--muted, #a1a1aa)',
                                         fontStyle: 'italic',
                                         opacity: 0.75,
