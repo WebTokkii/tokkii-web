@@ -1009,11 +1009,11 @@ h1 {
 }
 
 .streamed-card-thumb {
-  width: 88px !important;
-  min-width: 88px !important;
-  max-width: 88px !important;
-  height: 125px !important;
-  max-height: 125px !important;
+  width: 92px !important;
+  min-width: 92px !important;
+  max-width: 92px !important;
+  height: 132px !important;
+  max-height: 132px !important;
   aspect-ratio: 2/3;
   border-radius: 12px;
   overflow: hidden;

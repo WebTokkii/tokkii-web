@@ -65,11 +65,11 @@ const MostStreamed: React.FC<MostStreamedProps> = ({ hideHeader = false, onGames
             )}
 
             <div 
-                className="streamed-vertical-list"
+                className="streamed-two-columns-grid"
                 style={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    gap: '16px',
+                    display: 'grid',
+                    gridTemplateColumns: 'repeat(auto-fit, minmax(420px, 1fr))',
+                    gap: '20px',
                     width: '100%',
                     marginTop: '10px'
                 }}
@@ -88,20 +88,20 @@ const MostStreamed: React.FC<MostStreamedProps> = ({ hideHeader = false, onGames
                             WebkitBackdropFilter: 'blur(14px)',
                             border: '1px solid var(--line, rgba(233, 176, 255, 0.15))',
                             borderRadius: '20px',
-                            padding: '16px 22px',
+                            padding: '18px 22px',
                             boxShadow: 'var(--shadow, 0 10px 30px rgba(0, 0, 0, 0.35))',
                             overflow: 'hidden'
                         }}
                     >
-                        {/* Miniatura Izquierda (Un poco más grande: 88px x 125px) */}
+                        {/* Miniatura Izquierda (92px x 132px) */}
                         <div 
                             className="streamed-card-thumb"
                             style={{
-                                width: '88px',
-                                minWidth: '88px',
-                                maxWidth: '88px',
-                                height: '125px',
-                                maxHeight: '125px',
+                                width: '92px',
+                                minWidth: '92px',
+                                maxWidth: '92px',
+                                height: '132px',
+                                maxHeight: '132px',
                                 borderRadius: '12px',
                                 overflow: 'hidden',
                                 background: '#0d0714',
@@ -129,7 +129,7 @@ const MostStreamed: React.FC<MostStreamedProps> = ({ hideHeader = false, onGames
                             />
                         </div>
 
-                        {/* Contenido Derecho: Título Arriba + Descripción Abajo */}
+                        {/* Contenido Derecho: Título Mayor + Descripción Mayor */}
                         <div 
                             className="streamed-card-body"
                             style={{
@@ -144,7 +144,7 @@ const MostStreamed: React.FC<MostStreamedProps> = ({ hideHeader = false, onGames
                                 className="streamed-card-title"
                                 style={{
                                     margin: 0,
-                                    fontSize: '1.25rem',
+                                    fontSize: '1.35rem',
                                     fontWeight: 800,
                                     color: '#ffffff',
                                     lineHeight: 1.25,
@@ -159,7 +159,7 @@ const MostStreamed: React.FC<MostStreamedProps> = ({ hideHeader = false, onGames
                                     className="streamed-card-desc"
                                     style={{
                                         margin: 0,
-                                        fontSize: '0.92rem',
+                                        fontSize: '0.98rem',
                                         color: '#cbd5e1',
                                         lineHeight: 1.6,
                                         wordBreak: 'break-word',
@@ -173,7 +173,7 @@ const MostStreamed: React.FC<MostStreamedProps> = ({ hideHeader = false, onGames
                                     className="streamed-card-desc placeholder"
                                     style={{
                                         margin: 0,
-                                        fontSize: '0.88rem',
+                                        fontSize: '0.92rem',
                                         color: 'var(--muted, #a1a1aa)',
                                         fontStyle: 'italic',
                                         opacity: 0.75,
