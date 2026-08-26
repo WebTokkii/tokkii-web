@@ -5,6 +5,8 @@ interface StreamedItem {
     id: number;
     title: string;
     image_url: string;
+    description?: string;
+    order_index?: number;
 }
 
 interface MostStreamedProps {
@@ -62,15 +64,25 @@ const MostStreamed: React.FC<MostStreamedProps> = ({ hideHeader = false, onGames
                 </div>
             )}
 
-            <div className="games-grid">
+            <div className="streamed-horizontal-grid">
                 {streamedData.map((item) => (
-                    <div key={item.id} className="game">
-                        <img 
-                            src={getImageUrl(item.image_url)} 
-                            alt={item.title} 
-                        />
-                        <div className="overlay">
-                            <div className="name">{item.title}</div>
+                    <div key={item.id} className="streamed-horizontal-card">
+                        <div className="streamed-card-thumb">
+                            <img 
+                                src={getImageUrl(item.image_url)} 
+                                alt={item.title} 
+                                onError={(e: any) => {
+                                    e.target.src = `${import.meta.env.VITE_R2_BASE_URL}/logo.png`;
+                                }}
+                            />
+                        </div>
+                        <div className="streamed-card-body">
+                            <h3 className="streamed-card-title">{item.title}</h3>
+                            {item.description ? (
+                                <p className="streamed-card-desc">{item.description}</p>
+                            ) : (
+                                <p className="streamed-card-desc placeholder">Partidas, directos y momentos destacados de {item.title}.</p>
+                            )}
                         </div>
                     </div>
                 ))}
