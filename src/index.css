@@ -975,3 +975,94 @@ h1 {
     box-shadow: 0 0 6px #FF0073, 0 0 10px rgba(255, 0, 115, 0.5);
   }
 }
+
+/* Lo Stremeado - Grid y Tarjetas Horizontales con Tema Tokkii */
+.streamed-horizontal-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  gap: 20px;
+  width: 100%;
+  margin-top: 10px;
+}
+
+.streamed-horizontal-card {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  gap: 16px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.04), rgba(111, 0, 219, 0.08));
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  padding: 16px 18px;
+  box-shadow: var(--shadow);
+  transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1), border-color 0.3s ease, box-shadow 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.streamed-horizontal-card:hover {
+  transform: translateY(-4px);
+  border-color: rgba(162, 86, 223, 0.55);
+  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.45), 0 0 25px rgba(157, 78, 221, 0.22);
+}
+
+.streamed-card-thumb {
+  width: 68px !important;
+  min-width: 68px !important;
+  max-width: 68px !important;
+  height: 98px !important;
+  max-height: 98px !important;
+  aspect-ratio: 2/3;
+  border-radius: 10px;
+  overflow: hidden;
+  background: #0d0714;
+  border: 1px solid rgba(233, 176, 255, 0.2);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.35);
+  flex-shrink: 0;
+}
+
+.streamed-card-thumb img {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+  object-position: center !important;
+  transition: transform 0.4s ease;
+}
+
+.streamed-horizontal-card:hover .streamed-card-thumb img {
+  transform: scale(1.08);
+}
+
+.streamed-card-body {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex: 1;
+  min-width: 0;
+}
+
+.streamed-card-title {
+  margin: 0;
+  font-size: 1.12rem;
+  font-weight: 800;
+  color: #fff;
+  line-height: 1.25;
+  letter-spacing: -0.01em;
+}
+
+.streamed-card-desc {
+  margin: 0;
+  font-size: 0.88rem;
+  color: #cbd5e1;
+  line-height: 1.55;
+  word-break: break-word;
+  white-space: pre-line;
+}
+
+.streamed-card-desc.placeholder {
+  color: var(--muted);
+  font-style: italic;
+  opacity: 0.7;
+}

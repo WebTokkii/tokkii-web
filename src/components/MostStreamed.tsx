@@ -64,24 +64,123 @@ const MostStreamed: React.FC<MostStreamedProps> = ({ hideHeader = false, onGames
                 </div>
             )}
 
-            <div className="streamed-horizontal-grid">
+            <div 
+                className="streamed-horizontal-grid"
+                style={{
+                    display: 'grid',
+                    gridTemplateColumns: 'repeat(auto-fill, minmax(340px, 1fr))',
+                    gap: '20px',
+                    width: '100%',
+                    marginTop: '10px'
+                }}
+            >
                 {streamedData.map((item) => (
-                    <div key={item.id} className="streamed-horizontal-card">
-                        <div className="streamed-card-thumb">
+                    <div 
+                        key={item.id} 
+                        className="streamed-horizontal-card"
+                        style={{
+                            display: 'flex',
+                            flexDirection: 'row',
+                            alignItems: 'flex-start',
+                            gap: '16px',
+                            background: 'linear-gradient(180deg, rgba(255, 255, 255, 0.04), rgba(111, 0, 219, 0.08))',
+                            backdropFilter: 'blur(14px)',
+                            WebkitBackdropFilter: 'blur(14px)',
+                            border: '1px solid var(--line, rgba(233, 176, 255, 0.15))',
+                            borderRadius: '20px',
+                            padding: '16px 18px',
+                            boxShadow: 'var(--shadow, 0 10px 30px rgba(0, 0, 0, 0.35))',
+                            overflow: 'hidden'
+                        }}
+                    >
+                        {/* Miniatura Izquierda Compacta */}
+                        <div 
+                            className="streamed-card-thumb"
+                            style={{
+                                width: '68px',
+                                minWidth: '68px',
+                                maxWidth: '68px',
+                                height: '98px',
+                                maxHeight: '98px',
+                                borderRadius: '10px',
+                                overflow: 'hidden',
+                                background: '#0d0714',
+                                border: '1px solid rgba(233, 176, 255, 0.2)',
+                                flexShrink: 0,
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center'
+                            }}
+                        >
                             <img 
                                 src={getImageUrl(item.image_url)} 
                                 alt={item.title} 
+                                style={{
+                                    width: '100%',
+                                    height: '100%',
+                                    objectFit: 'cover',
+                                    objectPosition: 'center',
+                                    display: 'block'
+                                }}
                                 onError={(e: any) => {
                                     e.target.src = `${import.meta.env.VITE_R2_BASE_URL}/logo.png`;
                                 }}
                             />
                         </div>
-                        <div className="streamed-card-body">
-                            <h3 className="streamed-card-title">{item.title}</h3>
+
+                        {/* Contenido Derecho: Título Arriba + Descripción Abajo */}
+                        <div 
+                            className="streamed-card-body"
+                            style={{
+                                display: 'flex',
+                                flexDirection: 'column',
+                                gap: '6px',
+                                flex: 1,
+                                minWidth: 0
+                            }}
+                        >
+                            <h3 
+                                className="streamed-card-title"
+                                style={{
+                                    margin: 0,
+                                    fontSize: '1.12rem',
+                                    fontWeight: 800,
+                                    color: '#ffffff',
+                                    lineHeight: 1.25,
+                                    letterSpacing: '-0.01em'
+                                }}
+                            >
+                                {item.title}
+                            </h3>
+
                             {item.description ? (
-                                <p className="streamed-card-desc">{item.description}</p>
+                                <p 
+                                    className="streamed-card-desc"
+                                    style={{
+                                        margin: 0,
+                                        fontSize: '0.88rem',
+                                        color: '#cbd5e1',
+                                        lineHeight: 1.55,
+                                        wordBreak: 'break-word',
+                                        whiteSpace: 'pre-line'
+                                    }}
+                                >
+                                    {item.description}
+                                </p>
                             ) : (
-                                <p className="streamed-card-desc placeholder">Partidas, directos y momentos destacados de {item.title}.</p>
+                                <p 
+                                    className="streamed-card-desc placeholder"
+                                    style={{
+                                        margin: 0,
+                                        fontSize: '0.85rem',
+                                        color: 'var(--muted, #a1a1aa)',
+                                        fontStyle: 'italic',
+                                        opacity: 0.75,
+                                        lineHeight: 1.5
+                                    }}
+                                >
+                                    Partidas, directos y momentos destacados de {item.title}.
+                                </p>
                             )}
                         </div>
                     </div>
