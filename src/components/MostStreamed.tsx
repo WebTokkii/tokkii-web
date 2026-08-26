@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
 
 interface StreamedItem {
@@ -54,7 +54,7 @@ const MostStreamed: React.FC<MostStreamedProps> = ({ hideHeader = false, onGames
     if (onlyLoad) return null;
 
     return (
-        <div>
+        <div style={{ width: '100%' }}>
             {!hideHeader && (
                 <div className="section-head">
                     <div>
