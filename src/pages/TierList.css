@@ -1861,89 +1861,86 @@ body.dragging-active * {
 
 
 /* ==========================================================================
-   FORCE CONSISTENT ELEMENT BORDER COLORS (POOL & TIER ROWS)
+   FORCE CONSISTENT ELEMENT BORDER COLORS (POOL & TIER ROWS ONLY)
    ========================================================================== */
 .character-card.element-anemo-glow,
-.tier-row .character-card.element-anemo-glow,
-.fullscreen-char-card.element-anemo-glow {
+.tier-row .character-card.element-anemo-glow {
   border: 2.5px solid #33ecc0 !important;
   box-shadow: 0 0 8px rgba(51, 236, 192, 0.4), 0 4px 8px rgba(0, 0, 0, 0.5) !important;
 }
 
 .character-card.element-geo-glow,
-.tier-row .character-card.element-geo-glow,
-.fullscreen-char-card.element-geo-glow {
+.tier-row .character-card.element-geo-glow {
   border: 2.5px solid #f3cb3f !important;
   box-shadow: 0 0 8px rgba(243, 203, 63, 0.4), 0 4px 8px rgba(0, 0, 0, 0.5) !important;
 }
 
 .character-card.element-electro-glow,
-.tier-row .character-card.element-electro-glow,
-.fullscreen-char-card.element-electro-glow {
+.tier-row .character-card.element-electro-glow {
   border: 2.5px solid #b874ec !important;
   box-shadow: 0 0 8px rgba(184, 116, 236, 0.4), 0 4px 8px rgba(0, 0, 0, 0.5) !important;
 }
 
 .character-card.element-dendro-glow,
-.tier-row .character-card.element-dendro-glow,
-.fullscreen-char-card.element-dendro-glow {
+.tier-row .character-card.element-dendro-glow {
   border: 2.5px solid #74ec76 !important;
   box-shadow: 0 0 8px rgba(116, 236, 118, 0.4), 0 4px 8px rgba(0, 0, 0, 0.5) !important;
 }
 
 .character-card.element-hydro-glow,
-.tier-row .character-card.element-hydro-glow,
-.fullscreen-char-card.element-hydro-glow {
+.tier-row .character-card.element-hydro-glow {
   border: 2.5px solid #33b6ec !important;
   box-shadow: 0 0 8px rgba(51, 182, 236, 0.4), 0 4px 8px rgba(0, 0, 0, 0.5) !important;
 }
 
 .character-card.element-pyro-glow,
-.tier-row .character-card.element-pyro-glow,
-.fullscreen-char-card.element-pyro-glow {
+.tier-row .character-card.element-pyro-glow {
   border: 2.5px solid #ec4a33 !important;
   box-shadow: 0 0 8px rgba(236, 74, 51, 0.4), 0 4px 8px rgba(0, 0, 0, 0.5) !important;
 }
 
 .character-card.element-cryo-glow,
-.tier-row .character-card.element-cryo-glow,
-.fullscreen-char-card.element-cryo-glow {
+.tier-row .character-card.element-cryo-glow {
   border: 2.5px solid #7adbec !important;
   box-shadow: 0 0 8px rgba(122, 219, 236, 0.4), 0 4px 8px rgba(0, 0, 0, 0.5) !important;
 }
 
 /* Wuthering Waves */
 .character-card.element-aero-glow,
-.tier-row .character-card.element-aero-glow,
-.fullscreen-char-card.element-aero-glow {
+.tier-row .character-card.element-aero-glow {
   border: 2.5px solid #33ecc0 !important;
   box-shadow: 0 0 8px rgba(51, 236, 192, 0.4), 0 4px 8px rgba(0, 0, 0, 0.5) !important;
 }
 
 .character-card.element-glacio-glow,
-.tier-row .character-card.element-glacio-glow,
-.fullscreen-char-card.element-glacio-glow {
+.tier-row .character-card.element-glacio-glow {
   border: 2.5px solid #7adbec !important;
   box-shadow: 0 0 8px rgba(122, 219, 236, 0.4), 0 4px 8px rgba(0, 0, 0, 0.5) !important;
 }
 
 .character-card.element-fusion-glow,
-.tier-row .character-card.element-fusion-glow,
-.fullscreen-char-card.element-fusion-glow {
+.tier-row .character-card.element-fusion-glow {
   border: 2.5px solid #ec4a33 !important;
   box-shadow: 0 0 8px rgba(236, 74, 51, 0.4), 0 4px 8px rgba(0, 0, 0, 0.5) !important;
 }
 
 .character-card.element-spectro-glow,
-.tier-row .character-card.element-spectro-glow,
-.fullscreen-char-card.element-spectro-glow {
+.tier-row .character-card.element-spectro-glow {
   border: 2.5px solid #f3cb3f !important;
   box-shadow: 0 0 8px rgba(243, 203, 63, 0.4), 0 4px 8px rgba(0, 0, 0, 0.5) !important;
 }
 
 .character-card.element-havoc-glow,
-.tier-row .character-card.element-havoc-glow,
-.fullscreen-char-card.element-havoc-glow {
+.tier-row .character-card.element-havoc-glow {
   border: 2.5px solid #d03ff3 !important;
   box-shadow: 0 0 8px rgba(208, 63, 243, 0.4), 0 4px 8px rgba(0, 0, 0, 0.5) !important;
+}
+
+/* Ensure Fullscreen Tierlist Cards Have NO Borders */
+.tier-dropzone-fullscreen .fullscreen-char-card,
+.fullscreen-char-card {
+  border: none !important;
+  border-right: none !important;
+  box-shadow: none !important;
+  outline: none !important;
 }
