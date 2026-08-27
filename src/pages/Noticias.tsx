@@ -1,3 +1,4 @@
+import { resolveAssetUrl } from '../utils/assets';
 import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
@@ -61,10 +62,7 @@ const Noticias = () => {
         }).toUpperCase();
     };
 
-    const getImageUrl = (image: string) => {
-        if (!image) return `${import.meta.env.VITE_R2_BASE_URL}/logo.png`;
-        return image.startsWith('http') ? image : `${import.meta.env.VITE_R2_BASE_URL}/${image}`;
-    };
+    const getImageUrl = (image: string) => resolveAssetUrl(image);
 
     const getAuthorAvatar = (authorName: string) => {
         const name = authorName || 'EvilTokkii';

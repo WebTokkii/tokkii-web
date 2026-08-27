@@ -1,11 +1,10 @@
 /**
- * Resuelve URLs de recursos locales y remotos (R2, Supabase, CDN).
+ * Resuelve URLs de recursos locales y remotos de forma infalible.
  */
 export function resolveAssetUrl(path?: string | null): string {
-  if (!path) return '';
+  if (!path) return '/logo.png';
   const trimmed = path.trim();
 
-  // Si ya es una URL absoluta o data-url, retornarla tal cual
   if (
     trimmed.startsWith('http://') || 
     trimmed.startsWith('https://') || 
@@ -15,12 +14,8 @@ export function resolveAssetUrl(path?: string | null): string {
     return trimmed;
   }
 
-  // Quitar slash inicial si existe y anteponer el BASE_URL de la app
   const cleanPath = trimmed.startsWith('/') ? trimmed.slice(1) : trimmed;
-  const base = import.meta.env.BASE_URL || '/';
-  const prefix = base.endsWith('/') ? base : `${base}/`;
-  
-  return `${prefix}${cleanPath}`;
+  return `/${cleanPath}`;
 }
 
 export default resolveAssetUrl;

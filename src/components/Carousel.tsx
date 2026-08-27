@@ -2,12 +2,12 @@ import React, { useState, useEffect } from 'react';
 import './Carousel.css';
 
 const images = [
-    `${import.meta.env.VITE_R2_BASE_URL}/Imagenes/Carrusel1.jpg`,
-    `${import.meta.env.VITE_R2_BASE_URL}/Imagenes/Carrusel2.jpg`,
-    `${import.meta.env.VITE_R2_BASE_URL}/Imagenes/Carrusel3.jpg`,
-    `${import.meta.env.VITE_R2_BASE_URL}/Imagenes/Carrusel4.jpg`,
-    `${import.meta.env.VITE_R2_BASE_URL}/Imagenes/Carrusel5.jpg`,
-    `${import.meta.env.VITE_R2_BASE_URL}/Imagenes/Carrusel6.jpg`,
+    `/Imagenes/Carrusel1.jpg`,
+    `/Imagenes/Carrusel2.jpg`,
+    `/Imagenes/Carrusel3.jpg`,
+    `/Imagenes/Carrusel4.jpg`,
+    `/Imagenes/Carrusel5.jpg`,
+    `/Imagenes/Carrusel6.jpg`,
 ];
 
 const Carousel: React.FC = () => {
@@ -24,7 +24,7 @@ const Carousel: React.FC = () => {
     return (
         <section className="carousel-section fade-in">
             <div className="container">
-                <img src={`${import.meta.env.VITE_R2_BASE_URL}/Imagenes/Separador.png`} alt="Separador" className="carousel-separator top" />
+                <img src={`/Imagenes/Separador.png`} alt="Separador" className="carousel-separator top" />
                 <div className="carousel-wrapper">
                     {images.map((img, index) => (
                         <div
@@ -35,7 +35,7 @@ const Carousel: React.FC = () => {
                     ))}
                     <div className="carousel-overlay"></div>
                 </div>
-                <img src={`${import.meta.env.VITE_R2_BASE_URL}/Imagenes/Separador.png`} alt="Separador" className="carousel-separator bottom" />
+                <img src={`/Imagenes/Separador.png`} alt="Separador" className="carousel-separator bottom" />
             </div>
         </section>
     );

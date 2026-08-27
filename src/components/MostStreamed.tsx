@@ -1,3 +1,4 @@
+import { resolveAssetUrl } from '../utils/assets';
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
 
@@ -39,10 +40,7 @@ const MostStreamed: React.FC<MostStreamedProps> = ({ hideHeader = false, onGames
         fetchStreamed();
     }, []);
 
-    const getImageUrl = (imagePath: string) => {
-        if (!imagePath) return `${import.meta.env.VITE_R2_BASE_URL}/logo.png`;
-        return imagePath.startsWith('http') ? imagePath : `${import.meta.env.VITE_R2_BASE_URL}/${imagePath}`;
-    };
+    const getImageUrl = (imagePath: string) => resolveAssetUrl(imagePath);
 
     useEffect(() => {
         if (streamedData.length > 0 && onGamesLoad) {
