@@ -171,7 +171,26 @@ export default function TierList() {
       }
     });
 
-    return () => subscription.unsubscribe();
+    const handleAuthChanged = () => {
+      supabase.auth.getSession().then(({ data: { session } }) => {
+        const currentUser = session?.user ?? null;
+        setUser(currentUser);
+        if (currentUser) {
+          supabase.from('profiles').select('*').eq('id', currentUser.id).maybeSingle().then(({ data }) => {
+            if (data) setProfile(data);
+          });
+        } else {
+          setProfile(null);
+        }
+      });
+    };
+
+    window.addEventListener('auth-changed', handleAuthChanged);
+
+    return () => {
+      subscription.unsubscribe();
+      window.removeEventListener('auth-changed', handleAuthChanged);
+    };
   }, []);
 
   const handleTwitchLogin = async () => {

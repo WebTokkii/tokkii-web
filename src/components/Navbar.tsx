@@ -242,42 +242,57 @@ const Navbar: React.FC = () => {
 
     const handleLoginWithTwitch = async () => {
         if (!loginConsent) {
-            alert('Debes confirmar que autorizas el inicio de sesion con Twitch y el tratamiento minimo de datos para continuar.');
+            alert('Debes confirmar que autorizas el inicio de sesión con Twitch para continuar.');
             return;
         }
 
-        const { data, error } = await supabase.auth.signInWithOAuth({
-            provider: 'twitch',
-            options: {
-                redirectTo: window.location.origin,
-                skipBrowserRedirect: true
-            }
-        });
+        try {
+            setShowLoginModal(false);
+            setLoginConsent(false);
 
-        if (error) {
-            console.error('Twitch OAuth error:', error);
-            alert('No se pudo iniciar sesion con Twitch. Intenta nuevamente.');
-            return;
-        }
+            const currentUrl = window.location.href.split('#')[0];
+            const { data, error } = await supabase.auth.signInWithOAuth({
+                provider: 'twitch',
+                options: {
+                    redirectTo: currentUrl,
+                    skipBrowserRedirect: false
+                }
+            });
 
-        if (data?.url) {
-            const popup = window.open(
-                data.url,
-                'eviltokkii-twitch-login',
-                'width=520,height=720,menubar=no,toolbar=no,location=no,status=no,scrollbars=yes,resizable=yes'
-            );
-
-            if (!popup) {
+            if (error) throw error;
+            if (data?.url) {
                 window.location.assign(data.url);
-            } else {
-                setShowLoginModal(false);
-                setLoginConsent(false);
             }
+        } catch (err: any) {
+            console.error('Twitch OAuth error:', err);
+            alert('No se pudo iniciar sesión con Twitch: ' + (err.message || 'Error desconocido'));
         }
     };
 
     const handleLogout = async () => {
-        await supabase.auth.signOut();
+        setShowUserMenu(false);
+        setUser(null);
+        setProfile(null);
+
+        try {
+            await supabase.auth.signOut({ scope: 'local' });
+        } catch (err) {
+            console.warn("Error signing out:", err);
+        }
+
+        try {
+            Object.keys(localStorage).forEach(key => {
+                if (key.startsWith('sb-') && key.endsWith('-auth-token')) {
+                    localStorage.removeItem(key);
+                }
+            });
+        } catch (_) {}
+
+        window.dispatchEvent(new CustomEvent('auth-changed', { detail: null }));
+
+        if (window.location.pathname.includes('/perfil')) {
+            window.location.href = '/';
+        }
     };
 
     return (
