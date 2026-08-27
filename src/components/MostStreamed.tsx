@@ -81,36 +81,32 @@ const MostStreamed: React.FC<MostStreamedProps> = ({ hideHeader = false, onGames
                         style={{
                             display: 'flex',
                             flexDirection: 'row',
-                            alignItems: 'center',
+                            alignItems: 'stretch',
                             gap: '20px',
                             background: 'linear-gradient(180deg, rgba(255, 255, 255, 0.04), rgba(111, 0, 219, 0.08))',
                             backdropFilter: 'blur(14px)',
                             WebkitBackdropFilter: 'blur(14px)',
                             border: '1px solid var(--line, rgba(233, 176, 255, 0.15))',
                             borderRadius: '20px',
-                            padding: '18px 22px',
+                            padding: '0 24px 0 0',
                             boxShadow: 'var(--shadow, 0 10px 30px rgba(0, 0, 0, 0.35))',
-                            overflow: 'hidden'
+                            overflow: 'hidden',
+                            minHeight: '140px'
                         }}
                     >
-                        {/* Miniatura Izquierda (92px x 132px) */}
+                        {/* Miniatura Izquierda: Ocupa todo el alto de la casilla */}
                         <div 
                             className="streamed-card-thumb"
                             style={{
-                                width: '92px',
-                                minWidth: '92px',
-                                maxWidth: '92px',
-                                height: '132px',
-                                maxHeight: '132px',
-                                borderRadius: '12px',
-                                overflow: 'hidden',
+                                width: '115px',
+                                minWidth: '115px',
+                                maxWidth: '115px',
+                                alignSelf: 'stretch',
                                 background: '#0d0714',
-                                border: '1px solid rgba(233, 176, 255, 0.2)',
-                                boxShadow: '0 4px 15px rgba(0, 0, 0, 0.4)',
+                                borderRight: '1px solid rgba(233, 176, 255, 0.15)',
                                 flexShrink: 0,
                                 display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'center'
+                                overflow: 'hidden'
                             }}
                         >
                             <img 
@@ -129,15 +125,17 @@ const MostStreamed: React.FC<MostStreamedProps> = ({ hideHeader = false, onGames
                             />
                         </div>
 
-                        {/* Contenido Derecho: Título Mayor + Descripción Mayor */}
+                        {/* Contenido Derecho: Título arriba + Descripción */}
                         <div 
                             className="streamed-card-body"
                             style={{
                                 display: 'flex',
                                 flexDirection: 'column',
+                                justifyContent: 'flex-start',
                                 gap: '8px',
                                 flex: 1,
-                                minWidth: 0
+                                minWidth: 0,
+                                padding: '16px 0 16px 0'
                             }}
                         >
                             <h3 
@@ -147,7 +145,7 @@ const MostStreamed: React.FC<MostStreamedProps> = ({ hideHeader = false, onGames
                                     fontSize: '1.35rem',
                                     fontWeight: 800,
                                     color: '#ffffff',
-                                    lineHeight: 1.25,
+                                    lineHeight: 1.2,
                                     letterSpacing: '-0.01em'
                                 }}
                             >
