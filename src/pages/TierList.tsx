@@ -1,4 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { toBlob } from 'html-to-image';
+import CommunityTierlistsSection from '../components/CommunityTierlistsSection';
 import { 
   GENSHIN_CHARACTERS
 } from '../data/GenshinDb';
@@ -34,7 +36,12 @@ import {
   Sparkles,
   HelpCircle,
   X,
-  Maximize2
+  Maximize2,
+  Camera,
+  Upload,
+  Globe,
+  Check,
+  Share2
 } from 'lucide-react';
 
 interface Tier {
@@ -127,6 +134,142 @@ const DBD_WEAPONS: Record<string, string> = {
 };
 
 export default function TierList() {
+  // Auth state from Supabase for Twitch login
+  const [user, setUser] = useState<any>(null);
+  const [profile, setProfile] = useState<any>(null);
+  const [showLoginModal, setShowLoginModal] = useState(false);
+  const [loginConsent, setLoginConsent] = useState(false);
+
+  // Community Publish State
+  const tierBoardRef = useRef<HTMLDivElement>(null);
+  const [publishModalOpen, setPublishModalOpen] = useState(false);
+  const [tierlistTitleInput, setTierlistTitleInput] = useState('');
+  const [isPublishing, setIsPublishing] = useState(false);
+  const [publishSuccess, setPublishSuccess] = useState(false);
+  const [refreshCommunityTrigger, setRefreshCommunityTrigger] = useState(0);
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      const currentUser = session?.user ?? null;
+      setUser(currentUser);
+      if (currentUser) {
+        supabase.from('profiles').select('*').eq('id', currentUser.id).maybeSingle().then(({ data }) => {
+          if (data) setProfile(data);
+        });
+      }
+    });
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      const currentUser = session?.user ?? null;
+      setUser(currentUser);
+      if (currentUser) {
+        supabase.from('profiles').select('*').eq('id', currentUser.id).maybeSingle().then(({ data }) => {
+          if (data) setProfile(data);
+        });
+      } else {
+        setProfile(null);
+      }
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
+
+  const handleTwitchLogin = async () => {
+    try {
+      const redirectUrl = window.location.origin + window.location.pathname;
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: 'twitch',
+        options: {
+          redirectTo: redirectUrl
+        }
+      });
+      if (error) throw error;
+    } catch (err: any) {
+      alert("Error al iniciar sesión con Twitch: " + err.message);
+    }
+  };
+
+  const handleStartPublish = () => {
+    if (!user) {
+      setShowLoginModal(true);
+      return;
+    }
+    const defaultTitle = currentTemplateId === 'overwatch' ? 'Mi Tierlist de Overwatch' :
+                         currentTemplateId === 'genshin' ? 'Mi Tierlist de Genshin Impact' :
+                         currentTemplateId === 'wuwa' ? 'Mi Tierlist de Wuthering Waves' : 'Mi Tierlist de DBD';
+    setTierlistTitleInput(defaultTitle);
+    setPublishSuccess(false);
+    setPublishModalOpen(true);
+  };
+
+  const handleConfirmPublish = async () => {
+    if (!tierBoardRef.current || !user) return;
+    setIsPublishing(true);
+
+    try {
+      // 1. Captura en alta resolución del tablero
+      const blob = await toBlob(tierBoardRef.current, {
+        pixelRatio: 2,
+        cacheBust: true,
+        filter: (node: HTMLElement) => {
+          return !node.classList?.contains('tier-actions') && !node.classList?.contains('color-picker-action-btn');
+        }
+      });
+
+      if (!blob) throw new Error("No se pudo generar la imagen de la tierlist");
+
+      // 2. Subida a Cloudflare R2 vía clever-api Edge Function
+      const fileName = `tierlist_${currentTemplateId}_${user.id}_${Date.now()}.png`;
+      const { data: edgeData, error: edgeErr } = await supabase.functions.invoke('clever-api', {
+        body: { fileName, fileType: 'image/png' }
+      });
+
+      if (edgeErr || !edgeData) throw new Error(edgeErr?.message || "Error al conectar con Cloudflare R2");
+
+      const r2Res = await fetch(edgeData.presignedUrl, {
+        method: 'PUT',
+        body: blob,
+        headers: { 'Content-Type': 'image/png' }
+      });
+
+      if (!r2Res.ok) throw new Error("Error subiendo la imagen a Cloudflare R2");
+
+      const finalPublicUrl = edgeData.finalPublicUrl;
+
+      // 3. Guardar en la tabla community_tierlists de Supabase
+      const userName = profile?.username || user.user_metadata?.full_name || user.user_metadata?.name || 'Viewer';
+      const userAvatar = profile?.avatar_url || user.user_metadata?.avatar_url || '';
+      const userRole = profile?.role || 'usuario';
+
+      const { error: dbErr } = await supabase
+        .from('community_tierlists')
+        .insert([{
+          game_type: currentTemplateId,
+          user_id: user.id,
+          user_name: userName,
+          user_avatar: userAvatar,
+          user_role: userRole,
+          title: tierlistTitleInput.trim() || `Tierlist de ${currentTemplateId.toUpperCase()}`,
+          image_url: finalPublicUrl,
+          tiers_data: tiers
+        }]);
+
+      if (dbErr) throw dbErr;
+
+      setPublishSuccess(true);
+      setRefreshCommunityTrigger(prev => prev + 1);
+      setTimeout(() => {
+        setPublishModalOpen(false);
+        setIsPublishing(false);
+      }, 1500);
+
+    } catch (err: any) {
+      console.error("Error publishing tierlist:", err);
+      alert("Error al publicar la tierlist: " + err.message);
+      setIsPublishing(false);
+    }
+  };
+
   // Database map for quick lookups
   const charactersMap = useRef<Record<string, Character>>(
     GENSHIN_CHARACTERS.reduce((acc, char) => {
@@ -898,15 +1041,13 @@ export default function TierList() {
       const horizontalLimit = 1000 / maxCharsInARow; // 1000px available max width
       calculatedSize = Math.min(calculatedSize, horizontalLimit);
     }
-    
-    return Math.max(36, Math.floor(calculatedSize));
+  return Math.max(36, Math.floor(calculatedSize));
   };
   const presenterCardSize = getPresenterCardSize();
 
   return (
     <div className="app-container">
-      <>
-        {/* Title Header Banner */}
+      {/* Title Header Banner */}
       {currentView === 'home' ? (
         <div className="home-dashboard" style={{ padding: '1rem 0', display: 'flex', flexDirection: 'column', gap: '2.5rem' }}>
           <article className="hero-main glass" style={{ margin: '0 auto', textAlign: 'center', padding: '40px 34px', width: '100%', maxWidth: '900px' }}>
@@ -1064,10 +1205,9 @@ export default function TierList() {
               )}
             </p>
           </header>
-
-      {/* Control Buttons & Search Panel */}
+        {/* Control Buttons & Search Panel */}
       <section className="controls-bar">
-        <div className="controls-left">
+        <div className="controls-left" style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', alignItems: 'center' }}>
           <button onClick={handleAddTier} className="btn btn-primary">
             <Plus size={16} />
             Añadir Fila
@@ -1080,6 +1220,26 @@ export default function TierList() {
             <Maximize2 size={16} />
             Full Tierlist
           </button>
+          <button 
+            type="button"
+            onClick={handleStartPublish} 
+            className="btn" 
+            style={{ 
+              background: 'linear-gradient(135deg, #a855f7, #ec4899)', 
+              color: '#fff', 
+              fontWeight: 800, 
+              borderRadius: '999px',
+              padding: '0.65rem 1.4rem',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px',
+              boxShadow: '0 4px 15px rgba(168, 85, 247, 0.4)',
+              cursor: 'pointer'
+            }}
+          >
+            <Camera size={16} />
+            Publicar en la Comunidad
+          </button>
         </div>
         
         <div className="controls-right">
@@ -1088,8 +1248,8 @@ export default function TierList() {
             <input 
               type="text" 
               placeholder="Buscar personaje..." 
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
+              value={searchQuery} 
+              onChange={(e) => setSearchQuery(e.target.value)} 
               className="search-input"
             />
             {searchQuery && (
@@ -1124,7 +1284,7 @@ export default function TierList() {
       )}
 
       {/* The main Tier List Board */}
-      <main className="tierlist-board">
+      <main className="tierlist-board" ref={tierBoardRef}>
         {tiers.map((tier, index) => (
           <div 
             key={tier.id} 
@@ -1627,8 +1787,229 @@ export default function TierList() {
         </>
       )}
 
+      {/* Sección de Tierlists de la Comunidad Debajo de cada Juego */}
+      {currentView === 'editor' && (
+        <CommunityTierlistsSection 
+          gameType={currentTemplateId}
+          gameTitle={
+            currentTemplateId === 'genshin' ? 'Genshin Impact' :
+            currentTemplateId === 'wuwa' ? 'Wuthering Waves' :
+            currentTemplateId === 'overwatch' ? 'Overwatch' : 'Dead by Daylight'
+          }
+          user={user}
+          profile={profile}
+          onOpenLogin={() => setShowLoginModal(true)}
+          refreshTrigger={refreshCommunityTrigger}
+        />
+      )}
 
-      </>
+      {/* Modal para Publicar Tierlist en la Comunidad */}
+      {publishModalOpen && (
+        <div 
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            background: 'rgba(0,0,0,0.85)',
+            backdropFilter: 'blur(8px)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            zIndex: 99999,
+            padding: '20px'
+          }}
+          onClick={() => !isPublishing && setPublishModalOpen(false)}
+        >
+          <div 
+            className="card animate-slide-down"
+            style={{
+              background: '#0d1117',
+              border: '1px solid rgba(168, 85, 247, 0.4)',
+              borderRadius: '20px',
+              padding: '28px',
+              width: '100%',
+              maxWidth: '480px',
+              boxShadow: '0 20px 50px rgba(0,0,0,0.9)'
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+              <h3 style={{ margin: 0, fontSize: '1.3rem', color: '#fff', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <Camera size={20} color="#a855f7" /> Publicar en la Comunidad
+              </h3>
+              {!isPublishing && (
+                <button 
+                  type="button" 
+                  onClick={() => setPublishModalOpen(false)}
+                  style={{ background: 'none', border: 'none', color: '#94a3b8', cursor: 'pointer' }}
+                >
+                  <X size={20} />
+                </button>
+              )}
+            </div>
+
+            {publishSuccess ? (
+              <div style={{ textAlign: 'center', padding: '24px 0', color: '#4ade80' }}>
+                <div style={{ width: '56px', height: '56px', borderRadius: '50%', background: 'rgba(34, 197, 94, 0.2)', border: '2px solid #22c55e', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px auto' }}>
+                  <Check size={32} />
+                </div>
+                <h4 style={{ margin: '0 0 6px 0', color: '#fff', fontSize: '1.2rem' }}>¡Publicada con Éxito!</h4>
+                <p style={{ margin: 0, color: '#94a3b8', fontSize: '0.9rem' }}>Tu tierlist ya está visible en la sección de la comunidad.</p>
+              </div>
+            ) : (
+              <div>
+                <p style={{ color: '#cbd5e1', fontSize: '0.9rem', lineHeight: 1.5, marginBottom: '18px' }}>
+                  Se capturará una imagen en HD de tu tierlist actual y se subirá para que toda la comunidad pueda verla, darle like y comentar.
+                </p>
+
+                <div style={{ marginBottom: '20px' }}>
+                  <label className="form-label" style={{ fontSize: '0.85rem', marginBottom: '6px', color: '#fff' }}>
+                    Título de tu Tierlist (Opcional)
+                  </label>
+                  <input 
+                    type="text"
+                    className="form-control"
+                    placeholder="Ej: Mejores Héroes para Subir de Rango"
+                    value={tierlistTitleInput}
+                    onChange={(e) => setTierlistTitleInput(e.target.value)}
+                    style={{ fontSize: '0.95rem' }}
+                    disabled={isPublishing}
+                  />
+                </div>
+
+                <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px' }}>
+                  <button
+                    type="button"
+                    onClick={() => setPublishModalOpen(false)}
+                    disabled={isPublishing}
+                    style={{
+                      padding: '10px 18px',
+                      background: 'transparent',
+                      border: '1px solid rgba(255,255,255,0.1)',
+                      color: 'var(--text-muted)',
+                      borderRadius: '8px',
+                      cursor: 'pointer'
+                    }}
+                  >
+                    Cancelar
+                  </button>
+                  <button
+                    type="button"
+                    className="btn primary"
+                    onClick={handleConfirmPublish}
+                    disabled={isPublishing}
+                    style={{
+                      padding: '10px 24px',
+                      borderRadius: '8px',
+                      fontWeight: 700,
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '8px',
+                      background: 'linear-gradient(135deg, #a855f7, #ec4899)'
+                    }}
+                  >
+                    {isPublishing ? (
+                      <>
+                        <Sparkles size={16} className="animate-spin" />
+                        Capturando y Subiendo a R2...
+                      </>
+                    ) : (
+                      <>
+                        <Upload size={16} />
+                        Publicar Ahora
+                      </>
+                    )}
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* Modal de Login con Twitch si el usuario no está logueado */}
+      {showLoginModal && (
+        <div 
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            background: 'rgba(0,0,0,0.85)',
+            backdropFilter: 'blur(8px)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            zIndex: 999999,
+            padding: '20px'
+          }}
+          onClick={() => setShowLoginModal(false)}
+        >
+          <div 
+            className="card animate-slide-down"
+            style={{
+              background: '#0d1117',
+              border: '1px solid rgba(145, 70, 255, 0.4)',
+              borderRadius: '24px',
+              padding: '32px',
+              width: '100%',
+              maxWidth: '440px',
+              textAlign: 'center',
+              boxShadow: '0 20px 60px rgba(0,0,0,0.9)'
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div style={{ width: '56px', height: '56px', borderRadius: '50%', background: 'rgba(145, 70, 255, 0.2)', border: '1px solid #9146FF', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px auto', color: '#9146FF' }}>
+              <Globe size={28} />
+            </div>
+            <h3 style={{ margin: '0 0 8px 0', fontSize: '1.4rem', color: '#fff', fontWeight: 900 }}>
+              Inicia Sesión con Twitch
+            </h3>
+            <p style={{ color: '#94a3b8', fontSize: '0.9rem', lineHeight: 1.5, margin: '0 0 20px 0' }}>
+              Para publicar tierlists, dar <strong>like/dislike</strong> y escribir comentarios, conéctate con tu cuenta de Twitch en 1 clic.
+            </p>
+
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '20px', textAlign: 'left', background: 'rgba(255,255,255,0.03)', padding: '10px 14px', borderRadius: '10px' }}>
+              <input 
+                type="checkbox" 
+                id="consentCheck" 
+                checked={loginConsent} 
+                onChange={(e) => setLoginConsent(e.target.checked)}
+                style={{ accentColor: '#9146FF', width: '16px', height: '16px', cursor: 'pointer' }}
+              />
+              <label htmlFor="consentCheck" style={{ fontSize: '0.8rem', color: '#cbd5e1', cursor: 'pointer' }}>
+                Acepto las normas de convivencia de la comunidad de EvilTokkii.
+              </label>
+            </div>
+
+            <button
+              type="button"
+              className="btn primary"
+              disabled={!loginConsent}
+              onClick={handleTwitchLogin}
+              style={{
+                width: '100%',
+                padding: '12px',
+                borderRadius: '12px',
+                fontSize: '1rem',
+                fontWeight: 800,
+                background: loginConsent ? 'linear-gradient(135deg, #9146FF, #772CE8)' : 'rgba(255,255,255,0.1)',
+                color: '#fff',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '8px',
+                cursor: loginConsent ? 'pointer' : 'not-allowed'
+              }}
+            >
+              Conectar con Twitch
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
