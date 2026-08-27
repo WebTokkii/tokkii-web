@@ -1,3 +1,4 @@
+import { resolveAssetUrl } from '../utils/assets';
 import React, { useState, useEffect, useRef } from 'react';
 import { toBlob } from 'html-to-image';
 import CommunityTierlistsSection from '../components/CommunityTierlistsSection';
@@ -1081,10 +1082,10 @@ export default function TierList() {
 
           <div className="game-tabs-grid">
               {[
-                { id: 'genshin', name: 'Genshin Impact', desc: 'Edita la tierlist de personajes oficiales del parche Snezhnaya, incluyendo a Odette y Alyosha.', color: '#33ecc0', bg: '/Imagenes/tierlist_genshin.png' },
-                { id: 'wuwa', name: 'Wuthering Waves', desc: 'Clasifica a todos los Resonadores y formas de Rover jugables hasta la versión 3.5.', color: '#b874ec', bg: '/Imagenes/tierlist_wuwa.png' },
-                { id: 'overwatch', name: 'Overwatch', desc: 'Crea la tierlist definitiva de héroes incluyendo a Anran, Domina, Hazard y Jetpack Cat.', color: '#f08226', bg: '/Imagenes/tierlist_overwatch.png' },
-                { id: 'dbd', name: 'Dead by Daylight', desc: 'Clasifica supervivientes y asesinos oficiales más tus personajes personalizados.', color: '#00d27f', bg: '/Imagenes/tierlist_dbd.png' }
+                { id: 'genshin', name: 'Genshin Impact', desc: 'Edita la tierlist de personajes oficiales del parche Snezhnaya, incluyendo a Odette y Alyosha.', color: '#33ecc0', bg: resolveAssetUrl('/Imagenes/tierlist_genshin.png') },
+                { id: 'wuwa', name: 'Wuthering Waves', desc: 'Clasifica a todos los Resonadores y formas de Rover jugables hasta la versión 3.5.', color: '#b874ec', bg: resolveAssetUrl('/Imagenes/tierlist_wuwa.png') },
+                { id: 'overwatch', name: 'Overwatch', desc: 'Crea la tierlist definitiva de héroes incluyendo a Anran, Domina, Hazard y Jetpack Cat.', color: '#f08226', bg: resolveAssetUrl('/Imagenes/tierlist_overwatch.png') },
+                { id: 'dbd', name: 'Dead by Daylight', desc: 'Clasifica supervivientes y asesinos oficiales más tus personajes personalizados.', color: '#00d27f', bg: resolveAssetUrl('/Imagenes/tierlist_dbd.png') }
               ].map((g) => {
                   return (
                       <div
@@ -1413,7 +1414,7 @@ export default function TierList() {
                       handleDrop(e, tier.id, targetIdx);
                     }}
                     className={`character-card rarity-${char.rarity}-card element-${char.element.toLowerCase()}-glow ${selectedCharId === char.id ? 'selected' : ''}`}
-                    style={{ backgroundImage: `url(${char.imgUrl})` }}
+                    style={{ backgroundImage: `url(${resolveAssetUrl(char.imgUrl)})` }}
                   >
                     <div className="character-name-overlay">{char.name}</div>
                   </div>
@@ -1609,7 +1610,7 @@ export default function TierList() {
                     data-char-id={char.id}
                     className={`character-card ${currentTemplateId === 'dbd' ? 'dbd-pool-card' : ''} rarity-${char.rarity}-card element-${char.element.toLowerCase()}-glow ${selectedCharId === char.id ? 'selected' : ''}`}
                     style={{ 
-                      backgroundImage: `url(${char.imgUrl})`, 
+                      backgroundImage: `url(${resolveAssetUrl(char.imgUrl)})`, 
                       flexShrink: 0,
                       opacity: activeDragCharId === char.id ? 0.35 : 1,
                       cursor: activeDragCharId === char.id ? 'grabbing' : 'grab'
@@ -1657,7 +1658,7 @@ export default function TierList() {
           <div 
             className={`character-card rarity-${charactersMap.current[activeDragCharId]?.rarity}-card element-${charactersMap.current[activeDragCharId]?.element.toLowerCase()}-glow`}
             style={{ 
-              backgroundImage: `url(${charactersMap.current[activeDragCharId]?.imgUrl})`,
+              backgroundImage: `url(${resolveAssetUrl(charactersMap.current[activeDragCharId]?.imgUrl)})`,
               transition: 'none',
               transform: 'none'
             }}
@@ -1782,7 +1783,7 @@ export default function TierList() {
                             }}
                             className={`fullscreen-char-card element-${char.element.toLowerCase()}-glow`}
                             style={{
-                              backgroundImage: `url(${char.imgUrl})`,
+                              backgroundImage: `url(${resolveAssetUrl(char.imgUrl)})`,
                               height: '100%',
                               aspectRatio: '1 / 1',
                               width: 'auto',

@@ -1,3 +1,4 @@
+import { resolveAssetUrl } from '../utils/assets';
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { Sparkles, Volume2, VolumeX, ChevronLeft } from 'lucide-react';
 import { supabase } from '../lib/supabase';
@@ -1554,7 +1555,7 @@ export default function Minijuegos() {
                                   overflow: 'hidden'
                               }}>
                                   <img 
-                                      src={g.bg} 
+                                      src={resolveAssetUrl(g.bg)} 
                                       alt="background" 
                                       className="card-bg-img"
                                       style={{
