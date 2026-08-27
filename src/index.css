@@ -986,20 +986,21 @@ h1 {
 }
 
 .streamed-horizontal-card {
-  display: flex;
-  flex-direction: row;
-  align-items: flex-start;
-  gap: 16px;
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: stretch !important;
+  gap: 20px !important;
   background: linear-gradient(180deg, rgba(255, 255, 255, 0.04), rgba(111, 0, 219, 0.08));
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
   border: 1px solid var(--line);
   border-radius: 20px;
-  padding: 16px 18px;
+  padding: 0 24px 0 0 !important;
   box-shadow: var(--shadow);
   transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1), border-color 0.3s ease, box-shadow 0.3s ease;
   position: relative;
-  overflow: hidden;
+  overflow: hidden !important;
+  min-height: 140px;
 }
 
 .streamed-horizontal-card:hover {
@@ -1009,18 +1010,21 @@ h1 {
 }
 
 .streamed-card-thumb {
-  width: 92px !important;
-  min-width: 92px !important;
-  max-width: 92px !important;
-  height: 132px !important;
-  max-height: 132px !important;
-  aspect-ratio: 2/3;
-  border-radius: 12px;
-  overflow: hidden;
+  width: 115px !important;
+  min-width: 115px !important;
+  max-width: 115px !important;
+  height: 100% !important;
+  min-height: 100% !important;
+  max-height: none !important;
+  align-self: stretch !important;
+  border-radius: 0 !important;
+  overflow: hidden !important;
   background: #0d0714;
-  border: 1px solid rgba(233, 176, 255, 0.2);
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
-  flex-shrink: 0;
+  border: none !important;
+  border-right: 1px solid rgba(233, 176, 255, 0.15) !important;
+  box-shadow: none !important;
+  flex-shrink: 0 !important;
+  display: flex !important;
 }
 
 .streamed-card-thumb img {
@@ -1028,6 +1032,7 @@ h1 {
   height: 100% !important;
   object-fit: cover !important;
   object-position: center !important;
+  display: block !important;
   transition: transform 0.4s ease;
 }
 
@@ -1036,27 +1041,29 @@ h1 {
 }
 
 .streamed-card-body {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  flex: 1;
-  min-width: 0;
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: flex-start !important;
+  gap: 8px !important;
+  flex: 1 !important;
+  min-width: 0 !important;
+  padding: 16px 0 !important;
 }
 
 .streamed-card-title {
-  margin: 0;
-  font-size: 1.12rem;
-  font-weight: 800;
-  color: #fff;
-  line-height: 1.25;
+  margin: 0 !important;
+  font-size: 1.35rem !important;
+  font-weight: 800 !important;
+  color: #fff !important;
+  line-height: 1.2 !important;
   letter-spacing: -0.01em;
 }
 
 .streamed-card-desc {
   margin: 0;
-  font-size: 0.88rem;
+  font-size: 0.96rem;
   color: #cbd5e1;
-  line-height: 1.55;
+  line-height: 1.5;
   word-break: break-word;
   white-space: pre-line;
 }
