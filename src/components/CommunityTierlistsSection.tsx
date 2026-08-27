@@ -556,7 +556,7 @@ export const CommunityTierlistsSection: React.FC<CommunityTierlistsSectionProps>
                     </h4>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                       {tierlist.user_avatar ? (
-                        <img src={tierlist.user_avatar} alt="" style={{ width: '22px', height: '22px', borderRadius: '50%', border: '1px solid rgba(255,255,255,0.2)' }} />
+                        <img src={tierlist.user_avatar} referrerPolicy="no-referrer" alt="" style={{ width: '22px', height: '22px', borderRadius: '50%', border: '1px solid rgba(255,255,255,0.2)' }} />
                       ) : (
                         <div style={{ width: '22px', height: '22px', borderRadius: '50%', background: 'var(--primary)' }} />
                       )}

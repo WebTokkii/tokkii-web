@@ -234,8 +234,7 @@ export default function Perfil() {
         
         <header className="glass" style={{ display: 'flex', alignItems: 'center', gap: '24px', padding: '2rem', borderRadius: '24px', marginBottom: '2rem' }}>
           {profile.avatar_url && (
-            <img 
-              src={profile.avatar_url} 
+            <img src={profile.avatar_url} referrerPolicy="no-referrer" 
               alt="Avatar" 
               style={{ width: '90px', height: '90px', borderRadius: '50%', border: '3px solid var(--highlight)', display: 'block', boxShadow: '0 0 20px rgba(233,176,255,0.2)' }} 
             />

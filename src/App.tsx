@@ -18,6 +18,11 @@ import Legal from './pages/Legal';
 import NotFound from './pages/NotFound';
 
 const App: React.FC = () => {
+  React.useEffect(() => {
+    if (window.location.hash && window.location.hash.includes('access_token')) {
+      window.history.replaceState(null, '', window.location.pathname + window.location.search);
+    }
+  }, []);
   return (
     <Router>
       <ScrollToTop />

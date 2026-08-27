@@ -1704,8 +1704,7 @@ export default function Minijuegos() {
                         #{index + 1}
                       </span>
                       {userScore.avatar_url ? (
-                        <img 
-                          src={userScore.avatar_url} 
+                        <img src={userScore.avatar_url} referrerPolicy="no-referrer" 
                           alt={userScore.username}
                           style={{ width: '36px', height: '36px', borderRadius: '50%', border: '1px solid rgba(255,255,255,0.1)' }}
                         />

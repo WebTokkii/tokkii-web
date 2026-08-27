@@ -375,7 +375,7 @@ const Navbar: React.FC = () => {
                                 </div>
                                 {(profile?.avatar_url || user.user_metadata?.avatar_url) && (
                                     <img 
-                                        src={profile?.avatar_url || user.user_metadata.avatar_url} 
+                                        src={profile?.avatar_url || user?.user_metadata?.avatar_url || ''} referrerPolicy="no-referrer" 
                                         alt="Avatar" 
                                         style={{ width: '32px', height: '32px', borderRadius: '50%', border: '2px solid var(--highlight)' }} 
                                     />
